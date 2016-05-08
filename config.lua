@@ -1,7 +1,8 @@
 return {
-	bot_api_key = '181668033:AAFd5f14E2pEOgYKb9gVaKJvOfftODk4ryo',
+	bot_api_key = 'DELETE THIS AND ADD YOUR APIKEY HERE',
 	time_offset = 0,
-	admin = 189041244,
+	-- you need change "yourid"
+	admin = YOURID,
 --  group = 1045085829,
 	channel = '',
 	plugins = {
