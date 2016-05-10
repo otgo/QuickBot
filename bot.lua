@@ -7,40 +7,40 @@ colors = require('ansicolors')
 client = Redis.connect('127.0.0.1', 6379)
 serpent = require('serpent')
 
-bot_init = function(on_reload) -- The function run when the bot is started or reloaded.
+bot_init = function(on_reload) 
 	
 	print(colors('%{blue bright}Loading config.lua...'))
-	config = dofile('config.lua') -- Load configuration file.
+	config = dofile('config.lua') 
 	if config.bot_api_key == '' then
-		print(colors('%{red bright}Key perdida!'))
+		print(colors('%{red bright}API KEY MISSING!'))
 		return
 	end
-	print(colors('%{blue bright}Leyendo...'))
-	cross = dofile('utilities.lua') -- Load miscellaneous and cross-plugin functions.
-	print(colors('%{blue bright}Leyendo lenguajes...'))
-	lang = dofile('languages.lua') -- All the languages available
-	print(colors('%{blue bright}Leyendo API...'))
+	print(colors('%{blue bright}Loading utilities.lua...'))
+	cross = dofile('utilities.lua') 
+	print(colors('%{blue bright}Loading languages...'))
+	lang = dofile('languages.lua') 
+	print(colors('%{blue bright}Loading API functions table...'))
 	api = require('methods')
 	
 	bot = nil
-	while not bot do -- Get bot info and retry if unable to connect.
+	while not bot do 
 		bot = api.getMe()
 	end
 	bot = bot.result
 
-	plugins = {} -- Load plugins.
+	plugins = {} 
 	for i,v in ipairs(config.plugins) do
 		local p = dofile('plugins/'..v)
-		print(colors('%{red bright}Leyendo plugin...%{reset}'), v)
+		print(colors('%{red bright}Cargando plugin...%{reset}'), v)
 		table.insert(plugins, p)
 	end
-	print(colors('%{blue}Plugins leidos:'), #plugins)
+	print(colors('%{blue}Plugins cargados:'), #plugins)
 
 	print(colors('%{blue bright}BOT INICIADO: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')'))
 	if not on_reload then
 		save_log('starts')
 		client:hincrby('bot:general', 'starts', 1)
-		api.sendMessage(config.admin, '*Bot iniciiado!*\n_'..os.date('Día %A, %d %B %Y\nHora: %X')..'_\n'..#plugins..' plugins leídos', true)
+		api.sendMessage(config.admin, '*¡Bot iniciado!*\n_'..os.date('Día %A, %d %B %Y\nAt %X')..'_\n'..#plugins..' plugins cargados', true)
 	end
 	
 	-- Generate a random seed and "pop" the first random number. :)
@@ -145,7 +145,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 					if blocks then
 						print(colors('\nMsg info:\t %{red bright}'..get_from(msg)..'%{reset} in: '..msg.chat.type..' ['..msg.chat.id..'] type: '..get_what(msg)..' ('..os.date('on %A, %d %B %Y at %X')..')'))
 						if blocks[1] ~= '' then
-      						print('Match encontrado:', colors('%{blue bright}'..w))
+      						print('Match found:', colors('%{blue bright}'..w))
       						client:hincrby('bot:general', 'query', 1)
       						if msg.from then client:incrby('user:'..msg.from.id..':query', 1) end
       					end
@@ -156,10 +156,10 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							return v.action(msg, blocks, msg.lang)
 						end)
 						if not success then
-							api.sendReply(msg, 'ERROR', true)
+							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendMessage( tostring(config.admin), 'Error ocurrido.\nVerifica el log', false, false, false)
+          					api.sendMessage( tostring(config.admin), 'An error occurred.\nCheck the log', false, false, false)
 							return
 						end
 						-- If the action returns a table, make that table msg.
