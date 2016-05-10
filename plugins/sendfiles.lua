@@ -1,10 +1,10 @@
 local triggers = {
-		'^/enviar (imagen) (.*)$',
-		'^/enviar (sticker) (.*)$',
-		'^/enviar (archivo) (.*)$',
-		'^/enviar (gif) (.*)$',
-		'^/enviar (video) (.*)$',
-		'^/enviar (formatos)$',
+		'^/send (imagen) (.*)$',
+		'^/send (sticker) (.*)$',
+		'^/send (archivo) (.*)$',
+		'^/send (gif) (.*)$',
+		'^/send (video) (.*)$',
+		'^/send (formatos)$',
 		}
 
 local action = function(msg, blocks)
