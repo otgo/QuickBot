@@ -29,7 +29,7 @@ cd QuickBot
 # cambia los permisos
 chmod +x run.sh && chmod +x dependences.sh
 # Instalar dependencias necesarias
-./dependences.sh
+sudo ./dependences.sh
 ```
 
 --------------------
