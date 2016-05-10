@@ -1,7 +1,7 @@
 local function gsub_custom_welcome(msg, custom)
 	local name = msg.added.first_name:mEscape()
 	local id = msg.added.id
-	local iduser = msg.from.id
+--	local iduser = msg.from.id
 	local username
 	local group = msg.chat.title:mEscape()
 	if msg.added.username then
@@ -9,7 +9,7 @@ local function gsub_custom_welcome(msg, custom)
 	else
 		username = '(no username)'
 	end
-	custom = custom:gsub('$name', name):gsub('$username', username):gsub('$id', id):gsub('$group', group):gsub('$id', iduser)
+	custom = custom:gsub('$name', name):gsub('$username', username):gsub('$id', id):gsub('$group', group)
 	return custom
 end
 
