@@ -5,7 +5,7 @@ local triggers = {
 local action = function(msg, blocks, ln)
 
 if blocks[1] == 'beta' then
-    	api.sendDocument(msg.chat.id, './TelegramBetav3.8.1(790)Uni.apk')
+    	api.sendDocument(msg.chat.id, './TelegramBeta790.apk')
     end
     end
     
