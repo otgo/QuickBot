@@ -53,8 +53,8 @@ return {
                         ..'En las reglas, puedes usar texto en (*negritas*) usando asteriscos ó texto en (_cursivas_) usando guiones bajos o palabras (`normales`) en las reglas y descripción.\n'
                         ..'`/[kick/ban] [images,audio,etc]` : cambia la acción si ponen imagenes audios, etc.\n'
                         ..'`/media` : Muestra el estado de baneos o expulsaciones por multimedia.\n'
-                        ..'`/link` : obtiene el link del grupo, si está puesto, obvio.\n'
-                        ..'`/lang` : muestra los lenguajes, aunque solo hay español por ahora XD.\n'
+                        ..'`/link` : obtiene el link del grupo, si está puesto.\n'
+                        ..'`/lang` : muestra los lenguajes, español solamente disponible por ahora.\n'
                         ..'`/lang` [es] : cambia el lenguaje del bot.\n'
                         ..'`/settings` : muestra los ajustes del grupo.\n'
                         ..'`/warn [kick/ban]` : cambia la acción si el usuario se advierte al numer máximo.\n'
@@ -97,7 +97,7 @@ return {
                    ..'\n*¿Como puedo ayudarte?*\n'
                    ..'\nPuedo banear, expulsar, advertir a cualquier usuario que tú desees.\n'
                    ..'Solo necesito que me des administración y mi trabajo empieza!\n'
-                   ..'\nSi deseas usarlo, por favor consulta a mis dueños [Jarriz](http://telegram.me/jarriz) ó a [George](http://telegram.me/george0884) para promoverte.\n'
+                   ..'\nSi deseas usarlo, por favor consultame para promoverte.\n'
                    ..'\n_Por favor, regalános tu puntuación_ [aquí](https://telegram.me/storebot?start=moderadores_bot)',
             group_success = '_Este comando solo funciona por pv_',
            group_not_success = '_Mensajeame para ayudarte_',
