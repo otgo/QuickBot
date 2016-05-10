@@ -1,12 +1,12 @@
 local triggers = {
 	'^[Mm]ata a (.*)$',
-        '^[Qq]uicksilver mata a (.*)$'
+        '^[Bb]ot mata a (.*)$'
 }
 
 local action = function(msg, matches, blocks, ln)
 
-        api.sendMessage(msg.chat.id, '_Llamando a Terminator..._\n*Matando a * _' ..matches[1]..'_', true)
-	api.sendVideo(msg.chat.id, './gif/giphy.mp4')
+        api.sendMessage(msg.chat.id, '_Llamando a Terminator..._\n_Matando a ' ..matches[1]..'_...', true)
+	api.sendVideo(msg.chat.id, './enviar/gif/giphy.mp4')
  
 
     end
