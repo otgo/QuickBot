@@ -16,7 +16,7 @@ return {
 		'say.lua',
 		'comprimirlink.lua',
 		'sendfiles.lua',
-		'mata.lua',
+		'killer.lua',
 		'settings.lua',
 		'about.lua',
 		'report.lua',
