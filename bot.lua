@@ -9,17 +9,17 @@ serpent = require('serpent')
 
 bot_init = function(on_reload) 
 	
-	print(colors('%{blue bright}Loading config.lua...'))
+	print(colors('%{blue bright}Cargando config.lua...'))
 	config = dofile('config.lua') 
 	if config.bot_api_key == '' then
-		print(colors('%{red bright}API KEY MISSING!'))
+		print(colors('%{red bright}VERIFICA LA APIKEY'))
 		return
 	end
-	print(colors('%{blue bright}Loading utilities.lua...'))
+	print(colors('%{blue bright}Cargando utilities.lua...'))
 	cross = dofile('utilities.lua') 
-	print(colors('%{blue bright}Loading languages...'))
+	print(colors('%{blue bright}Cargando languages...'))
 	lang = dofile('languages.lua') 
-	print(colors('%{blue bright}Loading API functions table...'))
+	print(colors('%{blue bright}Cargando tabla de funciones API...'))
 	api = require('methods')
 	
 	bot = nil
@@ -145,7 +145,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 					if blocks then
 						print(colors('\nMsg info:\t %{red bright}'..get_from(msg)..'%{reset} in: '..msg.chat.type..' ['..msg.chat.id..'] type: '..get_what(msg)..' ('..os.date('on %A, %d %B %Y at %X')..')'))
 						if blocks[1] ~= '' then
-      						print('Match found:', colors('%{blue bright}'..w))
+      						print('Comando encontrado:', colors('%{blue bright}'..w))
       						client:hincrby('bot:general', 'query', 1)
       						if msg.from then client:incrby('user:'..msg.from.id..':query', 1) end
       					end
@@ -159,7 +159,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendMessage( tostring(config.admin), 'An error occurred.\nCheck the log', false, false, false)
+          					api.sendMessage( tostring(config.admin), 'Error ocurrido, guardado en logs', false, false, false)
 							return
 						end
 						-- If the action returns a table, make that table msg.
