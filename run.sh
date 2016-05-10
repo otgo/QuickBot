@@ -1,2 +1,2 @@
-killall screen
-screen lua bot.lua
+sudo killall screen
+sudo screen lua bot.lua
