@@ -15,7 +15,6 @@ return {
 		'help.lua',
 		'caracola.lua',
 		'rules.lua',
-	--	'probando.lua',
 		'say.lua',
 		'comprimirlink.lua',
   		'funcion.lua',
