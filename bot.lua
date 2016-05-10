@@ -156,7 +156,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							return v.action(msg, blocks, msg.lang)
 						end)
 						if not success then
-							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
+							api.sendReply(msg, '*ERROR*', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
           					api.sendMessage( tostring(config.admin), 'Error ocurrido, guardado en logs', false, false, false)
