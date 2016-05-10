@@ -15,7 +15,6 @@ return {
 		'rules.lua',
 		'say.lua',
 		'comprimirlink.lua',
-  		'funcion.lua',
 		'sendfiles.lua',
 		'mata.lua',
 		'settings.lua',
