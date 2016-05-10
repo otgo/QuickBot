@@ -2,6 +2,8 @@ return {
 	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
 	time_offset = 0,
 	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
+	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacio
+	channelsupport = '@canal', -- en caso de que no quieras que el bot te envie respuestas a un grupo dejalo vacío
 	channel = '',
 	plugins = {
 		'onmessage.lua', 
