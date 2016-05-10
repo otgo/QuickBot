@@ -1,9 +1,7 @@
 return {
-	bot_api_key = 'DELETE THIS AND ADD YOUR APIKEY HERE',
+	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
 	time_offset = 0,
-	-- you need change "yourid"
-	admin = YOURID,
---  group = 1045085829,
+	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
 	channel = '',
 	plugins = {
 		'onmessage.lua', 
