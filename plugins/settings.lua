@@ -26,7 +26,7 @@ end
 
 local action = function(msg, blocks, ln)
 
---ignore if via pm
+--ignore if via pv
 if msg.chat.type == 'private' then
     api.sendMessage(msg.from.id, make_text(lang[ln].pv))
     return nil
