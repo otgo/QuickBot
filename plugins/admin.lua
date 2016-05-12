@@ -2,7 +2,7 @@ local triggers = {
 	'^/(init)$',
 	'^/(init)@'..bot.username..'$',
 	'^/(stop)$',
---	'^/(backup)[@'..bot.username..']?',
+	'^/(backup)[@'..bot.username..']?',
 	'^/(bc) (.*)$',
 	'^/(bcg) (.*)$',
 	'^/(save)$',
@@ -39,15 +39,14 @@ local triggers = {
 	'^/(movechat) (-%d+)$',
 	'^/(redis backup)$',
 	'^/(group info) (-?%d+)$',
-	'^/(echo) (.*)$',
-	'^/(fill media)$'
+	'^/(echo) (.*)$'
 }
 
 local logtxt = ''
 local failed = 0
 
 local function save_in_redis(hash, text)
-    local redis_res = db:set(hash, text)
+    local redis_res = client:set(hash, text)
     if redis_res == true then
 	    return 'Saved on redis (res: true)'
 	else
@@ -61,7 +60,7 @@ local function bot_leave(chat_id, ln)
 	if not res then
 		return lang[ln].admin.leave_error
 	else
-		db:hincrby('bot:general', 'groups', -1)
+		client:hincrby('bot:general', 'groups', -1)
 		return lang[ln].admin.leave_chat_leaved
 	end
 end
@@ -79,46 +78,6 @@ local function load_lua(code)
 	return output
 end
 
-local function fill_media_settings()
-	local list = {'image', 'audio', 'video', 'sticker', 'gif', 'voice', 'contact', 'file'}
-	local m_found = 0
-	local m_not_found = 0
-	local groups = db:smembers('bot:groupsid')
-	local logtxt = ''
-	for k,v in pairs(groups) do
-		local chat_id = v
-		logtxt = logtxt..'\nChat id: '..chat_id..'\n'
-    	local media_sett = db:hgetall('chat:'..chat_id..':media')
-    	for i=1,#list do
-    		logtxt = logtxt..'Checking '..list[i]..'... '
-        	if next(media_sett) then
-            	local bool = false
-            	for media,status in pairs(media_sett) do
-                	if media == list[i] then
-                		logtxt = logtxt..'found!\n'
-                		m_found = m_found + 1
-                		bool = true
-                	end
-            	end
-            	if bool == false then
-            		logtxt = logtxt..'not found!\n'
-            		m_not_found = m_not_found + 1
-                	db:hset('chat:'..chat_id..':media', list[i], 'allowed')
-            	end
-        	else
-        		logtxt = logtxt..'not found!\n'
-            	m_not_found = m_not_found + 1
-            	db:hset('chat:'..chat_id..':media', list[i], 'allowed')
-        	end
-        end
-    end
-    logtxt = 'MISSING MEDIA SETTINGS\nFound (ignored): '..m_found..'\nNot found (setted): '..m_not_found..'\n'..logtxt
-    print(logtxt)
-    local path = "./logs/fill_media_settings.txt"
-    write_file(path, logtxt)
-    api.sendDocument(config.admin, path)
-end
-
 local action = function(msg, blocks, ln)
 	
 	if msg.from.id ~= config.admin then
@@ -134,7 +93,7 @@ local action = function(msg, blocks, ln)
 		mystat('/admin')
 	end
 	if blocks[1] == 'init' then
-		---db:bgsave()
+		--client:bgsave()
 		bot_init(true)
 		
 		local out = make_text(lang[ln].control.reload)
@@ -142,7 +101,7 @@ local action = function(msg, blocks, ln)
 		mystat('/reload')
 	end
 	if blocks[1] == 'stop' then
-		db:bgsave()
+		client:bgsave()
 		is_started = false
 		local out = make_text(lang[ln].control.stop)
 		api.sendReply(msg, out, true)
@@ -161,7 +120,7 @@ local action = function(msg, blocks, ln)
 	            return
 	        end
 	        local hash = 'bot:users'
-	        local ids = db:hkeys(hash)
+	        local ids = client:hkeys(hash)
 	        if ids then
 	            for i=1,#ids do
 	                api.sendMessage(ids[i], blocks[2], true)
@@ -178,7 +137,7 @@ local action = function(msg, blocks, ln)
 	    	api.sendMessage(config.admin, lang[ln].breaks_markdown)
 	        return
 	    end
-	    local groups = db:smembers('bot:groupsid')
+	    local groups = client:smembers('bot:groupsid')
 	    if not groups then
 	    	api.sendMessage(config.admin, lang[ln].admin.bcg_no_groups)
 	    else
@@ -191,7 +150,7 @@ local action = function(msg, blocks, ln)
 	    mystat('/bcg')
 	end
 	if blocks[1] == 'save' then
-		db:bgsave()
+		client:bgsave()
 		local out = make_text(lang[ln].getstats.redis)
 		api.sendMessage(msg.chat.id, out, true)
 		mystat('/save')
@@ -199,8 +158,8 @@ local action = function(msg, blocks, ln)
 	if blocks[1] == 'commands' then
 		local text = 'Stats:\n'
 	    local hash = 'commands:stats'
-	    local names = db:hkeys(hash)
-	    local num = db:hvals(hash)
+	    local names = client:hkeys(hash)
+	    local num = client:hvals(hash)
 	    for i=1, #names do
 	        text = text..'- *'..names[i]..'*: '..num[i]..'\n'
 	    end
@@ -211,13 +170,13 @@ local action = function(msg, blocks, ln)
     if blocks[1] == 'stats' then
     	local text = '#stats:\n'
         local hash = 'bot:general'
-	    local names = db:hkeys(hash)
-	    local num = db:hvals(hash)
+	    local names = client:hkeys(hash)
+	    local num = client:hvals(hash)
 	    for i=1, #names do
 	        text = text..'- *'..names[i]..'*: '..num[i]..'\n'
 	    end
-	     text = text..'- *messages from last start*: '..tot
-		api.sendMessage(msg.chat.id, text, true)
+	    local out = make_text(lang[ln].getstats.stats, text)
+		api.sendMessage(msg.chat.id, out, true)
 		mystat('/stats')
 	end
 	if blocks[1] == 'lua' then
@@ -337,7 +296,7 @@ local action = function(msg, blocks, ln)
 		else
 			id = blocks[2]
 		end
-		local response = db:sadd('bot:blocked', id)
+		local response = client:sadd('bot:blocked', id)
 		local text
 		if response == 1 then
 			text = make_text(lang[ln].admin.blocked, id)
@@ -360,7 +319,7 @@ local action = function(msg, blocks, ln)
 		else
 			id = blocks[2]
 		end
-		local response = db:srem('bot:blocked', id)
+		local response = client:srem('bot:blocked', id)
 		local text
 		if response == 1 then
 			text = make_text(lang[ln].admin.unblocked, id)
@@ -384,7 +343,7 @@ local action = function(msg, blocks, ln)
 		mystat('/isblocked')
 	end
 	if blocks[1] == 'ping redis' then
-		local ris = db:ping()
+		local ris = client:ping()
 		if ris == true then
 			api.sendMessage(msg.from.id, lang[ln].ping)
 		end
@@ -434,7 +393,7 @@ local action = function(msg, blocks, ln)
 		end
 		local key = blocks[2]
 		local hash = 'bot:general'
-		local res = db:hdel(hash, key)
+		local res = client:hdel(hash, key)
 		if res == 1 then
 			api.sendMessage(config.admin, 'Resetted!')
 		else
@@ -471,17 +430,17 @@ local action = function(msg, blocks, ln)
 			return
 		end
 		local status = blocks[2]
-		local current = db:hget('bot:general', 'adminmode')
+		local current = client:hget('bot:general', 'adminmode')
 		if current == status then
 			api.sendMessage(config.admin, 'Admin mode *already '..status..'*', true)
 		else
-			db:hset('bot:general', 'adminmode', status)
+			client:hset('bot:general', 'adminmode', status)
 			api.sendMessage(config.admin, 'Admin mode: *'..status..'*', true)
 		end
 	end
 	if blocks[1] == 'delflag' then
 		--with @admin command, flag is no longer needed
-		local groups = db:smembers('bot:groupsid')
+		local groups = client:smembers('bot:groupsid')
 		local logtxt = ''
 		local deleted = 0
 		local not_deleted = 0
@@ -489,7 +448,7 @@ local action = function(msg, blocks, ln)
 		for i=1,#groups do
 			logtxt = logtxt..i..' - Group id:\t'..groups[i]..'\n'
 			local hash = 'chat:'..groups[i]..':settings'
-			local res = db:hdel(hash, 'Flag')
+			local res = client:hdel(hash, 'Flag')
 			if res == 1 then
 				deleted = deleted + 1
 			elseif res == 0 then
@@ -508,7 +467,7 @@ local action = function(msg, blocks, ln)
 	end
 	if blocks[1] == 'usernames' then
 		local hash = 'bot:usernames'
-		local usernames = db:hkeys(hash)
+		local usernames = client:hkeys(hash)
 		local file = io.open("./logs/usernames.txt", "w")
 		file:write(vtext(usernames):gsub('"', ''))
         file:close()
@@ -517,8 +476,8 @@ local action = function(msg, blocks, ln)
         mystat('/usernames')
     end
     if blocks[1] == 'api errors' then
-    	local errors = db:hkeys('bot:errors')
-    	local times = db:hvals('bot:errors')
+    	local errors = client:hkeys('bot:errors')
+    	local times = client:hvals('bot:errors')
     	local text = 'Api errors:\n'
     	for i=1,#errors do
     		text = text..errors[i]..': '..times[i]..'\n'
@@ -529,7 +488,7 @@ local action = function(msg, blocks, ln)
     if blocks[1] == 'rediscli' then
     	local redis_f = blocks[2]:gsub(' ', '(\'', 1)
     	redis_f = redis_f:gsub(' ', '\',\'')
-    	redis_f = 'return db:'..redis_f..'\')'
+    	redis_f = 'return client:'..redis_f..'\')'
     	print(redis_f)
     	local output = load_lua(redis_f)
     	print(output)
@@ -550,7 +509,7 @@ local action = function(msg, blocks, ln)
     	end
 	end
 	if blocks[1] == 'redis backup' then
-		local groups = db:smembers('bot:groupsid')
+		local groups = client:smembers('bot:groupsid')
 		vardump(groups)
 		div()
 		local all_groups = {}
@@ -589,10 +548,7 @@ local action = function(msg, blocks, ln)
 	end
 	
 	if blocks[1] == 'echo' then
-		api.sendAdmin(blocks[2], true)
-	end
-	if blocks[1] == 'fill media' then
-		fill_media_settings()
+		sendAdmin(blocks[2], true)
 	end
 end
 

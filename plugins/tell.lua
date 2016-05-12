@@ -36,6 +36,8 @@ return {
 	action = action,
 	triggers = {
 		'^/(tell)$',
-		'^/(tell)@' ..bot.username.. '$'
+		'^/(tell)@'..bot.username..'$'
+
+
 	}
 }

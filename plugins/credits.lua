@@ -6,6 +6,7 @@ end
 return {
 	action = action,
 	triggers = {
+		'^/(info)' ..bot.username.. '$',
 		'^/(info)'
 	}
 }

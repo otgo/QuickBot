@@ -22,7 +22,7 @@ local action = function(msg, blocks, ln)
 			return nil
 		end
 	    --load about
-	    about = db:get(hash)
+	    about = client:get(hash)
         --check if there is an about text
         if not about then
             api.sendReply(msg, make_text(lang[ln].setabout.no_bio_add), true)
@@ -39,7 +39,7 @@ local action = function(msg, blocks, ln)
             	api.sendReply(msg. lang[ln].breaks_markdown)
             else
             	about = about..'\n'..input
-            	db:set(hash, about)
+            	client:set(hash, about)
             end
         end
         mystat('/addabout')
@@ -59,7 +59,7 @@ local action = function(msg, blocks, ln)
 		end
 		--check if the mod want to clean the about text
 		if input == 'clean' then
-			db:del(hash)
+			client:del(hash)
 			api.sendReply(msg, make_text(lang[ln].setabout.clean))
 			return nil
 		end
@@ -69,7 +69,7 @@ local action = function(msg, blocks, ln)
 		if not res then
 			api.sendReply(msg, lang[ln].breaks_markdown)
 		else
-			db:set(hash, input)
+			client:set(hash, input)
 		end
 		mystat('/setabout')
 	end

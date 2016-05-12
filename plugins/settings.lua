@@ -2,11 +2,11 @@ local function disable_set(field, msg, ln)
     local hash = 'chat:'..msg.chat.id..':settings'
     local field_lower = field:lower()
     print(already, locked)
-    local now = db:hget(hash, field)
+    local now = client:hget(hash, field)
     if now == 'yes' then
         api.sendReply(msg, make_text(lang[ln].settings.disable[field_lower..'_already']), true)
     else
-        db:hset(hash, field, 'yes')
+        client:hset(hash, field, 'yes')
         api.sendReply(msg, make_text(lang[ln].settings.disable[field_lower..'_locked']), true)
     end
 end
@@ -15,18 +15,18 @@ local function enable_set(field, msg, ln)
     local hash = 'chat:'..msg.chat.id..':settings'
     local field_lower = field:lower()
     print(field_lower)
-    local now = db:hget(hash, field)
+    local now = client:hget(hash, field)
     if now == 'no' then
         api.sendReply(msg, make_text(lang[ln].settings.enable[field_lower..'_already']), true)
     else
-        db:hset(hash, field, 'no')
+        client:hset(hash, field, 'no')
         api.sendReply(msg, make_text(lang[ln].settings.enable[field_lower..'_unlocked']), true)
     end
 end
 
 local action = function(msg, blocks, ln)
 
---ignore if via pv
+--ignore if via pm
 if msg.chat.type == 'private' then
     api.sendMessage(msg.from.id, make_text(lang[ln].pv))
     return nil
@@ -155,37 +155,37 @@ if blocks[1] == 'welcome' then
         local hash = 'chat:'..msg.chat.id..':welcome'
         local key = 'wel'
         
-        db:hdel(hash, 'custom') --will be hsetted again if the text is a custom welcome
+        client:hdel(hash, 'custom') --will be hsetted again if the text is a custom welcome
         --change welcome settings
         if input == 'a' then
-            db:hset(hash, key, 'a')
+            client:hset(hash, key, 'a')
             api.sendReply(msg, lang[ln].settings.welcome.a, true)
         elseif input == 'r' then
-            db:hset(hash, key, 'r')
+            client:hset(hash, key, 'r')
             api.sendReply(msg, lang[ln].settings.welcome.r, true)
         elseif input == 'm' then
-            db:hset(hash, key, 'm')
+            client:hset(hash, key, 'm')
             api.sendReply(msg, lang[ln].settings.welcome.m, true)
         elseif input == 'ar' or input == 'ra' then
-            db:hset(hash, key, 'ra')
+            client:hset(hash, key, 'ra')
             api.sendReply(msg, lang[ln].settings.welcome.ra, true)
         elseif input == 'mr' or input == 'rm' then
-            db:hset(hash, key, 'rm')
+            client:hset(hash, key, 'rm')
             api.sendReply(msg, lang[ln].settings.welcome.rm, true)
         elseif input == 'am' or input == 'ma' then
-            db:hset(hash, key, 'am')
+            client:hset(hash, key, 'am')
             api.sendReply(msg, lang[ln].settings.welcome.am, true)
         elseif input == 'ram' or input == 'rma' or input == 'arm' or input == 'amr' or input == 'mra' or input == 'mar' then
-            db:hset(hash, key, 'ram')
+            client:hset(hash, key, 'ram')
             api.sendReply(msg, lang[ln].settings.welcome.ram, true)
         elseif input == 'no' then
-            db:hset(hash, key, 'no')
+            client:hset(hash, key, 'no')
             api.sendReply(msg, lang[ln].settings.welcome.no, true)
         else
-            db:hset(hash, 'custom', input)
+            client:hset(hash, 'custom', input)
             local res = api.sendReply(msg, make_text(lang[ln].settings.welcome.custom, input), true)
             if not res then
-                db:hdel(hash, 'custom')
+                client:hdel(hash, 'custom')
                 api.sendReply(msg, lang[ln].settings.welcome.wrong_markdown, true)
             end
         end

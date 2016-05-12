@@ -15,6 +15,8 @@ local action = function(msg, blocks, ln)
 	    	end
 	   		if blocks[1] == 'ban' then
 	   			api.banUser(msg, true, false, blocks[2])
+	   			api.sendSticker(msg.chat.id, './stickers/banned.webp')
+
 		   		mystat('/ban')
     		end
    			if blocks[1] == 'unban' then
@@ -23,11 +25,11 @@ local action = function(msg, blocks, ln)
    			end
    			if blocks[1] == 'gban' then
 	   			if is_admin(msg) then
-	   				local groups = db:smembers('bot:groupsid')
+	   				local groups = client:smembers('bot:tofix')
     				local succ = 0
     				local not_succ = 0
 	    			for k,v in pairs(groups) do
-	    				local res = api.banUserId(v, msg.reply.from.id, getname(msg.reply), true, true)
+	    				local res = api.banUser(msg, true, false, blocks[2])
 	    				if res then
 	    					print('Global banned', v)
 	   						succ = succ + 1
@@ -55,6 +57,7 @@ return {
 		'^/(ban) (@[%w_]+)$',
 		'^/(unban)$',
 		'^/(unban) (@[%w_]+)$',
-		'^/(gban)$'
+		'^/(gban)$',
+		'^/(gban) (@[%w_]+)$',
 	}
 }

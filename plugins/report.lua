@@ -57,8 +57,6 @@ end
 return {
 	action = action,
 	triggers = {
-	--	'^/(c)$', --warn if not input
-	--	'^/(c) (.*)',
 		'^/(reply)$', --warn if not input
 		'^/(reply) (.*)'
 	}

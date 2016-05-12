@@ -1,6 +1,6 @@
 local function is_report_blocked(msg)
     local hash = 'chat:'..msg.chat.id..':reportblocked'
-    return db:sismember(hash, msg.from.id)
+    return client:sismember(hash, msg.from.id)
 end
 
 local function send_to_admin(mods, chat, msg_id)
@@ -26,10 +26,10 @@ local action = function(msg, blocks, ln)
             if is_report_blocked(msg) then
                 return nil
             end
-            if msg.reply and ((tonumber(msg.reply.from.id) == tonumber(bot.id)) or is_mod(msg.reply)) then
+            if msg.reply and tonumber(msg.reply.from.id) == tonumber(bot.id) then
                 return
             end
-            local mods = db:hkeys('chat:'..msg.chat.id..':mod')
+            local mods = client:hkeys('chat:'..msg.chat.id..':mod')
             local msg_id = msg.message_id
             if msg.reply then
                 blocks[2] = false
@@ -45,14 +45,14 @@ local action = function(msg, blocks, ln)
                 api.sendReply(msg, lang[ln].flag.no_reply)
             else
                 if blocks[2] == 'off' then
-                    local result = db:sadd(hash, msg.reply.from.id)
+                    local result = client:sadd(hash, msg.reply.from.id)
                     if result == 1 then
                         api.sendReply(msg, lang[ln].flag.blocked)
                     elseif result == 0 then
                         api.sendReply(msg, lang[ln].flag.already_blocked)
                     end
                 elseif blocks[2] == 'on' then
-                    local result = db:srem(hash, msg.reply.from.id)
+                    local result = client:srem(hash, msg.reply.from.id)
                     if result == 1 then
                         api.sendReply(msg, lang[ln].flag.unblocked)
                     elseif result == 0 then
@@ -63,13 +63,3 @@ local action = function(msg, blocks, ln)
         end
     end
 end
-
-return {
-	action = action,
-	triggers = {
-	    '^@(admin)$',
-	    '^@(admin) (.*)$',
-	    '^/(report) (on)$',
-	    '^/(report) (off)$',
-    }
-}
