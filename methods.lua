@@ -16,13 +16,12 @@ local function sendRequest(url, user_id)
 	local tab = JSON.decode(dat)
 
 	if code ~= 200 then
-		if tab and tab.description then print(code, tab.description) end
+		print(tab.description)
 		--403: bot blocked, 429: spam limit ...send a message to the admin, return the code
 		if code == 400 then code = api.getCode(tab.description) end --error code 400 is general: try to specify
-		db:hincrby('bot:errors', code, 1)
+		client:hincrby('bot:errors', code, 1)
 		if code ~= 403 and code ~= 429 and code ~= 110 and code ~= 111 then
-			local out = vtext(dat)..'\n'..code..'\n(text in the log)'
- 			api.sendLog(out)
+			api.sendMessage(config.admin, vtext(dat)..'\n'..code..'\n(text in the log)')
 			return false, code
 		end
 		return false, false --if the message is not sent because the bot is blocked, then don't return the code
@@ -58,10 +57,10 @@ local function getUpdates(offset)
 end
 
 local function getCode(error)
-	----error = error:gsub('%[Error : %d%d%d : Bad Request: ', ''):gsub('%]', '')
-	---error = error:gsub('%[Error : 400 : ', ''):gsub('%]', '')
+	error = error:gsub('%[Error : %d%d%d : Bad Request: ', ''):gsub('%]', '')
+	error = error:gsub('%[Error : 400 : ', ''):gsub('%]', '')
 	for k,v in pairs(config.api_errors) do
-		if error:match(v) then
+		if error == v then
 			return k
 		end
 	end
@@ -159,7 +158,7 @@ local function unbanUser(msg, on_request, no_msg, username)
 	
 	if msg.chat.type == 'group' then
 	    local hash = 'chat:'..chat_id..':banned'
-	    local removed = db:srem(hash, user_id)
+	    local removed = client:srem(hash, user_id)
 	    if removed == 0 then
 		    text = lang[ln].banhammer.not_banned
 		    api.sendReply(msg, text, true)
@@ -200,11 +199,11 @@ local function banUser(msg, on_request, no_msg, username)--no_msg: kick without 
 	res, code = api.kickChatMember(chat_id, user_id) --try to kick
 	
 	if res then --if the user has been kicked, then...
-	    db:hincrby('bot:general', 'ban', 1) --genreal: save how many kicks
+	    client:hincrby('bot:general', 'ban', 1) --genreal: save how many kicks
 		text = make_text(lang[ln].banhammer.banned, name)
 		if msg.chat.type == 'group' then
 		    local hash = 'chat:'..chat_id..':banned'
-	        db:sadd(hash, user_id)
+	        client:sadd(hash, user_id)
 	    end
 		--the kick went right: always display who have been kicked (and why, if included in the name)
 		no_msg = false --if the bot kicked successfully, then send a message with the motivation
@@ -221,16 +220,6 @@ local function banUser(msg, on_request, no_msg, username)--no_msg: kick without 
 	end
 end
 
-local function banUserId(chat_id, user_id, name, on_request, no_msg)
- 	local msg = {}
- 	msg.chat = {}
- 	msg.from = {}
- 	msg.chat.id = chat_id
- 	msg.from.id = user_id
- 	msg.from.first_name = name
- 	return api.banUser(msg, on_request, no_msg)
- end
- 
 local function kickUser(msg, on_request, no_msg, username)-- no_msg: don't send the error message if kick is failed. If no_msg is false, it will return the motivation of the fail
 	local name, user_id, text
 	local chat_id = msg.chat.id
@@ -258,7 +247,7 @@ local function kickUser(msg, on_request, no_msg, username)-- no_msg: don't send 
 	res, code = api.kickChatMember(chat_id, user_id) --try to kick
 	
 	if res then --if the user has been kicked, then...
-	    db:hincrby('bot:general', 'kick', 1) --genreal: save how many kicks
+	    client:hincrby('bot:general', 'kick', 1) --genreal: save how many kicks
 		--unban
 		if msg.chat.type == 'supergroup' then
 		    api.unbanChatMember(chat_id, user_id)
@@ -280,7 +269,7 @@ local function kickUser(msg, on_request, no_msg, username)-- no_msg: don't send 
 end
 
 local function sendMessage(chat_id, text, use_markdown, disable_web_page_preview, reply_to_message_id, send_sound)
-	
+	--print(text)
 	local url = BASE_URL .. '/sendMessage?chat_id=' .. chat_id .. '&text=' .. URL.escape(text)
 
 	url = url .. '&disable_web_page_preview=true'
@@ -508,11 +497,7 @@ local function sendVoice(chat_id, voice, reply_to_message_id)
 end
 
 local function sendAdmin(text, markdown)
-	return api.sendMessage(config.admin, text, markdown)
-end
- 
-local function sendLog(text, markdown)
- 	return api.sendMessage(config.log_chat or config.admin, text, markdown)
+	return sendMessage(config.admin, text, markdown)
 end
 
 return {
@@ -541,7 +526,5 @@ return {
 	answerCallbackQuery = answerCallbackQuery,
 	unbanUser = unbanUser,
 	getCode = getCode,
-	sendAdmin = sendAdmin,
- 	sendLog = sendLog,
- 	banUserId= banUserId
+	sendAdmin = sendAdmin
 }	

@@ -2,7 +2,6 @@ return {
     es = {
     
     bonus = {
-    		general_pm = '_Te lo enviaré por privado_',
             no_user = 'Nunca vi a ese usuario :( , por favor, respondele',
             the_group = 'el grupo',
             mods_list = 'Lista de moderadores*:\n&&&1',
@@ -94,11 +93,12 @@ return {
                     ..'`/help` : muestra éste mensaje.'
 		            ..'\n\nSi te gusta éste bot por favor puntúalo [aqui](https://telegram.me/storebot?start=moderadores_bot)',
 		 private = '¡Hola *&&&1*!\n'
-                   ..'Soy un _bot moderador_ para tus grupos.\n'
+                   ..'Soy Quicksilver, un _bot moderador_ para tus grupos.\n'
                    ..'\n*¿Como puedo ayudarte?*\n'
                    ..'\nPuedo banear, expulsar, advertir a cualquier usuario que tú desees.\n'
                    ..'Solo necesito que me des administración y mi trabajo empieza!\n'
-                   ..'\nSi deseas usarlo, por favor consulta a mi administrador para promoverte.\n',
+                   ..'\nSi deseas usarlo, por favor consulta a mis dueños [Jarriz](http://telegram.me/jarriz) ó a [George](http://telegram.me/george0884) para promoverte.\n'
+                   ..'\n_Por favor, regalános tu puntuación_ [aquí](https://telegram.me/storebot?start=moderadores_bot)',
             group_success = '_Este comando solo funciona por pv_',
            group_not_success = '_Mensajeame para ayudarte_',
             initial = 'Cambia su *permiso* para ver los comandos:'
@@ -364,7 +364,6 @@ return {
             menu = 'Te he enviado las configuraciones por privado :)',
             dashboard_first = 'Navega a travez de este mensaje para ver la informacion del grupo :)',
             menu_first = 'Toque en bloquear para *cambiar las configuraciones del grupo*, o usar ultima linea de _gestionar comportamiento del anti-flood_'
-            media_first = 'Seleccione una voz para *cambiar las configuración*'
             
         },
     },
