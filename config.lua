@@ -3,8 +3,8 @@ return {
 	time_offset = 0,
 	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
 	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
-	lang = languages.lua
-	channel = '',
+	lang = 'languages.lua',
+	channel = '@TuCanal',
 	plugins = {
 		'onmessage.lua', 
 		'admin.lua',
