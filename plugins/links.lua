@@ -18,14 +18,14 @@ local action = function(msg, blocks, ln)
 		end
 		
 		local key = 'link'
-		local link = client:hget(hash, key)
+		local link = db:hget(hash, key)
 		
 		--check if link is nil or nul
 		if link == 'no' or link == nil then
 			text = make_text(lang[ln].links.no_link)
 		else
-		local title = msg.chat.title:mEscape_hard()
-		text = make_text(lang[ln].links.link, title, link)
+			local title = msg.chat.title:mEscape_hard()
+			text = make_text(lang[ln].links.link, title, link)
 		end
 		api.sendReply(msg, text, true)
 		mystat('/link')
@@ -49,10 +49,10 @@ local action = function(msg, blocks, ln)
 		
 		--set to nul the link, or update/set it
 		if blocks[2] == 'no' then
-			client:hset(hash, key, 'no')
+			db:hset(hash, key, 'no')
 			text = make_text(lang[ln].links.link_unsetted)
 		else
-			local succ = client:hset(hash, key, link)
+			local succ = db:hset(hash, key, link)
 			local title = msg.chat.title:mEscape_hard()
 			if succ == false then
 				text = make_text(lang[ln].links.link_updated, title, link)
@@ -81,15 +81,15 @@ local action = function(msg, blocks, ln)
 		
 		--set to nul the poll, or update/set it
 		if blocks[2] == 'no' then
-			client:hset(hash, key, 'no')
+			db:hset(hash, key, 'no')
 			text = make_text(lang[ln].links.poll_unsetted)
 		else
 			local link = 'telegram.me/PollBot?start='..blocks[3]
-			local succ = client:hset(hash, key, link)
+			local succ = db:hset(hash, key, link)
 			local description = blocks[2]
 			
 			--save description of the poll in redis
-			client:hset(hash, 'polldesc', description)
+			db:hset(hash, 'polldesc', description)
 			if succ == false then
 				text = make_text(lang[ln].links.poll_updated, description, link)
 			else
@@ -107,8 +107,8 @@ local action = function(msg, blocks, ln)
 		end
 		
 		local key = 'poll'
-		local link = client:hget(hash, key)
-		local description = client:hget(hash, 'polldesc')
+		local link = db:hget(hash, key)
+		local description = db:hget(hash, 'polldesc')
 		
 		--check if link is nil or nul
 		if link == 'no' or link == nil then
@@ -125,11 +125,10 @@ return {
 	action = action,
 	triggers = {
 		'^/(link)$',
-		'^/(link)@'..bot.username..'$',
 		'^/(setlink) https://telegram%.me/joinchat/(.*)',
 		'^/(setlink) (no)',
 		'^/(poll)$',
-		'^/(setpoll) http://telegram%.me/PollBot%?start=(.*)',
+		'^/(setpoll) (.*) telegram%.me/PollBot%?start=(.*)',
 		'^/(setpoll) (no)$'
 	}
 }
