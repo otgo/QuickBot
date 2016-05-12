@@ -36,6 +36,7 @@ return {
 		'test.lua',
 		'all.lua',
 		'italic.lua',
+		'contact.lua',
 		
 	},
 	available_languages = {
