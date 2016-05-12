@@ -1,6 +1,6 @@
 local action = function(msg, blocks, ln)
-	
-	--return nil if wrote in private
+	-- pm
+
     if msg.chat.type == 'private' then
         local out = make_text(lang[ln].pv)
         api.sendMessage(msg.from.id, out)
