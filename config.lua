@@ -38,6 +38,7 @@ return {
 		'italic.lua',
 		'contact.lua',
 		'spam.lua',
+		'kickme.lua',
 		
 	},
 	available_languages = {
