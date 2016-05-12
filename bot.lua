@@ -18,7 +18,7 @@ bot_init = function(on_reload)
 	print(colors('%{blue bright}Cargando utilities.lua...'))
 	cross = dofile('utilities.lua') 
 	print(colors('%{blue bright}Cargando languages...'))
-	lang = dofile('languages.lua') 
+	lang = dofile(config.lang) 
 	print(colors('%{blue bright}Cargando tabla de funciones API...'))
 	api = require('methods')
 	
