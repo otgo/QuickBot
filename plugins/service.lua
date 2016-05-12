@@ -2,13 +2,13 @@ local function gsub_custom_welcome(msg, custom)
 	local name = msg.added.first_name:mEscape()
 	local id = msg.added.id
 	local username
-	local title = msg.chat.title:mEscape()
+	local group = msg.chat.title:mEscape()
 	if msg.added.username then
 		username = '@'..msg.added.username:mEscape()
 	else
 		username = '(no username)'
 	end
-	custom = custom:gsub('$name', name):gsub('$username', username):gsub('$id', id):gsub('$title', title)
+	custom = custom:gsub('$name', name):gsub('$username', username):gsub('$id', id):gsub('$group', group)
 	return custom
 end
 
