@@ -15,7 +15,6 @@ local action = function(msg, blocks, ln)
 	    	end
 	   		if blocks[1] == 'ban' then
 	   			api.banUser(msg, true, false, blocks[2])
-	   			api.sendSticker(msg.chat.id, './stickers/banned.webp')
 
 		   		mystat('/ban')
     		end
