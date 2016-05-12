@@ -1,5 +1,5 @@
 local triggers = {
-	'^/(test)$'
+	'^/(test)'
 }
 
 local function on_each_msg(msg, ln)
