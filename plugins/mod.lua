@@ -86,7 +86,7 @@ local action = function(msg, blocks, ln)
         api.sendReply(msg, out, true)
     end
 
-    if blocks[1] == 'owner' then
+    if blocks[1] == 'admin' then
         --only the owner can change the owner
         if not is_owner(msg) then
             local out = make_text(lang[ln].mod.not_owner)
@@ -158,7 +158,7 @@ return {
 	    '^/(promote) (@[%w_]+)$',
 	    '^/(demote)$',
 	    '^/(demote) (@[%w_]+)$',
-	    '^/(owner)$',
+	    '^/(admin)$',
 	    '^/(modlist)$',
     }
 }
