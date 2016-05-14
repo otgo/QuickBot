@@ -3,7 +3,7 @@ local action = function(msg, blocks, ln)
     if blocks[1] == 'start' then
         if msg.chat.type == 'private' then
             local hash = 'bot:general'
-            client:hincrby(hash, 'users', 1)
+            db:hincrby(hash, 'users', 1)
             local name = msg.from.first_name:mEscape()
             api.sendMessage(msg.chat.id, make_text(lang[ln].help.private, name), true)
         end
@@ -19,15 +19,15 @@ local action = function(msg, blocks, ln)
         keyboard = {}
         keyboard.inline_keyboard = {
     	    {
-    		    {text = "Normal user", callback_data = '/user'},
-			    {text = "Moderator", callback_data = '/mod'},
-    		    {text = "Owner", callback_data = '/owner'}
+    		    {text = "Todos", callback_data = '/user'},
+			    {text = "Moderadores", callback_data = '/mod'},
+    		    {text = "Admins", callback_data = '/owner'}
 	    	},
     		{
-    			{text = "Info", callback_data = '/info'}
+    			{text = "Información", callback_data = '/info'}
 	    	}
     	}
-        local res = api.sendKeyboard(msg.from.id, 'Choose the *role* to see the available commands:', keyboard, true)
+        local res = api.sendKeyboard(msg.from.id, 'Selecciona el *rango* para ver sus comandos', keyboard, true)
         if res then
             api.sendMessage(msg.chat.id, lang[ln].help.group_success, true)
         else
@@ -54,8 +54,6 @@ end
 return {
 	action = action,
 	triggers = {
-    	'^/(help)@'..bot.username..'$',
-	    '^/(start)@'..bot.username..'$',
 	    '^/(start)$',
 	    '^/(help)$',
 	    '^###cb:/(user)',

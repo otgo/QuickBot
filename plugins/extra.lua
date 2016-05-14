@@ -18,16 +18,15 @@ local action = function(msg, blocks, ln)
 	    if not res then
 	    	api.sendReply(msg, lang[ln].breaks_markdown)
 	    else
-	    	client:hset(hash, blocks[2], blocks[3])
+	    	db:hset(hash, blocks[2], blocks[3])
 	    end
-
 	    mystat('/extra')
 	elseif blocks[1] == 'extra list' then
 	    if not is_mod(msg) then
 	        return nil
 	    end
 	    local hash = 'chat:'..msg.chat.id..':extra'
-	    local commands = client:hkeys(hash)
+	    local commands = db:hkeys(hash)
 	    local text = ''
 	    if commands[1] == nil then
 	    	local out = make_text(lang[ln].extra.no_commands)
@@ -45,7 +44,7 @@ local action = function(msg, blocks, ln)
 	        return nil
 	    end
 	    local hash = 'chat:'..msg.chat.id..':extra'
-	    local success = client:hdel(hash, blocks[2])
+	    local success = db:hdel(hash, blocks[2])
 	    print(success)
 	    if success == 1 then
 	    	local out = make_text(lang[ln].extra.command_deleted, blocks[2])
@@ -60,8 +59,8 @@ local action = function(msg, blocks, ln)
             return
         end
         local hash = 'chat:'..msg.chat.id..':extra'
-        local commands = client:hkeys(hash)
-        local replies = client:hvals(hash)
+        local commands = db:hkeys(hash)
+        local replies = db:hvals(hash)
         local text
         for k,v in pairs(commands) do
             if v == blocks[1] then
@@ -81,12 +80,9 @@ return {
 	action = action,
 	triggers = {
 		'^/(extra)$',
-		'^/(extra) ([!#][%w_]*)%s(.*)$',
-		'^/(extra) ([Hh]ola*)%s(.*)$',
-		'^/(extra del) ([!#][%w_]*)$',
-		'^/(extra del) ([Hh]ola*)$',
+		'^/(extra) (#[%w_]*)%s(.*)$',
+		'^/(extra del) (#[%w_]*)$',
 		'^/(extra list)$',
-		'^([!#][%w_]*)$',
-		'^([Hh]ola*)$'
+		'^(#[%w_]*)$'
 	}
 }
