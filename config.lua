@@ -2,7 +2,7 @@ return {
 	bot_api_key = '',
 	admin = 0, 
 	support = 0, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
-	languages = 'languages.lua',
+	lang = 'languages.lua',
 	channel = '@TuCanal',
 	plugins = {
 		'onmessage.lua', 
