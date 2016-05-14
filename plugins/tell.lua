@@ -36,6 +36,6 @@ return {
 	action = action,
 	triggers = {
 		'^/(tell)$',
-		'^/(tell@GroupButler_bot)$'
+		'^/(tell)@' ..bot.username.. '$'
 	}
 }
