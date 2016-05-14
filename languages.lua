@@ -34,7 +34,7 @@ return {
         },
         help = {
             owner = '*Comandos para el propietario*:\n'
-                    ..'`/owner` (por respuesta) : crea un nuevo creador.\n'
+                    ..'`/admin` (por respuesta) : crea un nuevo administrador.\n'
                     ..'`/promote` (por respuesta) : promueve a un usuario en moderador.\n'
                     ..'`/demote` (por respuesta) : elimina un usuario de los propietarios o moderadores.\n'
                     ..'`/setlink [link]` : cambia el link de algún grupo.\n'
@@ -124,15 +124,15 @@ return {
         mod = {
             not_owner = '🚫 Para realizar esta opción requieres permisos de desarrollador.',
             reply_promote = 'ℹ️ Respondele a alguien para promoverlo.',
-            reply_demote = 'ℹ️ Respondele a alguien para removerlo de la lista de developers/mods.',
-            reply_owner = 'ℹ️ Respondele a alguien para promoverlo a desarrollador.',
+            reply_demote = 'ℹ️ Respondele a alguien para removerlo de la lista de admins/mods.',
+            reply_owner = 'ℹ️ Respondele a alguien para promoverlo a administrador.',
             already_mod = 'ℹ️ *&&&1* ya es moderador de *&&&2*',
-            already_owner = 'ℹ️ Este usuario ya es *desarrollador* en este grupo.',
+            already_owner = 'ℹ️ Este usuario ya es *administrador* en este grupo.',
             not_mod = 'ℹ️ *&&&1* no es moderador de *&&&2*',
             promoted = '🆙 *&&&1* ha sido promovido en *&&&2*',
-            demoted = 'ℹ️ *&&&1* ha perdido sus poderes magicos.',
-            new_owner = '🆙 *&&&1* es nuevo desarrollador en *&&&2*.',
-            modlist = '\nℹ️ Lista de moderadores/desarrolladores de &&&1:\n&&&2'
+            demoted = 'ℹ️ *&&&1* ha perdido sus privilegios.',
+            new_owner = '🆙 *&&&1* es nuevo administrador en *&&&2*.',
+            modlist = '\nℹ️ Lista de mods/admins de &&&1:\n&&&2'
         },
         report = {
             no_input = 'Enviame tus comentarios a mi [Telegram](http://telegram.me/jarriz)',
@@ -275,7 +275,7 @@ return {
             warned_max_kick = 'ℹ️ Usuario &&&1 *expulsado*: número máximo de advertencias alcanzado.',
             warned_max_ban = 'ℹ️ Usuario &&&1 *baneado*: número máximo de advertencias alcanzado.',
             warned = '*Usuario* &&&1 *advertido.*\n_Número de advertencias_   *&&&2*\n_Máximas permitidas_   *&&&3* (*-&&&4*)',
-            warnmax = 'ℹ️ _Número máximo de advertencias cambiadas_.\n*Anterior* value: &&&1\n*Nuevo* max: &&&2',
+            warnmax = 'ℹ️ _Número máximo de advertencias cambiadas_.\n*Anterior*: &&&1\n*Nuevo*: &&&2',
             getwarns_reply = 'ℹ️ Contestale con éste comando a un usuario para *ver* el número de sus advertencias.',
             limit_reached = 'ℹ️ Este usuario ya ha alcanzado el número máximo de advertencias (*&&&1/&&&2*)',
             limit_lower = 'ℹ️ Este usuario está bajo en el número de advertencias.\n*&&&1* advertencias limpias en un total de *&&&2* (*&&&3/&&&4*)',
