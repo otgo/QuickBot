@@ -17,7 +17,7 @@ return {
             reload = 'ℹ️ *Bot reloaded!*',
             stop = 'ℹ️ *Bot stopped!*'
         },
-        credits = 'This bot is based on [GroupButler bot](https://github.com/RememberTheAir/GroupButler), an *opensource* bot available on [Github](https://github.com/). Follow the link to know how the bot works or which data are stored.\n\nRemember you can always use /c command to ask something.\n\nFollow the [channel](https://telegram.me/GroupButler_ch) for further info and updates\nGive me the rating you think I deserve [here](https://telegram.me/storebot?start=groupbutler_bot)',
+        credits = '',
         extra = {
 			usage = 'Write next to /extra the title of the command and the text associated.\nFor example:\n/extra #motm stay positive. The bot will reply _\'Stay positive\'_ each time someone writes #motm',
             new_command = '*New command setted!*\n&&&1\n&&&2',
