@@ -83,7 +83,7 @@ return {
 		'^/(setabout)$', --to warn if an user don't add a text
 		'^/(setabout) (.*)',
 		'^/(about)$',
-		'^/(about)' ..bot.username.. '$',
+		'^/(about)@' ..bot.username.. '$',
 		'^/(addabout)$', --to warn if an user don't add a text
 		'^/(addabout) (.*)',
 	}
