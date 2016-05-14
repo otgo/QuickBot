@@ -79,7 +79,7 @@ return {
 		'^/(setrules)$',
 		'^/(setrules) (.*)',
 		'^/(rules)$',
-		'^/(rules)' ..bot.username.. '$',
+		'^/(rules)@' ..bot.username.. '$',
 		'^/(addrules)$',
 		'^/(addrules) (.*)'	
 	}
