@@ -94,11 +94,11 @@ return {
                     ..'`/help` : muestra éste mensaje.'
 		            ..'\n\nSi te gusta éste bot por favor puntúalo [aqui](https://telegram.me/storebot?start=moderadores_bot)',
 		 private = '¡Hola *&&&1*!\n'
-                   ..'Soy un _bot moderador_ para tus grupos.\n'
+                   ..'Soy Quicksilver, un _bot moderador_ para tus grupos.\n'
                    ..'\n*¿Como puedo ayudarte?*\n'
                    ..'\nPuedo banear, expulsar, advertir a cualquier usuario que tú desees.\n'
                    ..'Solo necesito que me des administración y mi trabajo empieza!\n'
-                   ..'\nSolamente agregame al grupo :)\n'
+                   ..'\nSi deseas usarlo, por favor consulta a mis dueños [Jarriz](http://telegram.me/jarriz) ó a [George](http://telegram.me/george0884) para promoverte.\n'
                    ..'\n_Por favor, regalános tu puntuación_ [aquí](https://telegram.me/storebot?start=moderadores_bot)',
             group_success = '_Este comando solo funciona por pv_',
            group_not_success = '_Mensajeame para ayudarte_',

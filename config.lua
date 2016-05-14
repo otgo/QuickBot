@@ -1,9 +1,8 @@
 return {
-	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
-	time_offset = 0,
-	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
+	bot_api_key = '213210238:AAEr7bk9kSKq3LHn64bYvuuyF9GHh3uAP9w',
+	admin = 189041244, 
 	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
-	lang = 'languages.lua',
+	languages = 'languages.lua',
 	channel = '@TuCanal',
 	plugins = {
 		'onmessage.lua', 

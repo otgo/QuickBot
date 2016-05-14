@@ -4,43 +4,45 @@ URL = require('socket.url')
 JSON = require('dkjson')
 redis = require('redis')
 colors = require('ansicolors')
-client = Redis.connect('127.0.0.1', 6379)
+db = Redis.connect('127.0.0.1', 6379)
 serpent = require('serpent')
 
-bot_init = function(on_reload) 
+bot_init = function(on_reload) -- The function run when the bot is started or reloaded.
 	
-	print(colors('%{blue bright}Cargando config.lua...'))
-	config = dofile('config.lua') 
+	print(colors('%{blue bright}Loading config.lua...'))
+	config = dofile('config.lua') -- Load configuration file.
 	if config.bot_api_key == '' then
-		print(colors('%{red bright}VERIFICA LA APIKEY'))
+		print(colors('%{red bright}API KEY MISSING!'))
 		return
 	end
-	print(colors('%{blue bright}Cargando utilities.lua...'))
-	cross = dofile('utilities.lua') 
-	print(colors('%{blue bright}Cargando languages...'))
-	lang = dofile(config.lang) 
-	print(colors('%{blue bright}Cargando tabla de funciones API...'))
+	print(colors('%{blue bright}Loading utilities.lua...'))
+	cross = dofile('utilities.lua') -- Load miscellaneous and cross-plugin functions.
+	print(colors('%{blue bright}Loading languages...'))
+	lang = dofile(config.languages) -- All the languages available
+	print(colors('%{blue bright}Loading API functions table...'))
 	api = require('methods')
 	
+	tot = 0
+	
 	bot = nil
-	while not bot do 
+	while not bot do -- Get bot info and retry if unable to connect.
 		bot = api.getMe()
 	end
 	bot = bot.result
 
-	plugins = {} 
+	plugins = {} -- Load plugins.
 	for i,v in ipairs(config.plugins) do
 		local p = dofile('plugins/'..v)
-		print(colors('%{red bright}Cargando plugin...%{reset}'), v)
+		print(colors('%{red bright}Loading plugin...%{reset}'), v)
 		table.insert(plugins, p)
 	end
-	print(colors('%{blue}Plugins cargados:'), #plugins)
+	print(colors('%{blue}Plugins loaded:'), #plugins)
 
-	print(colors('%{blue bright}BOT INICIADO: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')'))
+	print(colors('%{blue bright}BOT RUNNING: @'..bot.username .. ', AKA ' .. bot.first_name ..' ('..bot.id..')'))
 	if not on_reload then
 		save_log('starts')
-		client:hincrby('bot:general', 'starts', 1)
-		api.sendMessage(config.admin, '*¡Bot iniciado!*\n_'..os.date('Día %A, %d %B %Y\nAt %X')..'_\n'..#plugins..' plugins cargados', true)
+		db:hincrby('bot:general', 'starts', 1)
+		api.sendMessage(config.admin, '*Bot started!*\n_'..os.date('On %A, %d %B %Y\nAt %X')..'_\n'..#plugins..' plugins loaded', true)
 	end
 	
 	-- Generate a random seed and "pop" the first random number. :)
@@ -91,19 +93,22 @@ end
 
 local function collect_stats(msg)
 	--count the number of messages
-	client:hincrby('bot:general', 'messages', 1)
+	db:hincrby('bot:general', 'messages', 1)
 	--for resolve username (may be stored by groups of id in the future)
+	if not(msg.chat.type == 'private') then db:sadd('bot:groupsid', msg.chat.id) end --to be removed
 	if msg.from and msg.from.username then
-		client:hset('bot:usernames', '@'..msg.from.username:lower(), msg.from.id)
+		db:hset('bot:usernames', '@'..msg.from.username:lower(), msg.from.id)
+		db:hset('bot:usernames:'..msg.chat.id, '@'..msg.from.username:lower(), msg.from.id)
 	end
 	if msg.forward_from and msg.forward_from.username then
-		client:hset('bot:usernames', '@'..msg.forward_from.username:lower(), msg.forward_from.id)
+		db:hset('bot:usernames', '@'..msg.forward_from.username:lower(), msg.forward_from.id)
+		db:hset('bot:usernames:'..msg.chat.id, '@'..msg.forward_from.username:lower(), msg.forward_from.id)
 	end
 	if not(msg.chat.type == 'private') then
 		if msg.from.id then
-			client:hincrby('chat:'..msg.chat.id..':userstats', msg.from.id, 1) --3D: number of messages for each user
+			db:hincrby('chat:'..msg.chat.id..':userstats', msg.from.id, 1) --3D: number of messages for each user
 		end
-		client:incrby('chat:'..msg.chat.id..':totalmsgs', 1) --total number of messages of the group
+		db:incrby('chat:'..msg.chat.id..':totalmsgs', 1) --total number of messages of the group
 	end
 end
 
@@ -123,7 +128,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 	end
 	
 	--Group language
-	msg.lang = client:get('lang:'..msg.chat.id)
+	msg.lang = db:get('lang:'..msg.chat.id)
 	if not msg.lang then
 		msg.lang = 'es'
 	end
@@ -143,11 +148,11 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 				for k,w in pairs(v.triggers) do
 					local blocks = match_pattern(w, msg.text)
 					if blocks then
-						print(colors('\nMsg info:\t %{red bright}'..get_from(msg)..'%{reset} in: '..msg.chat.type..' ['..msg.chat.id..'] type: '..get_what(msg)..' ('..os.date('on %A, %d %B %Y at %X')..')'))
+						print(colors('Msg info:\t %{red bright}'..get_from(msg)..'%{reset} ['..msg.chat.type..'] ('..os.date('at %X')..')'))  --('..os.date('on %A, %d %B %Y at %X')..')'))
 						if blocks[1] ~= '' then
-      						print('Comando encontrado:', colors('%{blue bright}'..w))
-      						client:hincrby('bot:general', 'query', 1)
-      						if msg.from then client:incrby('user:'..msg.from.id..':query', 1) end
+      						print('Match found:', colors('%{blue bright}'..w))
+      						db:hincrby('bot:general', 'query', 1)
+      						if msg.from then db:incrby('user:'..msg.from.id..':query', 1) end
       					end
 				
 						msg.text_lower = msg.text:lower()
@@ -156,10 +161,10 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							return v.action(msg, blocks, msg.lang)
 						end)
 						if not success then
-							api.sendReply(msg, '*ERROR*', true)
+							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendMessage( tostring(config.admin), 'Error ocurrido, guardado en logs', false, false, false)
+          					api.sendLog('An error occurred.\nCheck the log')
 							return
 						end
 						-- If the action returns a table, make that table msg.
@@ -254,7 +259,7 @@ local function inline_to_msg(inline)
     	date = os.time() + 100
     }
     --vardump(msg)
-    client:hincrby('bot:general', 'inline', 1)
+    db:hincrby('bot:general', 'inline', 1)
     return on_msg_receive(msg)
 end
 
@@ -269,6 +274,9 @@ local function media_to_msg(msg)
 		msg.text = '###voice'
 	elseif msg.document then
 		msg.text = '###file'
+		if msg.document.mime_type == 'video/mp4' then
+			msg.text = '###gif'
+		end
 	elseif msg.sticker then
 		msg.text = '###sticker'
 	elseif msg.contact then
@@ -307,12 +315,15 @@ end
 bot_init() -- Actually start the script. Run the bot_init function.
 
 while is_started do -- Start a loop while the bot should be running.
-	
+	print(colors('%{green}------------------------------------------------------------------------'))
+	print(colors('%{blue bright}Polling...'))
 	local res = api.getUpdates(last_update+1) -- Get the latest updates!
 	if res then
 		--vardump(res)
 		for i,msg in ipairs(res.result) do -- Go through every new message.
 			last_update = msg.update_id
+			tot = tot + 1
+			print(os.date('%X'), 'Update:', last_update, 'Tot:', tot)
 			if msg.message  or msg.callback_query then
 				if msg.callback_query then
 					handle_inline_keyboards_cb(msg.callback_query)
@@ -334,18 +345,6 @@ while is_started do -- Start a loop while the bot should be running.
 	else
 		print('Connection error')
 	end
-
-	--[[if last_cron ~= os.date('%M') then -- Run cron jobs if the time has come.
-		last_cron = os.date('%M')
-		for i,v in ipairs(plugins) do
-			if v.cron then -- Call each plugin's cron function, if it has one.
-				local res, err = pcall(function() v.cron() end)
-				if not res then print('ERROR: '..err) end
-			end
-		end
-		last_cron = os.date('%M') -- And finally, update the variable.
-	end]]
-
 end
 
 print('Halted.')
