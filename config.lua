@@ -1,7 +1,8 @@
 return {
-	bot_api_key = '',
-	admin = 0, 
-	support = 0, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
+	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
+	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
+	log_chat = -1001045085829,
+	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
 	lang = 'languages.lua',
 	channel = '@TuCanal',
 	plugins = {
