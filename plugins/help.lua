@@ -21,7 +21,7 @@ local action = function(msg, blocks, ln)
     	    {
     		    {text = "Todos", callback_data = '/user'},
 			    {text = "Moderadores", callback_data = '/mod'},
-    		    {text = "Admins", callback_data = '/owner'}
+    		    {text = "Admins", callback_data = '/admin'}
 	    	},
     		{
     			{text = "Información", callback_data = '/info'}
@@ -42,7 +42,7 @@ local action = function(msg, blocks, ln)
             text = lang[ln].help.all
         elseif role == 'mod' then
             text = lang[ln].help.moderator
-        elseif role == 'owner' then
+        elseif role == 'admin' then
             text = lang[ln].help.owner
         elseif role == 'info' then
             text = lang[ln].credits
@@ -59,7 +59,7 @@ return {
 	    '^/(help)$',
 	    '^/(help)@' ..bot.username.. '$',
 	    '^###cb:/(user)',
-    	'^###cb:/(owner)',
+    	'^###cb:/(admin)',
 	    '^###cb:/(mod)',
 	    '^###cb:/(info)'
     }
