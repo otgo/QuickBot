@@ -13,13 +13,13 @@ local action = function(msg, blocks, ln)
         --allert if not feedback
         if not input then
         	local out = make_text(lang[ln].report.no_input)
-            api.sendMessage(msg.from.id, out)
+            api.sendMessage(msg.from.id, out, true)
             return nil
         end
 	    
 	    api.forwardMessage (receiver, msg.from.id, msg.message_id)
 	    local out = make_text(lang[ln].report.sent, input)
-	    api.sendMessage(msg.from.id, out)
+	    api.sendMessage(msg.from.id, out, true)
 	    mystat('/c')
 	end
 	
@@ -41,7 +41,7 @@ local action = function(msg, blocks, ln)
 		--ignore if not imput
 		if not input then
 			local out = make_text(lang[ln].report.reply_no_input)
-            api.sendMessage(msg.from.id, out)
+            api.sendMessage(msg.from.id, out, true)
             return nil
         end
 		
