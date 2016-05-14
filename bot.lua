@@ -9,17 +9,17 @@ serpent = require('serpent')
 
 bot_init = function(on_reload) -- The function run when the bot is started or reloaded.
 	
-	print(colors('%{blue bright}Loading config.lua...'))
+	print(colors('%{blue bright}Leyendo config.lua...'))
 	config = dofile('config.lua') -- Load configuration file.
 	if config.bot_api_key == '' then
-		print(colors('%{red bright}API KEY MISSING!'))
+		print(colors('%{red bright}Verifica la API KEY'))
 		return
 	end
-	print(colors('%{blue bright}Loading utilities.lua...'))
+	print(colors('%{blue bright}Leyendo utilities.lua...'))
 	cross = dofile('utilities.lua') -- Load miscellaneous and cross-plugin functions.
-	print(colors('%{blue bright}Loading languages...'))
+	print(colors('%{blue bright}Leyendo languages...'))
 	lang = dofile(config.lang) -- All the languages available
-	print(colors('%{blue bright}Loading API functions table...'))
+	print(colors('%{blue bright}Leyendo tabla de funciones...'))
 	api = require('methods')
 	
 	tot = 0
@@ -33,16 +33,16 @@ bot_init = function(on_reload) -- The function run when the bot is started or re
 	plugins = {} -- Load plugins.
 	for i,v in ipairs(config.plugins) do
 		local p = dofile('plugins/'..v)
-		print(colors('%{red bright}Loading plugin...%{reset}'), v)
+		print(colors('%{red bright}Leyendo plugin...%{reset}'), v)
 		table.insert(plugins, p)
 	end
-	print(colors('%{blue}Plugins loaded:'), #plugins)
+	print(colors('%{blue}Plugins leidos:'), #plugins)
 
-	print(colors('%{blue bright}BOT RUNNING: @'..bot.username .. ', AKA ' .. bot.first_name ..' ('..bot.id..')'))
+	print(colors('%{blue bright}BOT RUNNING: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')'))
 	if not on_reload then
 		save_log('starts')
 		db:hincrby('bot:general', 'starts', 1)
-		api.sendMessage(config.admin, '*Bot started!*\n_'..os.date('On %A, %d %B %Y\nAt %X')..'_\n'..#plugins..' plugins loaded', true)
+		api.sendMessage(config.admin, '*Bot iniciado*\n_'..os.date('Dia %A, %d %B %Y\nHora %X')..'_\n'..#plugins..' plugins leidos', true)
 	end
 	
 	-- Generate a random seed and "pop" the first random number. :)
@@ -161,10 +161,10 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							return v.action(msg, blocks, msg.lang)
 						end)
 						if not success then
-							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
+							api.sendReply(msg, '*ERROR*', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendLog('An error occurred.\nCheck the log')
+          					api.sendLog('*ERROR OCURRIDO*.\nVerifica el log.', true)
 							return
 						end
 						-- If the action returns a table, make that table msg.
