@@ -2,6 +2,7 @@ return {
     es = {
     
     bonus = {
+    		general_pm = '_Te enviaré la información por privado_.',
             no_user = 'Nunca vi a ese usuario :( , por favor, respondele',
             the_group = 'el grupo',
             mods_list = 'Lista de moderadores*:\n&&&1',
@@ -307,7 +308,7 @@ return {
             ban = 'ℹ️ Ahora los flooders serán baneados.',
         },
         mediasettings = {
-        --	warn = 'Éste tipo de multimedia *no está permitida* en este grupo.\n_La próxima vez_ serás expulsado o baneado.,
+        	warn = 'Éste tipo de multimedia *no está permitida* en este grupo.\n_La próxima vez_ serás expulsado o baneado.',
             list_header = 'ℹ️ *Aquí una lista de la multimedia que puede ser bloquada*:\n\n',
             settings_header = '*Configuración actual de la multimedia*:\n\n',
             already = 'ℹ️ Nueva configuración para (`&&&1`) ahora dará *&&&2*.',
@@ -363,7 +364,8 @@ return {
             dashboard = 'Te envie un resumen de los ajustes por privado :)',
             menu = 'Te he enviado las configuraciones por privado :)',
             dashboard_first = 'Navega a travez de este mensaje para ver la informacion del grupo :)',
-            menu_first = 'Toque en bloquear para *cambiar las configuraciones del grupo*, o usar ultima linea de _gestionar comportamiento del anti-flood_'
+            menu_first = 'Toque en bloquear para *cambiar las configuraciones del grupo*, o usar ultima linea de _gestionar comportamiento del anti-flood_',
+            media_first = 'Clic en la voz para *cambiar la configuración*'
             
         },
     },
