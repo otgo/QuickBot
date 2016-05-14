@@ -1,7 +1,7 @@
 return {
-	bot_api_key = '213210238:AAEr7bk9kSKq3LHn64bYvuuyF9GHh3uAP9w',
-	admin = 189041244, 
-	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
+	bot_api_key = '',
+	admin = 0, 
+	support = 0, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
 	languages = 'languages.lua',
 	channel = '@TuCanal',
 	plugins = {
