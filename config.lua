@@ -1,10 +1,10 @@
 return {
 	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
-	admin = YOURID,  -- necesitas cambiar "yourid" por tu id 
-	log_chat = -1001045085829,
-	support = IDDESOPORTE, -- en caso de que no tengas un usuario especial de soporte dejalo vacío
+	admin = 0,  -- tu id (necesario)
+	support = 0, -- id de soporte (opcional)
+	channel = '@TuCanal', -- tu canal (opcional)
 	lang = 'languages.lua',
-	channel = '@TuCanal',
+	log_chat = -1001045085829,
 	plugins = {
 		'onmessage.lua', 
 		'admin.lua',
