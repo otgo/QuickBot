@@ -14,7 +14,7 @@ local triggers = {
 	'^/(log) (del)',
 	'^/(log) (.*)$',
 	'^/(log)$',
-	'^/(admin)$',
+	'^/(adminpatterns)$',
 	'^/(block) (%d+)$',
 	'^/(block)$',
 	'^/(unblock) (%d+)$',
@@ -124,7 +124,7 @@ local action = function(msg, blocks, ln)
 		return
 	end
 	
-	if blocks[1] == 'admin' then
+	if blocks[1] == 'adminpatterns' then
 		local text = ''
 		for k,v in pairs(triggers) do
 			text = text..v..'\n'
