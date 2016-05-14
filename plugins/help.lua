@@ -55,7 +55,9 @@ return {
 	action = action,
 	triggers = {
 	    '^/(start)$',
+	    '^/(start)@' ..bot.username.. '$',
 	    '^/(help)$',
+	    '^/(help)@' ..bot.username.. '$',
 	    '^###cb:/(user)',
     	'^###cb:/(owner)',
 	    '^###cb:/(mod)',
