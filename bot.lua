@@ -318,7 +318,7 @@ bot_init() -- Actually start the script. Run the bot_init function.
 
 while is_started do -- Start a loop while the bot should be running.
 	print(colors('%{green}------------------------------------------------------------------------'))
-	print(colors('%{blue bright}Polling...'))
+	print(colors('%{blue bright}Actualizando...'))
 	local res = api.getUpdates(last_update+1) -- Get the latest updates!
 	if res then
 		--vardump(res)
