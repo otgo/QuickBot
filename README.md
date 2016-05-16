@@ -24,13 +24,29 @@ Clonar repositorio:
 git clone https://github.com/jarriztg/QuickBot.git
 ```
 ```bash
-# mover a directorio de scripts
-cd QuickBot
-# cambia los permisos
-chmod +x run.sh && chmod +x dependences.sh
-# Instalar dependencias necesarias
-sudo ./dependences.sh
+# mover a directorio y cambiar permisos de arranque
+cd QuickBot && chmod +x run.sh && chmod +x dependences.sh
 ```
+Instalar QuickBot: 
+
+```bash
+./run.sh install
+```
+
+Más funciones del bash:
+
+```bash
+# Iniciar una sesión normal
+./run.sh
+
+# Arrancar QuickBot en screen, siempre arrancando.
+./run.sh screen
+
+# Detener última sesión de QuickBot en screen
+./run.sh stop
+
+```
+
 
 --------------------
 <td><strong>Pruebalo</strong></td>
