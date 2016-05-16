@@ -48,6 +48,7 @@ local action = function(msg, blocks, ln)
     -- save stats
     if blocks[1] == 'start' then
         if msg.chat.type == 'private' then
+            local name = msg.from.first_name:mEscape()
             local message = make_text(lang[ln].help.private, name)
             api.sendMessage(msg.from.id, message, true)
         end
