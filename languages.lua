@@ -15,7 +15,7 @@ return {
     	    general_pm = '_Te enviaré la información por privado_.',
             no_user = 'Nunca vi a ese usuario :( , por favor, respondele',
             the_group = 'el grupo',
-            mods_list = 'Lista de moderadores*:\n&&&1',
+            mods_list = 'Lista de moderadores del *grupo*:\n&&&1',
             settings_header = 'Ajustes del *grupo*:\n\n*Lenguaje*: `&&&1`\n',
             reply = '*Contestale a alguien* para usar este comando, o un *usuario*',
             msg_me = '_Mensajeame primero mara ayudarte_'
@@ -29,8 +29,8 @@ return {
         extra = {
 			usage = 'Escribe despues de /extra algún titulo de comando que sea asociado al activar.\n*Por ejemplo*:\n/extra #baile vamos a bailar. Quicksilver responderá _\'vamos a bailar.\'_ cuando alguien escriba #baile',
             new_command = '🆕 *¡Nuevo comando agregado!*\n&&&1\n&&&2',
-            no_commands = 'ℹ️ *¡No hay ningun comando escrito!',
-            commands_list = 'Lista de *comandos agregados*:\n&&&1',
+            no_commands = 'ℹ️ No hay comandos programados.',
+            commands_list = 'ℹ️ Lista de *comandos personalizados*:\n&&&1',
             command_deleted = '&&&1 el comando ha sido borrado.',
             command_empty = '&&&1 éste comando no existe.'
         },
