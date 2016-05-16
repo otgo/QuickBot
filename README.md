@@ -1,6 +1,6 @@
 QuickBot
 -------------------------
-Crea tu propio bot, <td><strong>AQUÍ</strong></td>.
+Crea tu propio bot, <td><strong>aquí</strong></td>.
 
 
 <strong>Necesitas cambiar</strong> tu información en config.lua
