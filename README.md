@@ -48,13 +48,7 @@ Más funciones del bash:
 ```
 
 
---------------------
-<td><strong>Pruebalo</strong></td>
 
-```bash
-# arranca al bot, siempre arrancando.
-./run.sh
-```
 
 Envia tus pullrequest para mejorar el código.
 
