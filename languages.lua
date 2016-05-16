@@ -292,11 +292,6 @@ return {
             Arab = 'Árabe',
             Report = 'Reportes'
         },
-      --  shell = {
-     --       no_input = 'Por favor, especifica el comando a arrancar.',
-      --      done = '*¡Terminado!*',
-      --      output = '```\n&&&1\n```'
-   --     },
         tell = {
             first_name = '*Primer nombre*: &&&1\n',
             last_name = '*Apellido*: &&&1\n',
