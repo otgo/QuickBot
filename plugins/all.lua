@@ -31,15 +31,15 @@ local function doKeyboard_dashboard(chat_id)
     local keyboard = {}
     keyboard.inline_keyboard = {
 	    {
-            {text = "Settings", callback_data = 'dashboardsettings//'..chat_id},
+            {text = "Ajustes", callback_data = 'dashboardsettings//'..chat_id},
 		},
 	    {
-		    {text = "Rules", callback_data = 'dashboardrules//'..chat_id},
-		    {text = "About", callback_data = 'dashboardabout//'..chat_id}
+		    {text = "Reglas", callback_data = 'dashboardrules//'..chat_id},
+		    {text = "Acerca", callback_data = 'dashboardabout//'..chat_id}
         },
 	   	{
-	   	    {text = "Moderators", callback_data = 'dashboardmodlist//'..chat_id},
-	   	    {text = "Extra commands", callback_data = 'dashboardextra//'..chat_id}
+	   	    {text = "Moderadores", callback_data = 'dashboardmodlist//'..chat_id},
+	   	    {text = "Comandos extra", callback_data = 'dashboardextra//'..chat_id}
 	    }
     }
     
