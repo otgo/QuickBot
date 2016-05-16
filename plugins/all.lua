@@ -51,8 +51,8 @@ local function doKeyboard_menu(chat_id)
     local settings = db:hgetall('chat:'..chat_id..':settings')
     keyboard.inline_keyboard = {}
     for key,val in pairs(settings) do
-        if val == 'yes' then val = '🔐' end
-        if val == 'no' then val = '🔓' end
+        if val == 'yes' then val = '❌' end
+        if val == 'no' then val = '✅' end
         local current = {
             {text = key, callback_data = 'menualert//'},
             {text = val, callback_data = 'menu'..key..'//'..chat_id}
@@ -126,7 +126,7 @@ local action = function(msg, blocks, ln)
 	    end
 	    if msg.cb then
 	        if blocks[2] == 'alert' then
-                api.answerCallbackQuery(msg.cb_id, 'Tap on a lock!')
+                api.answerCallbackQuery(msg.cb_id, 'Presiona de lado :)')
                 return
             end
             --keyboard = doKeyboard(blocks[1], chat_id)

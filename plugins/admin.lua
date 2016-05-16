@@ -38,8 +38,13 @@ local triggers = {
 	'^/(movechat) (-%d+)$',
 	'^/(redis backup)$',
 	'^/(group info) (-?%d+)$',
-	'^/(echo) (.*)$',
-	'^/(fill media)$'
+	'^/(fill media)$',
+	'^/(trfile) (%a%a)$',
+	'^/(fixaction) (-%d+)$',
+	'^/(sendplug) (.*)$',
+	'^/(sendfile) (.*)$',
+	'^/(reply)$',
+	'^/(reply) (.*)'
 }
 
 local logtxt = ''
@@ -58,10 +63,10 @@ end
 local function bot_leave(chat_id, ln)
 	local res = api.kickChatMember(chat_id, bot.id)
 	if not res then
-		return lang[ln].admin.leave_error
+		return 'Check the id, it could be wrong'
 	else
 		db:hincrby('bot:general', 'groups', -1)
-		return lang[ln].admin.leave_chat_leaved
+		return 'Chat leaved!'
 	end
 end
 
@@ -77,6 +82,38 @@ local function load_lua(code)
 	end
 	return output
 end
+
+local function update_welcome_settings()
+	local total = 0
+	local groups = db:smembers('bot:groupsid')
+	local logtxt = 'UPDATINS WELCOME SETTINGS\n\n'
+	for i=1,#groups do
+		local chat = groups[i]
+		logtxt = logtxt..'CHAT ID: '..chat..'\n'
+		local hash = 'chat:'..chat..':welcome'
+		local content = db:hget(hash, 'custom')
+		if content then
+			db:hset(hash, 'type', 'custom')
+			db:hset(hash, 'content', content)
+			logtxt = logtxt..'Found: custom. Moving...\n\n'
+		else --if custom field is empty then...
+			local parts = db:hget(hash, 'wel')
+			db:hset(hash, 'type', 'composed')
+			if parts then
+				db:hset(hash, 'content', parts)
+			else
+				db:hset(hash, 'content', 'no')
+			end
+			logtxt = logtxt..'Found: composed. Moving...\n\n'
+		end
+		total = total + 1
+	end
+	logtxt = logtxt..'\n\nTotal items: '..total
+    --print(logtxt)
+    local path = "./logs/update_welcome_settings.txt"
+    write_file(path, logtxt)
+    api.sendDocument(config.admin, path)
+end		
 
 local function fill_media_settings()
 	local list = {'image', 'audio', 'video', 'sticker', 'gif', 'voice', 'contact', 'file'}
@@ -130,21 +167,18 @@ local action = function(msg, blocks, ln)
 			text = text..v..'\n'
 		end
 		api.sendMessage(config.admin, text)
-		mystat('/admin')
+		mystat('/adminpatterns')
 	end
 	if blocks[1] == 'init' then
 		--db:bgsave()
 		bot_init(true)
-		
-		local out = make_text(lang[ln].control.reload)
-		api.sendReply(msg, out, true)
+		api.sendReply(msg, (lang[ln].admin.reload), true)
 		mystat('/reload')
 	end
 	if blocks[1] == 'stop' then
 		db:bgsave()
 		is_started = false
-		local out = make_text(lang[ln].control.stop)
-		api.sendReply(msg, out, true)
+		api.sendReply(msg, (lang[ln].admin.stop), true)
 		mystat('/stop')
 	end
 	if blocks[1] == 'backup' then
@@ -155,10 +189,10 @@ local action = function(msg, blocks, ln)
     	mystat('/backup')
     end
     if blocks[1] == 'bc' then
-	        if breaks_markdown(blocks[2]) then
-	            api.sendMessage(config.admin, lang[ln].breaks_markdown)
-	            return
-	        end
+    	local res = api.sendAdmin(blocks[2], true)
+    	if not res then
+    		api.sendAdmin('Can\'t broadcast: wrong markdown')
+    	else
 	        local hash = 'bot:users'
 	        local ids = db:hkeys(hash)
 	        if ids then
@@ -166,20 +200,22 @@ local action = function(msg, blocks, ln)
 	                api.sendMessage(ids[i], blocks[2], true)
 	                print('Sent', ids[i])
 	            end
-	            api.sendMessage(config.admin, lang[ln].broadcast.delivered)
+	            api.sendMessage(config.admin, lang[ln].admin.broadcast, true)
 	        else
-	            api.sendMessage(config.admin, lang[ln].broadcast.no_user)
+	            api.sendMessage(config.admin, 'No users saved, no broadcast')
 	        end
 	        mystat('/bc')
 	    end
+	end
 	if blocks[1] == 'bcg' then
-		if breaks_markdown(blocks[2]) then
-	    	api.sendMessage(config.admin, lang[ln].breaks_markdown)
-	        return
-	    end
+		local res = api.sendAdmin(blocks[2], true)
+    	if not res then
+    		api.sendAdmin('Can\'t broadcast: wrong markdown')
+    		return
+    	end
 	    local groups = db:smembers('bot:groupsid')
 	    if not groups then
-	    	api.sendMessage(config.admin, lang[ln].admin.bcg_no_groups)
+	    	api.sendMessage(config.admin, 'No (groups) id saved')
 	    else
 	    	for i=1,#groups do
 	    		api.sendMessage(groups[i], blocks[2], true)
@@ -191,8 +227,7 @@ local action = function(msg, blocks, ln)
 	end
 	if blocks[1] == 'save' then
 		db:bgsave()
-		local out = make_text(lang[ln].getstats.redis)
-		api.sendMessage(msg.chat.id, out, true)
+		api.sendMessage(msg.chat.id, 'Redis updated', true)
 		mystat('/save')
 	end
 	if blocks[1] == 'commands' then
@@ -203,8 +238,7 @@ local action = function(msg, blocks, ln)
 	    for i=1, #names do
 	        text = text..'- *'..names[i]..'*: '..num[i]..'\n'
 	    end
-	    local out = make_text(lang[ln].getstats.stats, text)
-		api.sendMessage(msg.chat.id, out, true)
+		api.sendMessage(msg.chat.id, text, true)
 		mystat('/commands')
     end
     if blocks[1] == 'stats' then
@@ -234,9 +268,9 @@ local action = function(msg, blocks, ln)
 		local output = io.popen(blocks[2]):read('*all')
 		--check if the output has a text
 		if output:len() == 0 then
-			output = make_text(lang[ln].shell.done)
+			output = 'Done!'
 		else
-			output = make_text(lang[ln].shell.output, output)
+			output = '```\n'..output..'\n```'
 		end
 		api.sendMessage(msg.chat.id, output, true, msg.message_id, true)
 		mystat('/run')
@@ -328,7 +362,7 @@ local action = function(msg, blocks, ln)
 		local id
 		if not blocks[2] then
 			if not msg.reply then
-				api.sendReply(msg, lang[ln].admin.no_reply)
+				api.sendReply(msg, 'This command need a reply')
 				return
 			else
 				id = msg.reply.from.id
@@ -339,9 +373,9 @@ local action = function(msg, blocks, ln)
 		local response = db:sadd('bot:blocked', id)
 		local text
 		if response == 1 then
-			text = make_text(lang[ln].admin.blocked, id)
+			text = id..' have been blocked'
 		else
-			text = make_text(lang[ln].admin.already_blocked, id)
+			text = id..' was already blocked'
 		end
 		api.sendReply(msg, text)
 		mystat('/block')
@@ -351,7 +385,7 @@ local action = function(msg, blocks, ln)
 		local response
 		if not blocks[2] then
 			if not msg.reply then
-				api.sendReply(msg, lang[ln].admin.no_reply)
+				api.sendReply(msg, 'This command need a reply')
 				return
 			else
 				id = msg.reply.from.id
@@ -362,16 +396,16 @@ local action = function(msg, blocks, ln)
 		local response = db:srem('bot:blocked', id)
 		local text
 		if response == 1 then
-			text = make_text(lang[ln].admin.unblocked, id)
+			text = id..' have been unblocked'
 		else
-			text = make_text(lang[ln].admin.already_unblocked, id)
+			text = id..' was already unblocked'
 		end
 		api.sendReply(msg, text)
 		mystat('/unblock')
 	end
 	if blocks[1] == 'isblocked' then
 		if not msg.reply then
-			api.sendReply(msg, lang[ln].admin.no_reply)
+			api.sendReply(msg, 'This command need a reply')
 			return
 		else
 			if is_blocked(msg.reply.from.id) then
@@ -393,7 +427,7 @@ local action = function(msg, blocks, ln)
 		local text
 		if not blocks[2] then
 			if msg.chat.type == 'private' then
-				text = lang[ln].admin.leave_id_missing
+				text = 'ID missing'
 			else
 				text = bot_leave(msg.chat.id, ln) 
 			end
@@ -586,11 +620,78 @@ local action = function(msg, blocks, ln)
 		end
 		api.sendDocument(config.admin, path)
 	end
-	if blocks[1] == 'echo' then
-		api.sendAdmin(blocks[2], true)
-	end
 	if blocks[1] == 'fill media' then
 		fill_media_settings()
+	end
+	if blocks[1] == 'trfile' then
+		if not msg.reply then
+			api.sendReply(msg, 'Reply to a file')
+		else
+			if not msg.reply.document then
+				api.sendReply(msg, 'This is not a file')
+				return
+			end
+			if not(msg.reply.document.mime_type == 'text/plain') and not(msg.reply.document.mime_type == 'text/x-lua') then
+				api.sendReply(msg, 'This is not a txt/lua file')
+				return
+			end
+			local code = blocks[2]
+			local exists = is_lang_supported(code)
+			if not exists then
+				api.sendReply(msg, 'Language not supported')
+			else
+				local hash = 'trfile:'..code:upper()
+				db:set(hash, msg.reply.document.file_id)
+				api.sendReply(msg, 'Translation file setted!\n*Lang*: '..code:upper()..'\n*ID*: '..msg.reply.document.file_id..'\n*Path*: lang'..code:upper()..'.lua', true)
+			end
+		end
+	end
+	if blocks[1] == 'fixaction' then
+		local id = blocks[2]
+		local hash = 'chat:'..id..':flood'
+		local key = 'ActionFlood'
+		db:hset(hash, key, 'kick')
+		key = 'MaxFlood'
+		db:hset(hash, key, 5)
+		api.sendAdmin('Should be fixed')
+	end
+	if blocks[1] == 'sendplug' then
+		local path = './plugins/'..blocks[2]..'.lua'
+		api.sendDocument(config.admin, path)
+	end
+	if blocks[1] == 'sendfile' then
+		local path = './'..blocks[2]
+		api.sendDocument(config.admin, path)
+	end
+	if blocks[1] == 'update' then
+		update_welcome_settings()
+	end
+	if blocks[1] == 'reply' then
+	    --ignore if no reply
+	    if not msg.reply_to_message then
+            api.sendReply(msg, lang[ln].report.reply)
+			return nil
+		end
+		
+		local input = blocks[2]
+		
+		--ignore if not imput
+		if not input then
+            api.sendMessage(msg.from.id, lang[ln].report.reply_no_input)
+            return
+        end
+		
+		msg = msg.reply_to_message
+		local receiver = msg.forward_from.id
+		local out = make_text(lang[ln].report.feedback_reply, input)
+		
+		local res = api.sendAdmin(make_text(lang[ln].report.reply_sent, input), true)
+		if res then
+			api.sendMessage(receiver, out, true)
+		else
+			api.sendAdmin('Wrong markdown')
+		end
+		mystat('/reply')
 	end
 end
 

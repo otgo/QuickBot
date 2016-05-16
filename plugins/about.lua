@@ -28,15 +28,10 @@ local action = function(msg, blocks, ln)
             api.sendReply(msg, make_text(lang[ln].setabout.no_bio_add), true)
         else
             local input = blocks[2]
-	        --check if breaks the markdown
-	        if breaks_markdown(input) then
-				api.sendReply(msg, make_text(lang[ln].breaks_markdown))
-				return nil
-			end
 			--add the new string to the about text
             local res = api.sendReply(msg, make_text(lang[ln].setabout.added, input), true)
             if not res then
-            	api.sendReply(msg. lang[ln].breaks_markdown)
+            	api.sendReply(msg. lang[ln].breaks_markdown, true)
             else
             	about = about..'\n'..input
             	db:set(hash, about)
@@ -67,7 +62,7 @@ local action = function(msg, blocks, ln)
 		--set the new about
 		local res = api.sendReply(msg, make_text(lang[ln].setabout.new, input), true)
 		if not res then
-			api.sendReply(msg, lang[ln].breaks_markdown)
+			api.sendReply(msg, lang[ln].breaks_markdown, true)
 		else
 			db:set(hash, input)
 		end
@@ -75,6 +70,7 @@ local action = function(msg, blocks, ln)
 	end
 
 end
+
 
 return {
 	action = action,
