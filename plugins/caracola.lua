@@ -1,10 +1,11 @@
 local triggers = {
-	'^/(caracolamagica) (.*)$'
+	'^/(caracolamagica) (.*)$',
+	'^/(caracola) (.*)$'
 }
 
 local action = function(msg, blocks, ln)
 	
-if blocks[1] == 'caracolamagica' and blocks[2] then
+if blocks[1] == 'caracolamagica' or blocks[1] == 'caracola' and blocks[2] then
 math.randomseed(os.time());
 end
   num = math.random(0,3);
