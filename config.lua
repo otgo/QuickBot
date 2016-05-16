@@ -1,17 +1,16 @@
 return {
-	bot_api_key = 'BORRA SOLO ESTO Y PON TU API KEY AQUI',
-	admin = 0,  -- tu id (necesario)
+	bot_api_key = '',
+	admin = 0,
 	support = 0, -- id de soporte (opcional)
 	channel = '@TuCanal', -- tu canal (opcional)
 	lang = 'languages.lua',
-	log_chat = -1001045085829,
+	log_chat = 0,
 	plugins = {
 		'onmessage.lua', 
 		'admin.lua',
 		'mod.lua',
 		'credits.lua',
-		'ping.lua',
-		'tell.lua',
+		'users.lua',
 		'help.lua',
 		'caracola.lua',
 		'rules.lua',
@@ -21,7 +20,6 @@ return {
 		'killer.lua',
 		'settings.lua',
 		'about.lua',
-		'report.lua',
 		'beta.lua',
 		'saludador.lua',
 		'flag.lua',

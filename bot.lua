@@ -12,14 +12,14 @@ bot_init = function(on_reload) -- The function run when the bot is started or re
 	print(colors('%{blue bright}Leyendo config.lua...'))
 	config = dofile('config.lua') -- Load configuration file.
 	if config.bot_api_key == '' then
-		print(colors('%{red bright}Verifica la API KEY'))
+		print(colors('%{red bright}VERIFICA LA APIKEY'))
 		return
 	end
 	print(colors('%{blue bright}Leyendo utilities.lua...'))
 	cross = dofile('utilities.lua') -- Load miscellaneous and cross-plugin functions.
 	print(colors('%{blue bright}Leyendo languages...'))
 	lang = dofile(config.lang) -- All the languages available
-	print(colors('%{blue bright}Leyendo tabla de funciones...'))
+	print(colors('%{blue bright}Leyendo tabla de funciones API...'))
 	api = require('methods')
 	
 	tot = 0
@@ -38,11 +38,11 @@ bot_init = function(on_reload) -- The function run when the bot is started or re
 	end
 	print(colors('%{blue}Plugins leidos:'), #plugins)
 
-	print(colors('%{blue bright}BOT RUNNING: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')'))
+	print(colors('%{blue bright}BOT INICIADO: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')'))
 	if not on_reload then
 		save_log('starts')
 		db:hincrby('bot:general', 'starts', 1)
-		api.sendMessage(config.admin, '*Bot iniciado*\n_'..os.date('Dia %A, %d %B %Y\nHora %X')..'_\n'..#plugins..' plugins leidos', true)
+		api.sendMessage(config.admin, '*Bot iniciado*\n_'..os.date('Día %A, %d %B %Y\nHora %X')..'_\n'..#plugins..' plugins leidos', true)
 	end
 	
 	-- Generate a random seed and "pop" the first random number. :)
@@ -95,7 +95,6 @@ local function collect_stats(msg)
 	--count the number of messages
 	db:hincrby('bot:general', 'messages', 1)
 	--for resolve username (may be stored by groups of id in the future)
-	if not(msg.chat.type == 'private') then db:sadd('bot:groupsid', msg.chat.id) end --to be removed
 	if msg.from and msg.from.username then
 		db:hset('bot:usernames', '@'..msg.from.username:lower(), msg.from.id)
 		db:hset('bot:usernames:'..msg.chat.id, '@'..msg.from.username:lower(), msg.from.id)
@@ -130,7 +129,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 	--Group language
 	msg.lang = db:get('lang:'..msg.chat.id)
 	if not msg.lang then
-		msg.lang = 'es'
+		msg.lang = 'en'
 	end
 	
 	collect_stats(msg) --resolve_username support, chat stats
@@ -161,10 +160,10 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 							return v.action(msg, blocks, msg.lang)
 						end)
 						if not success then
-							api.sendReply(msg, '*ERROR*', true)
+							api.sendReply(msg, '*ERROR*\nReportalo con /c [reporte] :)', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendLog('*ERROR OCURRIDO*.\nVerifica el log.', true)
+          					api.sendLog('*Un error ha ocurrido*.\nVerifica el log', true)
 							return
 						end
 						-- If the action returns a table, make that table msg.
@@ -266,6 +265,9 @@ end
 local function media_to_msg(msg)
 	if msg.photo then
 		msg.text = '###image'
+		--if msg.caption then
+			--msg.text = msg.text..':'..msg.caption
+		--end
 	elseif msg.video then
 		msg.text = '###video'
 	elseif msg.audio then
