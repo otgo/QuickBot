@@ -7,12 +7,12 @@ Más información en la [API de Telegram](https://core.telegram.org/bots/api)
 Necesitas asignar tu configuración en config.lua, tanto APIKEY como ID de administrador.
 Canal u otras opciones son opcionales. Cualquier falla o recomendación ingresala al grupo de [soporte](http://telegram.me/equipoQuickSilver)
 
+--
 ![Alt text](/enviar/imagen/instructions.jpg?raw=true "Instrucciones al editar config.lua")
+--
 
 
 
-
-----------------------------
 
 Clonar repositorio:
 
