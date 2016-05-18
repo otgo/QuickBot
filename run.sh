@@ -26,6 +26,16 @@ echo -e '\e[0;31mSession closed.\e[0m'
 
 fi
 
+if [ "$1" = "rmlogs" ]; then
+
+sudo rm -Rf logs/
+  
+clear
+
+echo -e '\e[0;31mLogs deleted.\e[0m'
+
+fi
+
 
 
 if [ "$1" = "" ]; then
