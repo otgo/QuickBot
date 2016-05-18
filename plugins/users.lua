@@ -29,6 +29,18 @@ local function tell(msg, ln)
 	end
 end
 
+local function do_keybaord_credits()
+	local keyboard = {}
+    keyboard.inline_keyboard = {
+    	{
+    		{text = 'Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
+    		{text = 'GitHub', url = 'https://github.com/jarriztg/QuickBot'},
+    		{text = 'Puntúame', url = 'https://telegram.me/storebot?start='..bot.username},
+		}
+	}
+	return keyboard
+end
+
 local action = function(msg, blocks, ln)
 	if blocks[1] == 'ping' then
 		api.sendMessage(msg.from.id, lang[ln].ping)
@@ -40,7 +52,7 @@ local action = function(msg, blocks, ln)
 		end
 		db:sadd('bot:tofix', msg.chat.id)
 		change_one_header(msg.chat.id)
-		api.sendReply(msg, 'All should be ok now.\nIf not, contact the bot owner! (with _/c_ command)', true)
+		api.sendReply(msg, 'Todo debería estar bien ahora.\nSi no es así. Contactame con /c comentario.', true)
 	end
 	if blocks[1] == 'fixextra' then
 		if not is_owner(msg) or msg.chat.type == 'private' then
@@ -48,11 +60,11 @@ local action = function(msg, blocks, ln)
 		end
 		db:sadd('bot:tofixextra', msg.chat.id)
 		change_extra_header(msg.chat.id)
-		api.sendReply(msg, 'All should be ok now.\nIf not, contact the bot owner! (with _/c_ command)', true)
+		api.sendReply(msg, 'Todo debería estar bien ahora.\nSi no es así. Contactame con /c comentario.', true)
 	end
 	if blocks[1] == 'strings' then
 		if not blocks[2] then
-			local file_id = db:get('trfile:EN')
+			local file_id = db:get('trfile:ES')
 			if not file_id then return end
 			api.sendDocumentId(msg.chat.id, file_id, msg.message_id)
 		else
@@ -100,6 +112,12 @@ local action = function(msg, blocks, ln)
 	    api.sendMessage(receiver, lang[ln].report.sent)
 	    mystat('/c')
 	end
+	if blocks[1] == 'info' then
+		local keyboard = {}
+		keyboard = do_keybaord_credits()
+		api.sendKeyboard(msg.chat.id, lang[ln].credits, keyboard, true)
+		mystat('/credits')
+	end
 end
 
 return {
@@ -114,5 +132,6 @@ return {
 		'^/(echo) (.*)$',
 		'^/(c)$',
 		'^/(c) (.*)',
+		'^/(info)$'
 	}
 }
