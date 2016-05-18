@@ -1,21 +1,13 @@
 QuickBot
 -------------------------
-Crea tu propio bot, <td><strong>aquí</strong></td>.
+Bot de telegram usando API conexiones.
 
+Más información en la [API de Telegram](https://core.telegram.org/bots/api)
 
-<strong>Necesitas cambiar</strong> tu información en config.lua
+Necesitas asignar tu configuración en config.lua, tanto APIKEY como ID de administrador.
+Canal u otras opciones son opcionales. Cualquier falla o recomendación ingresala al grupo de [soporte](http://telegram.me/equipoQuickSilver)
 
-
-Edita config.lua con tu APIKey y tu id.
-
-
-
-------------------
-¿Qué estás esperando?
-------------------
-
-<strong>Empieza tu propio bot basado en API ahora mismo!</strong> 
-
+----------------------------
 
 Clonar repositorio:
 
