@@ -9,7 +9,6 @@ return {
 		'onmessage.lua', 
 		'admin.lua',
 		'mod.lua',
-		'credits.lua',
 		'users.lua',
 		'help.lua',
 		'caracola.lua',
@@ -67,7 +66,9 @@ return {
 		[110] = 'PEER_ID_INVALID', 
 		[111] = 'Mensaje no modificado', 
 		[112] = 'Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', 
-		[120] = 'Can\'t parse reply keyboard markup JSON object', --keyboard table invalid
+		[113] = 'Bad Request: group chat is migrated to a supergroup chat', 
+		[114] = 'Bad Request: Message can\'t be forwarded',
+		[120] = 'Can\'t parse reply keyboard markup JSON object', 
 		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays',
 		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object',
 		[123] = 'Bad Request: Object expected as reply markup',
