@@ -184,17 +184,6 @@ function save_data(filename, data) -- Saves a table to a JSON file.
 
 end
 
-function match_pattern(pattern, text)
-  if text then
-  	text = text:gsub('@'..bot.username, '')
-    local matches = {}
-    matches = { string.match(text, pattern) }
-    if next(matches) then
-    	return matches
-    end
-  end
-end
-
 function clean_owner_modlist(chat)
 	--clear the owner
 	local hash = 'chat:'..chat..':owner'
@@ -358,6 +347,7 @@ function res_user(username)
 end
 
 function res_user_group(username, chat_id)
+	username = username:lower()
 	local hash = 'bot:usernames:'..chat_id
 	local stored = db:hget(hash, username)
 	if stored then
@@ -687,6 +677,37 @@ function change_extra_header(id)
 	api.sendDocument(config.admin, log_path)
 end
 
+function download_to_file(url, file_path)--https://github.com/yagop/telegram-bot/blob/master/bot/utils.lua
+  print("url to download: "..url)
+
+  local respbody = {}
+  local options = {
+    url = url,
+    sink = ltn12.sink.table(respbody),
+    redirect = true
+  }
+  -- nil, code, headers, status
+  local response = nil
+    options.redirect = false
+    response = {HTTPS.request(options)}
+  local code = response[2]
+  local headers = response[3]
+  local status = response[4]
+  if code ~= 200 then return false, code end
+
+  print("Saved to: "..file_path)
+
+  file = io.open(file_path, "w+")
+  file:write(table.concat(respbody))
+  file:close()
+  return file_path, code
+end
+
+function telegram_file_link(res)
+	--res = table returned by getFile()
+	return "https://api.telegram.org/file/bot"..config.bot_api_key.."/"..res.result.file_path
+end
+
 ----------------------- specific cross-plugins functions---------------------
 
 local function getAbout(chat_id, ln)
@@ -695,7 +716,7 @@ local function getAbout(chat_id, ln)
     if not about then
         return lang[ln].setabout.no_bio
     else
-       	return make_text(lang[ln].setabout.bio, about)
+       	return about
     end
 end
 
@@ -705,7 +726,7 @@ local function getRules(chat_id, ln)
     if not rules then
         return lang[ln].setrules.no_rules
     else
-       	return make_text(lang[ln].setrules.rules, rules)
+       	return rules
     end
 end
 
@@ -755,9 +776,9 @@ local function getSettings(chat_id, ln)
             
         local text
         if val == 'yes' then
-            text = make_text(lang[ln].settings[key])..': 🔒\n'
+            text = make_text(lang[ln].settings[key])..': 🚫\n'
         else
-            text = '*'..make_text(lang[ln].settings[key])..'*: 🔓\n'
+            text = '*'..make_text(lang[ln].settings[key])..'*: ✅\n'
         end
         message = message..text --concatenete the text
         if key == 'Flood' then
