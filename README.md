@@ -22,7 +22,7 @@ git clone https://github.com/jarriztg/QuickBot.git
 ```
 ```bash
 # mover a directorio y cambiar permisos de arranque
-cd QuickBot && chmod +x run.sh && chmod +x dependences.sh
+cd QuickBot && chmod +x run.sh
 ```
 Instalar QuickBot: 
 
