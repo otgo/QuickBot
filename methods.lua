@@ -1,3 +1,4 @@
+
 local BASE_URL = 'https://api.telegram.org/bot' .. config.bot_api_key
 
 if not config.bot_api_key then
@@ -132,94 +133,6 @@ local function code2text(code, ln, chat_id)
 	end
 end
 
-local function unbanUser(msg, on_request, no_msg, username)
-	local name, user_id, text
-	local chat_id = msg.chat.id
-	local ln = msg.lang
-	if not username then
-		if on_request then
-		    user_id = msg.reply.from.id
-		    name = getname(msg.reply)
-		else
-		    user_id = msg.from.id
-		    name = getname(msg)
-		end
-	else
-		user_id = res_user_group(username, chat_id)
-		if not user_id then
-			api.sendReply(msg, lang[ln].bonus.no_user)
-			return
-		end
-		name = username
-	end
-	name = name:mEscape()
-	
-	if is_mod2(chat_id, user_id) then return end
-	
-	if msg.chat.type == 'group' then
-	    local hash = 'chat:'..chat_id..':banned'
-	    local removed = db:srem(hash, user_id)
-	    if removed == 0 then
-		    text = lang[ln].banhammer.not_banned
-		    api.sendReply(msg, text, true)
-		    return false
-	    end
-	end
-	res, code = api.unbanChatMember(chat_id, user_id)
-	--che succede se unbanno un non bannato?
-	text = make_text(lang[ln].banhammer.unbanned, name)
-	api.sendReply(msg, text, true)
-	return true
-end
-
-local function banUser(msg, on_request, no_msg, username)--no_msg: kick without message if kick is failed
-	local name, user_id, text
-	local chat_id = msg.chat.id
-	local ln = msg.lang
-	if not username then
-		if on_request then
-		    user_id = msg.reply.from.id
-		    name = getname(msg.reply)
-		else
-		    user_id = msg.from.id
-		    name = getname(msg)
-		end
-	else
-		user_id = res_user_group(username, chat_id)
-		if not user_id then
-			api.sendReply(msg, lang[ln].bonus.no_user)
-			return
-		end
-		name = username
-	end	
-	name = name:mEscape()
-	
-	if is_mod2(chat_id, user_id) then return end
-	
-	res, code = api.kickChatMember(chat_id, user_id) --try to kick
-	
-	if res then --if the user has been kicked, then...
-	    db:hincrby('bot:general', 'ban', 1) --genreal: save how many kicks
-		text = make_text(lang[ln].banhammer.banned, name)
-		if msg.chat.type == 'group' then
-		    local hash = 'chat:'..chat_id..':banned'
-	        db:sadd(hash, user_id)
-	    end
-		--the kick went right: always display who have been kicked (and why, if included in the name)
-		no_msg = false --if the bot kicked successfully, then send a message with the motivation
-	else
-		text = api.code2text(code, ln, chat_id)
-	end
-	
-	--check if send a message after the kick. If a kick went successful, no_msg is always false: users need to know who and why
-	if no_msg or code == 107 then --if no_msg (don't reply with the error) or the error is unknown then...
-		return res
-	else
-		local sent, code_msg = api.sendMessage(chat_id, text, true)
-		return res
-	end
-end
-
 local function banUserId(chat_id, user_id, name, on_request, no_msg)
 	local msg = {}
 	msg.chat = {}
@@ -230,52 +143,56 @@ local function banUserId(chat_id, user_id, name, on_request, no_msg)
 	return api.banUser(msg, on_request, no_msg)
 end
 
-local function kickUser(msg, on_request, no_msg, username)-- no_msg: don't send the error message if kick is failed. If no_msg is false, it will return the motivation of the fail
-	local name, user_id, text
-	local chat_id = msg.chat.id
-	local ln = msg.lang
-	if not username then
-		if on_request then
-		    user_id = msg.reply.from.id
-		    name = getname(msg.reply)
-		else
-		    user_id = msg.from.id
-		    name = getname(msg)
-		end
-	else
-		user_id = res_user_group(username, chat_id)
-		if not user_id then
-			api.sendReply(msg, lang[ln].bonus.no_user)
-			return
-		end
-		name = username
-	end
-	name = name:mEscape()
+local function banUser(chat_id, user_id, is_normal_group, ln)--no_msg: kick without message if kick is failed
 	
 	if is_mod2(chat_id, user_id) then return end
 	
-	res, code = api.kickChatMember(chat_id, user_id) --try to kick
+	local res, code = api.kickChatMember(chat_id, user_id) --try to kick. "code" is already specific
+	
+	if res then --if the user has been kicked, then...
+	    db:hincrby('bot:general', 'ban', 1) --genreal: save how many kicks
+		if is_normal_group then
+		    local hash = 'chat:'..chat_id..':banned'
+	        db:sadd(hash, user_id)
+	    end
+		return res --return res and not the text
+	else ---else, the user haven't been kicked
+		local text = api.code2text(code, ln, chat_id)
+		return res, text --return the motivation too
+	end
+end
+
+local function kickUser(chat_id, user_id, ln)-- no_msg: don't send the error message if kick is failed. If no_msg is false, it will return the motivation of the fail
+	
+	if is_mod2(chat_id, user_id) then return end
+	
+	local res, code = api.kickChatMember(chat_id, user_id) --try to kick
 	
 	if res then --if the user has been kicked, then...
 	    db:hincrby('bot:general', 'kick', 1) --genreal: save how many kicks
 		--unban
-		if msg.chat.type == 'supergroup' then
-		    api.unbanChatMember(chat_id, user_id)
-		end
-		text = make_text(lang[ln].banhammer.kicked, name)
-		--the kick went right: always display who have been kicked (and why, if included in the name)
-		no_msg = false --if the bot kicked successfully, then send a message with the motivation
+		api.unbanChatMember(chat_id, user_id)
+		return res
 	else
-		text = api.code2text(code, ln, chat_id)
+		local motivation = api.code2text(code, ln, chat_id)
+		return res, motivation
 	end
+end
+
+local function unbanUser(chat_id, user_id, is_normal_group)
 	
-	--check if send a message after the kick. If a kick went successful, no_msg is always false: users need to know who and why
-	if no_msg or code == 107 then --if no_msg (don't reply with the error) or the error is unknown then...
-		return res
-	else
-		local sent, code_msg = api.sendMessage(chat_id, text, true)
-		return res
+	if is_mod2(chat_id, user_id) then return end
+	
+	if is_normal_group then
+	    local hash = 'chat:'..chat_id..':banned'
+	    local removed = db:srem(hash, user_id)
+	    if removed == 0 then
+		    --text = lang[ln].banhammer.not_banned
+		    return false
+	    end
 	end
+	local res, code = api.unbanChatMember(chat_id, user_id)
+	return true
 end
 
 local function sendMessage(chat_id, text, use_markdown, disable_web_page_preview, reply_to_message_id, send_sound)
@@ -354,6 +271,8 @@ local function sendKeyboard(chat_id, text, keyboard, markdown)
 	
 	url = url..'&text='..URL.escape(text)
 	
+	url = url..'&disable_web_page_preview=true'
+	
 	url = url..'&reply_markup='..JSON.encode(keyboard)
 	
 	return sendRequest(url)
@@ -388,10 +307,18 @@ local function forwardMessage(chat_id, from_chat_id, message_id)
 	
 end
 
+local function getFile(file_id)
+	
+	local url = BASE_URL .. '/getFile?file_id='..file_id
+	
+	return sendRequest(url)
+	
+end
+
 local function curlRequest(curl_command)
  -- Use at your own risk. Will not check for success.
 
-	local res = io.popen(curl_command)
+	io.popen(curl_command)
 
 end
 
@@ -569,5 +496,6 @@ return {
 	sendLog = sendLog,
 	banUserId= banUserId,
 	sendDocumentId = sendDocumentId,
-	sendStickerId = sendStickerId
+	sendStickerId = sendStickerId,
+	getFile = getFile
 }	
