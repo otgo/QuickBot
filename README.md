@@ -36,11 +36,14 @@ Más funciones del bash:
 # Iniciar una sesión normal
 ./run.sh
 
-# Arrancar QuickBot en screen, siempre arrancando.
+# Arrancar QuickBot en screen, siempre arrancando
 ./run.sh screen
 
 # Detener última sesión de QuickBot en screen
 ./run.sh stop
+
+# Borrar logs por consola
+./run.sh rmlogs
 
 ```
 
