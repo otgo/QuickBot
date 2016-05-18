@@ -183,7 +183,6 @@ return {
         },
         setabout = {
             no_bio = '*No hay descripción* en este grupo.',
-            bio = '*Descripción del grupo:*\n&&&1',
             no_bio_add = '*No hay descripción*.\nUsa `/setabout [descripción] para crear una nueva',
             no_input_add = 'Escribe algo despúes de "/addabout"',
             added = '*Descripción agregada:*\n"&&&1"',
@@ -193,7 +192,6 @@ return {
         },
         setrules = {
             no_rules = '¡*No hay reglas*!',
-            rules = '_Reglas del grupo:_\n&&&1',
             no_rules_add = '*No hay reglas* establecidas en este grupo\nUsa /setrules [reglas] para establecer unas nuevas.',
             no_input_add = 'Escribe algo despúes de "/addrules"',
             added = '*Reglas agregadas:*\n"&&&1"',
