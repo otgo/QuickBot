@@ -139,11 +139,12 @@ return {
         },
         links = {
             no_link = 'ℹ️ *No hay link* en este grupo, por favor, pideselo al creador.',
+            link_no_input = 'ℹ️ Este grupo *no es público*, necesitas configurarlo con /setlink',
             link = '[&&&1](&&&2)',
             link_invalid = 'ℹ️ Este link, *no es valido!*',
             link_updated = 'ℹ️ Link actualizado \n*Este es el link*: [&&&1](&&&2)',
             link_setted = 'ℹ️ Link configurado.\n*Este es el link*: [&&&1](&&&2)',
-            link_usetted = '*Primero configura el link*',
+            link_unsetted = '*Primero configura el link*',
             poll_unsetted = '*Primero crea una encuesta en pollbot*',
             poll_updated = 'ℹ️ Encuesta actualizada.\n*Vota aqui*: [&&&1](&&&2)',
             poll_setted = 'ℹ️ Encuesta configurada.\n*Vota aqui*: [&&&1](&&&2)',
