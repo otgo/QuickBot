@@ -7,10 +7,10 @@ if [ "$1" = "install" ]; then
   cd luarocks-2.2.2
   ./configure
   make
-  luarocks install luasocket
+  sudo luarocks install luasocket
   sudo luarocks install luasec
   sudo luarocks install redis-lua
-  sudo luarocks install ansicolors
+  sudo luarocks install lua-term
   sudo luarocks install serpent
   sudo apt-get install curl
   cd ..
