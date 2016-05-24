@@ -27,7 +27,7 @@ local action = function(msg, blocks, ln)
 		 	if blocks[1] == 'kick' then
 		    	local res, motivation = api.kickUser(chat_id, user_id, ln)
 		    	if not res then
-		    		api.sendReply(msg, motivation, true)
+		    		api.sendReply(msg, make_text(lang[ln].kick_errors[1]), true)
 		    	end
 		    	mystat('/kick')
 	    	end
@@ -36,7 +36,7 @@ local action = function(msg, blocks, ln)
 	   		if blocks[1] == 'ban' then
 	   			local res, motivation = api.banUser(chat_id, user_id, is_normal_group, ln)
 		    	if not res then
-		    		api.sendReply(msg, motivation, true)
+		    		api.sendReply(msg, make_text(lang[ln].kick_errors[1]), true)
 		    	end
 		    	mystat('/ban')
     		end
