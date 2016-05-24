@@ -1,17 +1,17 @@
 local function make_keyboard(mod)
 	local keyboard = {}
 	keyboard.inline_keyboard = {}
-	if mod then --extra options for the mod
+	if mod then 
 	    local list = {
 	        ['Baneos'] = '!banhammer',
-	        ['Información de grupos'] = '!info',
+	        ['Grupos'] = '!info',
 	        ['Flood'] = '!flood',
 	        ['Multimedia'] = '!media',
 	        ['Bienvenida'] = '!welcome',
 	        ['General'] = '!settings',
-	        ['Comandos extra'] = '!extra',
+	        ['Extra'] = '!extra',
 	        ['Advertencias'] = '!warns',
-	        ['Caracteres'] = '!char',
+	        ['Árabe/RTL'] = '!char',
 	        ['Links'] = '!links',
 	        ['Lenguajes'] = '!lang'
         }
@@ -27,14 +27,13 @@ local function make_keyboard(mod)
                 table.insert(line, button)
             end
         end
-        if next(line) then --if the numer of buttons is odd, then add the last button alone
+        if next(line) then 
             table.insert(keyboard.inline_keyboard, line)
         end
     end
     local bottom_bar = {
 		{text = '🔰 Todos', callback_data = '!user'},
 		{text = '🔰 Admins', callback_data = '!mod'},
-		{text = '🔰 Creador', callback_data = '!owner'},
 	}
 	table.insert(keyboard.inline_keyboard, bottom_bar)
 	local info_button = {
@@ -84,7 +83,7 @@ local function do_keybaord_credits()
  end
 
 local action = function(msg, blocks, ln)
-    -- save stats
+    -- stats
     if blocks[1] == 'start' then
     	db:hset('bot:users', msg.from.id, 'xx')
         if msg.chat.type == 'private' then
@@ -125,9 +124,6 @@ local action = function(msg, blocks, ln)
             with_mods_lines = false
         elseif query == 'mod' then
             text = lang[ln].help.kb_header
-        elseif query == 'owner' then
-            text = lang[ln].help.owner
-            with_mods_lines = false
         end
         if query == 'info' then
         	text = lang[ln].help.mods[query]
@@ -164,7 +160,6 @@ return {
 	    '^/(help)$',
 	    '^###cb:!(user)',
 	    '^###cb:!(info_button)',
-    	'^###cb:!(owner)',
 	    '^###cb:!(mod)',
 	    '^###cb:!(info)',
 	    '^###cb:!(banhammer)',
