@@ -19,10 +19,10 @@ if [ "$1" = "config" ]; then
     read channel
     sudo rm -f config.lua
     echo "return {" >> config.lua
-    echo "	bot_api_key = ''," >> config.lua
-    echo "	admin = 0," >> config.lua
+    echo "	bot_api_key = '$apikey'," >> config.lua
+    echo "	admin = $id," >> config.lua
     echo "	log_chat = -122946087," >> config.lua
-    echo "	channel = '@Canal'," >> config.lua
+    echo "	channel = '@$channel'," >> config.lua
     echo "	lang = 'languages.lua'," >> config.lua
     echo "	plugins = {" >> config.lua
     echo "		'onmessage.lua'," >> config.lua
