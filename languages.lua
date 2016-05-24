@@ -15,7 +15,6 @@ return {
     	    general_pm = '_Te enviaré la información por privado_.',
             no_user = 'Nunca vi a ese usuario :( , por favor, respondele',
             the_group = 'el grupo',
-            mods_list = 'Lista de moderadores del *grupo*:\n&&&1',
             settings_header = 'Ajustes del *grupo*:\n\n*Lenguaje*: `&&&1`\n',
             reply = '*Contestale a alguien* para usar este comando, o un *usuario*',
             msg_me = '_Mensajeame primero mara ayudarte_'
@@ -41,77 +40,77 @@ return {
                     ..'`/demote` (por respuesta) : elimina un usuario de los propietarios o moderadores.\n'
                     ..'`/setlink [link]` : cambia el link de algún grupo.\n',
             mods = {
-            	    banhammer = "*Moderadores*: Baneos\n\n"
-                	   .."`/kick` (respuesta|alias) : kickea a un usuariode algún grupo (no podrá ser agregado de nuevo).\n"
-                	   .."`/ban` (respuesta|alias) : banea a un usuario desde el grupo.\n"
-                	   .."`/unban` (respuesta|alias) : desbanea a un usuario desde el grupo.",
- 		    info = "*Moderadores*: Información acerca del grupo\n\n"
- 		           .."`/setrules <reglas>` : cambia las reglas del grupo\n"
- 		           .."`/addrules <regla>` : agrega sólo una linea a las reglas anteriormente creadas\n"
- 		           .."`/setabout <descripción>` : cambia la descripción del grupo.\n"
- 		           .."`/addabout <descripción>` : agrega sólo una línea a la descripción anteriormente creada.",
- 		    flood = "*Moderadores*: Ajustes del flood\n\n"
-                	   .."`/flood [on/off]` : apaga o activa el detector de flood.\n"
-                	   .."`/flood [numero]` : cambia el máximo numero de flood (mensajes máximos).\n"
-                	   .."`/flood [kick/ban]` : elige si deseas que el usuario sea baneado o expulsado por flood.\n"
-                	   .."\n*Nota:* el número máximo debe ser arriba de 3 y puedes ver los ajustes en teclado con `/menu`.",
-                    media = "*Moderadores*: Ajustes de multimedia\n\n"
-                    	   .."`/media` : Envia en PV un teclado para configurar los ajustes de multimedia.\n"
-                	   .."`/media [kick|ban|allow] [tipo]` : cambia la acción si ponen imagenes audios, etc.\n"
-                	   .."_Ejemplo_ : `/media kick sticker`.\n"
-                	   .."`/media list` = muestra los ajustes que pueden ser aplicados en la multimedia.\n"
-                	   .."\n*Multimedia soportada*: _imagenes, audios, videos, stickers, gifs, voz, contactos, archivos_\n"
-                	   .."\n*Nota*: la primera vez que sea enviada multimedia no permitida enviará una advertencia, la segunda, la acción establecida.",
-                    welcome = "*Moderadores*: Configuraciones del welcome\n\n"
-                	   .."`/enable welcome` = activa el mensaje de bienvenida cuando un usuario nuevo entre.\n"
-                	   .."`/disable welcome` = ocultará el mensaje de bienvenida.\n"
-                	   .."\n*Mensaje personalizado:*\n"
-                	   .."`/welcome Bienvenido $name, al grupo $group`\n"
-                	   .."Despúes de \"/welcome\" escribe tu mensaje personalizado. puede incluir nombre/alias/id\n"
-                	   .."Patrones: _$username_ (será reemplazado por el alias); _$name_ (será reemplazado por el nombre); _$id_ (será reemplazado por el id); _$group_ (será reemplazado por el nombre del grupo).\n"
-                           .."\n*GIF/sticker como bienvenida*\n"
-                           .."Puedes usar un gif/sticker como bienvenida. Solamente responde el gif/sticker con \'/welcome\'\n"
-                           .."\n*Mensaje de bienvenida compuesto*\n"
-                           .."Puedes componer un mensaje de bienvenida con reglas/lista de mods/descripción.\n"
-                           .."Puedes componerlo con `/welcome` y a continuación los códigos de mensaje.\n"
-                           .."_Códigos_ : *r* = reglas; *a* = descripción (about); *m* = lista de moderadores.\n"
-                           .."Ejemplo, con \"`/welcome rm`\", el mensaje incluirá reglas y lista de moderadores",
-                      extra = "*Moderadores*: Comandos extra\n\n"
-                        .."`/extra [#comando] [respuesta]` = el bot enviará una respuesta cuando se escriba el comando previo.\n"
-                        .."_Ejemplo_ : con \"`/extra #hola Buen día!`\", el bot responderá \"Buen día!\" cuando alguien escriba #hola.\n"
-                        .."`/extra list` = muestra los comandos personalizados.\n"
-                        .."`/extra del [#comando]` = elimina el comando escrito.\n",
-                    warns = "*Moderadores*: Advertencias\n\n"
-                           .."`/warn [kick/ban]` : cambia la acción si el usuario excede el número máximo de advertencias.\n"
-                           .."`/warn` (por respuesta) : genera una advertencia al usuario.\n"
-                           .."`/warnmax` : cambia el numero máximo de advertencias antes de que el usuario sea baneado o expulsado.\n"
-                           .."`/getwarns` (por respuesta) : muestra cuantas veces ha sido advertido el usuario.\n"
-                           .."`/nowarns` (por respuesta) : limpia las advertencias de un usuario.\n",
-                    char = "*Moderadores*: Caracteres especiales\n\n"
-                           .."`/disable rtl` = cualquiera con caracteres RTL en el nombre será expulsado. Además, será aplicado también en los mensajes.\n"
-                           .."`/enable rtl` = cualquiera con caracteres RTL en el nombre o mensajes, ya no será expulsado.\n"
-                           .."`/disable arab` = el bot expulsará a cualquiera que escriba mensajes en árabe.\n"
-                           .."`/enable arab` = el bot ya no expulsará a cualquiera que escriba mensajes en árabe.\n",
-                    links = "*Moderadores*: Links\n\n"
-                           .."`/link` : obtiene el link del grupo, si está puesto, obvio.\n"
-                           .."`/setpoll [link de pollbot]` = guarda el link de una encuesta de @pollbot. Una vez configurada, los moderadores podrán recibirla con `/poll`.\n"
-                           .."`/setpoll no` = borra la encuesta configurada previamente.\n"
-                           .."`/poll` = obtiene el link de la encuesta, si está configurada.\n"
-                           .."\n*Nota*: el bot solamente reconocerá links/polls válidos. Si el link no es válido, no arrojará una respuesta.",
-                    lang = "*Moderadores*: Lenguajes\n\n"
-                    	   .."`/lang` = muestra una lista de los lenguajes disponibles.\n"
-                    	   .."`/lang [es]` = cambia el lenguaje del bot. Disponible por ahora solamente español.\n",
-                    settings = "*Moderadores*: Configuraciones de grupos\n\n"
-                    	   .."`/menu` = maneja los ajustes del grupo con un teclado inline.\n"
-                    	   .."`/disable [rules|about|modlist|extra]` = hará que el comando seleccionado esté disponible *solamente para moderadores* (el bot no le responderá a usuarios normales).\n"
-                    	   .."_Ejemplo_ : con \"`/disable extra`\", los comandos extra estarán disponibles *solamente para moderadores*. Puedes terminar también con _rules, about, modlist_.\n"
-                    	   .."`/enable [rules|about|modlist|extra]` = hará que el comando seleccionado esté disponible *para todos* (no solamente para moderadores).\n"
-                           .."`/enable report` = los usuarios podrán reportar a los moderadores cuando esté activo, usando el comando \"@admin\".\n"
-                           .."`/disable report` = los usuarios no podrán reportar a los moderadores usando @admin (predeterminado).\n"
-                           .."`/report on` (por respuesta) = al usuario que le respondas podrá usar el comando @admin (solamente al usuario respondido)"
-                           .."`/report off` (por respuesta) = al usuario que le respondas ya no podrá usar el comando @admin (solamente al usuario respondido)",
+             banhammer = "*Moderadores*: Baneos\n\n"
+                	.."`/kick` (respuesta|alias) : kickea a un usuariode algún grupo (no podrá ser agregado de nuevo).\n"
+                	.."`/ban` (respuesta|alias) : banea a un usuario desde el grupo.\n"
+                	.."`/unban` (respuesta|alias) : desbanea a un usuario desde el grupo.",
+ 		     info = "*Moderadores*: Información acerca del grupo\n\n"
+ 		            .."`/setrules <reglas>` : cambia las reglas del grupo\n"
+ 		            .."`/addrules <regla>` : agrega sólo una linea a las reglas anteriormente creadas\n"
+ 		            .."`/setabout <descripción>` : cambia la descripción del grupo.\n"
+ 		            .."`/addabout <descripción>` : agrega sólo una línea a la descripción anteriormente creada.",
+ 		     flood = "*Moderadores*: Ajustes del flood\n\n"
+                	.."`/flood [on/off]` : apaga o activa el detector de flood.\n"
+                	.."`/flood [numero]` : cambia el máximo numero de flood (mensajes máximos).\n"
+                	.."`/flood [kick/ban]` : elige si deseas que el usuario sea baneado o expulsado por flood.\n"
+                	.."\n*Nota:* el número máximo debe ser arriba de 3 y puedes ver los ajustes en teclado con `/menu`.",
+             media = "*Moderadores*: Ajustes de multimedia\n\n"
+                    .."`/media` : Envia en PV un teclado para configurar los ajustes de multimedia.\n"
+                	.."`/media [kick|ban|allow] [tipo]` : cambia la acción si ponen imagenes audios, etc.\n"
+                	.."_Ejemplo_ : `/media kick sticker`.\n"
+                	.."`/media list` = muestra los ajustes que pueden ser aplicados en la multimedia.\n"
+                	.."\n*Multimedia soportada*: _imagenes, audios, videos, stickers, gifs, voz, contactos, archivos_\n"
+                	.."\n*Nota*: la primera vez que sea enviada multimedia no permitida enviará una advertencia, la segunda, la acción establecida.",
+             welcome = "*Moderadores*: Configuraciones del welcome\n\n"
+                	.."`/enable welcome` = activa el mensaje de bienvenida cuando un usuario nuevo entre.\n"
+                	.."`/disable welcome` = ocultará el mensaje de bienvenida.\n"
+                	.."\n*Mensaje personalizado:*\n"
+                	.."`/welcome Bienvenido $name, al grupo $group`\n"
+                	.."Despúes de \"/welcome\" escribe tu mensaje personalizado. puede incluir nombre/alias/id\n"
+                	.."Patrones: _$username_ (será reemplazado por el alias); _$name_ (será reemplazado por el nombre); _$id_ (será reemplazado por el id); _$group_ (será reemplazado por el nombre del grupo).\n"
+                    .."\n*GIF/sticker como bienvenida*\n"
+                    .."Puedes usar un gif/sticker como bienvenida. Solamente responde el gif/sticker con \'/welcome\'\n"
+                    .."\n*Mensaje de bienvenida compuesto*\n"
+                    .."Puedes componer un mensaje de bienvenida con reglas/lista de mods/descripción.\n"
+                    .."Puedes componerlo con `/welcome` y a continuación los códigos de mensaje.\n"
+                    .."_Códigos_ : *r* = reglas; *a* = descripción (about); *m* = lista de moderadores.\n"
+                    .."Ejemplo, con \"`/welcome rm`\", el mensaje incluirá reglas y lista de moderadores",
+             extra = "*Moderadores*: Comandos extra\n\n"
+                    .."`/extra [#comando] [respuesta]` = el bot enviará una respuesta cuando se escriba el comando previo.\n"
+                    .."_Ejemplo_ : con \"`/extra #hola Buen día!`\", el bot responderá \"Buen día!\" cuando alguien escriba #hola.\n"
+                    .."`/extra list` = muestra los comandos personalizados.\n"
+                    .."`/extra del [#comando]` = elimina el comando escrito.\n",
+             warns = "*Moderadores*: Advertencias\n\n"
+                    .."`/warn [kick/ban]` : cambia la acción si el usuario excede el número máximo de advertencias.\n"
+                    .."`/warn` (por respuesta) : genera una advertencia al usuario.\n"
+                    .."`/warnmax` : cambia el numero máximo de advertencias antes de que el usuario sea baneado o expulsado.\n"
+                    .."`/getwarns` (por respuesta) : muestra cuantas veces ha sido advertido el usuario.\n"
+                    .."`/nowarns` (por respuesta) : limpia las advertencias de un usuario.\n",
+             char = "*Moderadores*: Caracteres especiales\n\n"
+                    .."`/disable rtl` = cualquiera con caracteres RTL en el nombre será expulsado. Además, será aplicado también en los mensajes.\n"
+                    .."`/enable rtl` = cualquiera con caracteres RTL en el nombre o mensajes, ya no será expulsado.\n"
+                    .."`/disable arab` = el bot expulsará a cualquiera que escriba mensajes en árabe.\n"
+                    .."`/enable arab` = el bot ya no expulsará a cualquiera que escriba mensajes en árabe.\n",
+             links = "*Moderadores*: Links\n\n"
+                    .."`/link` : obtiene el link del grupo, si está puesto, obvio.\n"
+                    .."`/setpoll [link de pollbot]` = guarda el link de una encuesta de @pollbot. Una vez configurada, los moderadores podrán recibirla con `/poll`.\n"
+                    .."`/setpoll no` = borra la encuesta configurada previamente.\n"
+                    .."`/poll` = obtiene el link de la encuesta, si está configurada.\n"
+                    .."\n*Nota*: el bot solamente reconocerá links/polls válidos. Si el link no es válido, no arrojará una respuesta.",
+             lang = "*Moderadores*: Lenguajes\n\n"
+                    .."`/lang` = muestra una lista de los lenguajes disponibles.\n"
+                    .."`/lang [es]` = cambia el lenguaje del bot. Disponible por ahora solamente español.\n",
+             settings = "*Moderadores*: Configuraciones de grupos\n\n"
+                    .."`/menu` = maneja los ajustes del grupo con un teclado inline.\n"
+                    .."`/disable [rules|about|modlist|extra]` = hará que el comando seleccionado esté disponible *solamente para moderadores* (el bot no le responderá a usuarios normales).\n"
+                    .."_Ejemplo_ : con \"`/disable extra`\", los comandos extra estarán disponibles *solamente para moderadores*. Puedes terminar también con _rules, about, modlist_.\n"
+                    .."`/enable [rules|about|modlist|extra]` = hará que el comando seleccionado esté disponible *para todos* (no solamente para moderadores).\n"
+                    .."`/enable report` = los usuarios podrán reportar a los moderadores cuando esté activo, usando el comando \"@admin\".\n"
+                    .."`/disable report` = los usuarios no podrán reportar a los moderadores usando @admin (predeterminado).\n"
+                    .."`/report on` (por respuesta) = al usuario que le respondas podrá usar el comando @admin (solamente al usuario respondido)"
+                    .."`/report off` (por respuesta) = al usuario que le respondas ya no podrá usar el comando @admin (solamente al usuario respondido)",
                     },       
-                  all = '*Comandos para todos*:\n'
+            all = '*Comandos para todos*:\n'
                     ..'`/dashboard` : genera toda la información del grupo por privado\n'
                     ..'`/rules` (si están puestas) : muestra las reglas del grupo.\n'
                     ..'`/about` (si está puesta) : muestra la descripción del grupo.\n'
@@ -162,7 +161,7 @@ return {
             promoted = '🆙 *&&&1* ha sido promovido en *&&&2*',
             demoted = 'ℹ️ *&&&1* ha perdido sus privilegios.',
             new_owner = '🆙 *&&&1* es nuevo administrador en *&&&2*.',
-            modlist = '\nℹ️ Lista de mods/admins de &&&1:\n&&&2'
+            modlist = '\n*Moderadores*:\n&&&1'
         },
         report = {
             no_input = 'Enviame tus comentarios a mi [Telegram](http://telegram.me/jarriz)',
@@ -316,7 +315,7 @@ return {
             error = 'Lenguaje *no soportado*. Usa `/lang` para ver la lista de lenguajes',
             success = '*Nuevo lenguaje seleccionado* &&&1'
         },
-		banhammer = {
+	banhammer = {
             kicked_header = '_Lista de usuarios expulsados_:\n\n',
             kicked_empty = 'ℹ️ *La lista de usuario expulsados está limpia*',
             kicked = 'ℹ️ &&&1 *ha sido expulsado. (pero aún podra unirse a éste grupo)*',
@@ -356,13 +355,10 @@ return {
         },
      
         kick_errors = {
-            [101] = 'ℹ️ No soy admin.  No puedo realizar acciones.',
-            [102] = 'ℹ️ No puedo expulsar o banear a un administrador.',
-            [103] = 'ℹ️ No se necesita unban en un grupo normal.',
-            [104] = 'ℹ️ No puedo expulsar o banear a un administrador.', --dos
-            [105] = 'ℹ️ No soy admin. No puedo realizar acciones.',
-            [106] = 'ℹ️ Este usuario, no es miembro de éste grupo.',
-            [107] = 'ℹ️ Error desconocido al expulsar.',
+            [1] = 'ℹ️ No soy admin.  No puedo realizar acciones.',
+            [2] = 'ℹ️ No puedo expulsar o banear a un administrador.',
+            [3] = 'ℹ️ No se necesita unban en un grupo normal.',
+            [4] = 'ℹ️ Este usuario, no es miembro de éste grupo.',
             
         },
         flag = {
