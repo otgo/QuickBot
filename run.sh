@@ -104,7 +104,7 @@ if [ "$1" = "config" ]; then
     echo "}" >> config.lua
     clear
   echo -e '\e[0;32mOK. Configurado!\e[0m'
-  read -n1 -r -p 'A continuacion se abrirÃ¡ el launcher del bot, cualquier falla, configuralo de nuevo.'
+  read -n1 -r -p 'A continuacion se abrirá el launcher del bot, cualquier falla, configuralo de nuevo.'
   sudo ./run.sh
 fi
 
@@ -123,8 +123,8 @@ if [ "$1" = "kp" ]; then
 	 echo "$i..."
   done
 	 echo -e '\e[0;32m###########################################\e[0m'
-	 echo -e '\e[0;32m#             Bot reiniciado              #"\e[0m'
-	 echo -e '\e[0;32m###########################################"\e[0m'
+	 echo -e '\e[0;32m#             Bot reiniciado              #\e[0m'
+	 echo -e '\e[0;32m###########################################\e[0m'
   done
 fi
 
@@ -167,7 +167,7 @@ do
 	echo "$i..."
 done
 	echo -e '\e[0;32m###########################################\e[0m'
-	echo -e '\e[0;32m#             Bot reiniciado              #"\e[0m'
-	echo -e '\e[0;32m###########################################"\e[0m'
+	echo -e '\e[0;32m#             Bot reiniciado              #\e[0m'
+	echo -e '\e[0;32m###########################################\e[0m'
 done
 fi
