@@ -4,15 +4,6 @@ Bot de telegram usando API conexiones.
 
 Más información en la [API de Telegram](https://core.telegram.org/bots/api).
 
-Necesitas asignar tu configuración en config.lua, tanto APIKEY como ID de administrador.
-Canal u otras opciones son opcionales. Cualquier falla o recomendación ingresala al grupo de [soporte](http://telegram.me/equipoQuickSilver).
-
---
-![Alt text](/enviar/imagen/instructions.jpg?raw=true "Instrucciones al editar config.lua")
---
-
-
-
 
 Clonar repositorio:
 
@@ -30,20 +21,33 @@ Instalar QuickBot:
 ./run.sh install
 ```
 
+Al terminar la instalación te pedirá el apikey, tu ID y tu canal, por favor, ingresalos y pulsa enter.
+
+Despúes, el bot ya estará funcionando si lo haz configurado bien, cualquier falla vuelvelo a configurar.
+
+
+**IMPORTANTE**    
+_Al iniciar ./run.sh config o al volver iniciar el instalador, config.lua será eliminado y reemplazado por el de origen, para evitar cualquier error propio, si ya haz personalizado el config.lua renombra o copia tu config.lua_.
+
+
+
 Más funciones del bash:
 
 ```bash
-# Iniciar una sesión normal
+# Volver a iniciar una sesión normal
 ./run.sh
 
 # Arrancar QuickBot en screen, siempre arrancando
-./run.sh screen
+./run.sh kp
 
 # Detener última sesión de QuickBot en screen
 ./run.sh stop
 
 # Borrar logs por consola
 ./run.sh rmlogs
+
+# Configurar y/o crear de nuevo el config.lua
+./run.sh config
 
 ```
 
