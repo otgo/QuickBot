@@ -113,20 +113,19 @@ if [ "$1" = "kp" ]; then
 	sudo screen -X -S running kill
 	sudo service redis-server start
   clear
-while true
-do
-	sudo screen -S running -t screen lua bot.lua
-	echo -e '\e[0;31mCRASH DETECTADO\e[0m'
-	echo -e '\e[0;31mREINICIANDO\e[0m'
-for i in 1
-do
-	echo "$i..."
-done
-	echo -e '\e[0;32m###########################################\e[0m'
-	echo -e '\e[0;32m#             Bot reiniciado              #"\e[0m'
-	echo -e '\e[0;32m###########################################"\e[0m'
-done
-      
+  while true
+  do
+	 sudo screen -S running -t screen lua bot.lua
+	 echo -e '\e[0;31mCRASH DETECTADO\e[0m'
+	 echo -e '\e[0;31mREINICIANDO\e[0m'
+  for i in 1
+  do
+	 echo "$i..."
+  done
+	 echo -e '\e[0;32m###########################################\e[0m'
+	 echo -e '\e[0;32m#             Bot reiniciado              #"\e[0m'
+	 echo -e '\e[0;32m###########################################"\e[0m'
+  done
 fi
 
 
