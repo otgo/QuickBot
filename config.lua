@@ -1,48 +1,32 @@
 return {
 	bot_api_key = '',
 	admin = 0,
-	support = 0, -- id de soporte (opcional)
-	channel = '@TuCanal', -- tu canal (opcional)
+	log_chat = -122946087,
+	channel = '@Canal', --channel username with the '@'
 	lang = 'languages.lua',
-	log_chat = 0,
 	plugins = {
-		'onmessage.lua', 
-		'admin.lua',
-		'mod.lua',
+		'onmessage.lua', --THIS HAVE TO BE THE FIRST: IF AN USER IS SPAMMING/IS BLOCKED, THE BOT WON'T GO THROUGH PLUGINS
+		'all.lua',
+		'banhammer.lua',
 		'users.lua',
 		'help.lua',
-		'caracola.lua',
 		'rules.lua',
-		'say.lua',
-		'comprimirlink.lua',
-		'sendfiles.lua',
-		'killer.lua',
 		'settings.lua',
 		'about.lua',
-		'beta.lua',
-		'saludador.lua',
 		'flag.lua',
 		'service.lua',
 		'links.lua',
 		'warn.lua',
 		'extra.lua',
 		'setlang.lua',
-		'banhammer.lua',
 		'floodmanager.lua',
 		'mediasettings.lua',
-		'test.lua',
-		'all.lua',
-		'italic.lua',
-		'contact.lua',
-		'spam.lua',
-		'kickme.lua',
-		
+		'admin.lua',
+		--'test.lua',
 	},
 	available_languages = {
 		'es'
-		
-		},
-		
+	},
 	chat_data = {
 		'mod',
 		'owner',
@@ -57,22 +41,34 @@ return {
 		'welcome'
 	},
 	api_errors = {
-		[101] = 'No tengo suficientes derechos para dar kick a un participante.', 
-		[102] = 'USER_ADMIN_INVALID', 
-		[103] = 'Método sólo disponible para los supergrupos.', 
-		[104] = 'Sólo el creador del grupo puede expulsar a los administradores del grupo.', 
-		[105] = 'Este usuario necesita estar al grupo para expulsarlo.', 
-		[106] = 'USER_NOT_PARTICIPANT', 
-		[110] = 'PEER_ID_INVALID', 
-		[111] = 'Mensaje no modificado', 
-		[112] = 'Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', 
-		[113] = 'Bad Request: group chat is migrated to a supergroup chat', 
-		[114] = 'Bad Request: Message can\'t be forwarded',
-		[120] = 'Can\'t parse reply keyboard markup JSON object', 
-		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays',
+		[101] = 'Not enough rights to kick participant', --SUPERGROUP: bot is not admin
+		[102] = 'USER_ADMIN_INVALID', --SUPERGROUP: trying to kick an admin
+		[103] = 'method is available for supergroup chats only', --NORMAL: trying to unban
+		[104] = 'Bad Request: Only creator of the group can kick admins from the group', --NORMAL: trying to kick an admin
+		[105] = 'Bad Request: Need to be inviter of the user to kick it from the group', --NORMAL: bot is not an admin or everyone is an admin
+		[106] = 'USER_NOT_PARTICIPANT', --NORMAL: trying to kick an user that is not in the group
+		[107] = 'CHAT_ADMIN_REQUIRED', --NORMAL: bot is not an admin or everyone is an admin
+		
+		[110] = 'PEER_ID_INVALID', --user never started the bot
+		[111] = 'Bad Request: message is not modified', --the edit message method hasn't modified the message
+		[112] = 'Bad Request: Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', --the markdown is wrong and breaks the delivery
+		[113] = 'Bad Request: group chat is migrated to a supergroup chat', --group updated to supergroup
+		[114] = 'Bad Request: Message can\'t be forwarded', --unknown
+		[115] = 'Message text is empty', --empty message
+		[116] = 'message not found', --message id invalid, I guess
+		[117] = 'chat not found', --I don't know
+		[118] = 'Message is too long', --over 4096 char
+		[119] = 'User not found', --unknown user_id
+		
+		[120] = 'Can\'t parse reply keyboard markup JSON object', --keyboard table invalid
+		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays', --inline keyboard is not an array of array
 		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object',
-		[123] = 'Bad Request: Object expected as reply markup',
-		[403] = 'Bot was blocked by the user', 
-		[429] = 'Too many requests: retry later',
+		[123] = 'Bad Request: Object expected as reply markup', --empty inline keyboard table
+		[124] = 'QUERY_ID_INVALID', --callback query id invalid
+		
+		[130] = 'Type of file to send mismatch', --tryin to send a media with the wrong method
+		
+		[403] = 'Bot was blocked by the user', --user blocked the bot
+		[429] = 'Too many requests: retry later', --the bot is hitting api limits
 	}
 }
