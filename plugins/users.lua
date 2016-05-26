@@ -106,7 +106,7 @@ return {
 	action = action,
 	triggers = {
 		'^/(tell)$',
-		'^/(initgroup)$',
+	--	'^/(initgroup)$',
 		'^/(adminlist)$',
 		'^/(status) (@[%w_]+)$',
 	}
