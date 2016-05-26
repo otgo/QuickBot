@@ -1,9 +1,8 @@
 local action = function(msg, blocks)
 user = msg.from.username
 id = msg.from.id
-api.kickChatMember(msg.chat.id, msg.from.id)
-api.unbanChatMember(msg.chat.id, msg.from.id)
-api.sendMessage(msg.chat.id, 'El usuario @' ..user.. ' (' ..id.. ') *ha sido expulsado por hacer spam* (pero aún podrá unirse)', true)
+api.kickUser(msg.chat.id, msg.from.id)
+api.sendMessage(msg.chat.id, 'El usuario @' ..user.. ' (' ..id.. ') *ha sido expulsado por hacer spam* ', true)
 end
 
 return {
