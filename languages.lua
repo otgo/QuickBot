@@ -202,7 +202,8 @@ return {
             added = '*Descripción agregada:*\n"&&&1"',
             no_input_set = 'Escribe algo despúes de "/setabout"',
             clean = 'Descripción limpiada.',
-            new = '*Nueva descripción:*\n"&&&1"'
+            new = '*Nueva descripción:*\n"&&&1"',
+            about_setted = '*Nueva descripción guardada*'
         },
         setrules = {
             no_rules = '¡*No hay reglas*!',
