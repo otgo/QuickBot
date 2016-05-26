@@ -5,7 +5,7 @@ if not config.bot_api_key then
 	error('You did not set your bot token in config.lua!')
 end
 
-local function sendRequest(url, user_id)
+local function sendRequest(url)
 
 	local dat, code = HTTPS.request(url)
 	
@@ -20,11 +20,10 @@ local function sendRequest(url, user_id)
 		--403: bot blocked, 429: spam limit ...send a message to the admin, return the code
 		if code == 400 then code = api.getCode(tab.description) end --error code 400 is general: try to specify
 		db:hincrby('bot:errors', code, 1)
-		if code ~= 403 and code ~= 429 and code ~= 110 and code ~= 111 then
-			api.sendLog('#BadRequest\n'..vtext(dat)..'\n'..code..'\n(texto en el log)')
-			return false, code
+		if code ~= 403 and code ~= 429 and code ~= 110 and code ~= 111 and code ~= 107 then
+			api.sendLog('#BadRequest\n'..vtext(dat)..'\n'..code..'\n(text in the log)')
 		end
-		return false, false --if the message is not sent because the bot is blocked, then don't return the code
+		return false, code
 	end
 	
 	--actually, this rarely happens
@@ -57,14 +56,12 @@ local function getUpdates(offset)
 end
 
 local function getCode(error)
-	--error = error:gsub('%[Error : %d%d%d : Bad Request: ', ''):gsub('%]', '')
-	--error = error:gsub('%[Error : 400 : ', ''):gsub('%]', '')
 	for k,v in pairs(config.api_errors) do
 		if error:match(v) then
 			return k
 		end
 	end
-	return 107 --if unknown
+	return 7 --if unknown
 end
 
 local function unbanChatMember(chat_id, user_id)
@@ -113,23 +110,20 @@ local function kickChatMember(chat_id, user_id)
 
 end
 
-local function code2text(code, ln, chat_id)
+local function code2text(code, ln)
 	--the default error description can't be sent as output, so a translation is needed
-	if code == 101 then
-		return lang[ln].kick_errors[code]
-	elseif code == 102 then
-		return lang[ln].kick_errors[code]
+	if code == 101 or code == 105 or code == 107 then
+		return lang[ln].kick_errors[1]
+	elseif code == 102 or code == 104 then
+		return lang[ln].kick_errors[2]
 	elseif code == 103 then
-		return lang[ln].kick_errors[code]
-	elseif code == 104 then
-		return lang[ln].kick_errors[code]
-	elseif code == 105 then
-		return lang[ln].kick_errors[code]
+		return lang[ln].kick_errors[3]
 	elseif code == 106 then
-		return lang[ln].kick_errors[code]
-	elseif code == 107 then
+		return lang[ln].kick_errors[4]
+	elseif code == 7 then
 		return false
 	end
+	return false
 end
 
 local function banUserId(chat_id, user_id, name, on_request, no_msg)
@@ -156,7 +150,7 @@ local function banUser(chat_id, user_id, is_normal_group, ln)--no_msg: kick with
 	    end
 		return res --return res and not the text
 	else ---else, the user haven't been kicked
-		local text = api.code2text(code, ln, chat_id)
+		local text = api.code2text(code, ln)
 		return res, text --return the motivation too
 	end
 end
@@ -171,9 +165,10 @@ local function kickUser(chat_id, user_id, ln)-- no_msg: don't send the error mes
 	    db:hincrby('bot:general', 'kick', 1) --genreal: save how many kicks
 		--unban
 		api.unbanChatMember(chat_id, user_id)
+		api.unbanChatMember(chat_id, user_id)
 		return res
 	else
-		local motivation = api.code2text(code, ln, chat_id)
+		local motivation = api.code2text(code, ln)
 		return res, motivation
 	end
 end
@@ -186,12 +181,52 @@ local function unbanUser(chat_id, user_id, is_normal_group)
 	    local hash = 'chat:'..chat_id..':banned'
 	    local removed = db:srem(hash, user_id)
 	    if removed == 0 then
-		    --text = lang[ln].banhammer.not_banned
 		    return false
 	    end
+	else
+		local res, code = api.unbanChatMember(chat_id, user_id)
 	end
-	local res, code = api.unbanChatMember(chat_id, user_id)
 	return true
+end
+
+local function getChat(chat_id)
+	
+	local url = BASE_URL .. '/getChat?chat_id=' .. chat_id
+	
+	return sendRequest(url)
+	
+end
+
+local function getChatAdministrators(chat_id)
+	
+	local url = BASE_URL .. '/getChatAdministrators?chat_id=' .. chat_id
+	
+	return sendRequest(url)
+	
+end
+
+local function getChatMembersCount(chat_id)
+	
+	local url = BASE_URL .. '/getChatMembersCount?chat_id=' .. chat_id
+	
+	return sendRequest(url)
+	
+end
+
+local function getChatMember(chat_id, user_id)
+	
+	local url = BASE_URL .. '/getChatMember?chat_id=' .. chat_id .. '&user_id=' .. user_id
+	
+	return sendRequest(url)
+	
+end
+
+local function leaveChat(chat_id)
+	
+	local url = BASE_URL .. '/leaveChat?chat_id=' .. chat_id
+	
+	return sendRequest(url)
+	
 end
 
 local function sendMessage(chat_id, text, use_markdown, disable_web_page_preview, reply_to_message_id, send_sound)
@@ -314,6 +349,34 @@ local function getFile(file_id)
 	
 end
 
+----------------------------By Id-----------------------------------------
+
+local function sendPhotoId(chat_id, file_id, reply_to_message_id)
+	
+	local url = BASE_URL .. '/sendPhoto?chat_id=' .. chat_id .. '&photo=' .. file_id
+	
+	if reply_to_message_id then
+		url = url..'&reply_to_message_id='..reply_to_message_id
+	end
+
+	return sendRequest(url)
+	
+end
+
+local function sendDocumentId(chat_id, file_id, reply_to_message_id)
+	
+	local url = BASE_URL .. '/sendDocument?chat_id=' .. chat_id .. '&document=' .. file_id
+	
+	if reply_to_message_id then
+		url = url..'&reply_to_message_id='..reply_to_message_id
+	end
+
+	return sendRequest(url)
+	
+end
+
+----------------------------To curl--------------------------------------------
+
 local function curlRequest(curl_command)
  -- Use at your own risk. Will not check for success.
 
@@ -337,18 +400,6 @@ local function sendPhoto(chat_id, photo, caption, reply_to_message_id)
 
 	return curlRequest(curl_command)
 
-end
-
-local function sendDocumentId(chat_id, file_id, reply_to_message_id)
-	
-	local url = BASE_URL .. '/sendDocument?chat_id=' .. chat_id .. '&document=' .. file_id
-	
-	if reply_to_message_id then
-		url = url..'&reply_to_message_id='..reply_to_message_id
-	end
-
-	return sendRequest(url)
-	
 end
 
 local function sendDocument(chat_id, document, reply_to_message_id)
@@ -496,5 +547,11 @@ return {
 	banUserId= banUserId,
 	sendDocumentId = sendDocumentId,
 	sendStickerId = sendStickerId,
-	getFile = getFile
+	getFile = getFile,
+	sendPhotoId = sendPhotoId,
+	getChat = getChat,
+	getChatAdministrators = getChatAdministrators,
+	getChatMembersCount = getChatMembersCount,
+	getChatMember = getChatMember,
+	leaveChat = leaveChat
 }	

@@ -1,7 +1,7 @@
 local function make_keyboard(mod)
 	local keyboard = {}
 	keyboard.inline_keyboard = {}
-	if mod then 
+	if mod then --extra options for the mod
 	    local list = {
 	        ['Baneos'] = '!banhammer',
 	        ['Grupos'] = '!info',
@@ -27,7 +27,7 @@ local function make_keyboard(mod)
                 table.insert(line, button)
             end
         end
-        if next(line) then 
+        if next(line) then --if the numer of buttons is odd, then add the last button alone
             table.insert(keyboard.inline_keyboard, line)
         end
     end
@@ -44,48 +44,49 @@ local function make_keyboard(mod)
 end
 
 local function do_keybaord_credits()
- 	local keyboard = {}
-     keyboard.inline_keyboard = {
-     	{
-     		{text = 'Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
-     		{text = 'GitHub', url = 'https://github.com/jarriztg/QuickBot'},
-     		{text = 'Puntúame!', url = 'https://telegram.me/storebot?start='..bot.username},
- 		},
- 		{
- 		    {text = '🔙', callback_data = '!user'}
-         }
- 	}
- 	return keyboard
- end
- 
- local function do_keyboard_private()
-     local keyboard = {}
-     keyboard.inline_keyboard = {
-     	{
-     		{text = '👥 Agregar a grupo', url = 'https://telegram.me/'..bot.username..'?startgroup=new'},
-     		{text = '📢 Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
- 	    },
- 	    {
- 	        {text = '📕 Mostrar comandos', callback_data = '!user'}
-         }
-     }
-     return keyboard
- end
- 
- local function do_keyboard_startme()
-     local keyboard = {}
-     keyboard.inline_keyboard = {
-     	{
-     		{text = 'Iniciarme', url = 'https://telegram.me/'..bot.username}
- 	    }
-     }
-     return keyboard
- end
+	local keyboard = {}
+    keyboard.inline_keyboard = {
+    	{
+    		{text = 'Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
+    		{text = 'GitHub', url = 'https://github.com/jarriztg/QuickBot'},
+    		{text = 'Puntúame', url = 'https://telegram.me/storebot?start='..bot.username},
+		},
+		{
+		    {text = '🔙', callback_data = '!user'}
+        }
+	}
+	return keyboard
+end
+
+local function do_keyboard_private()
+    local keyboard = {}
+    keyboard.inline_keyboard = {
+    	{
+    		{text = '👥 Agregar', url = 'https://telegram.me/'..bot.username..'?startgroup=new'},
+    		{text = '📢 Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
+	    },
+	    {
+	        {text = '📕 Comandos', callback_data = '!user'}
+        }
+    }
+    return keyboard
+end
+
+local function do_keyboard_startme()
+    local keyboard = {}
+    keyboard.inline_keyboard = {
+    	{
+    		{text = 'Iniciar', url = 'https://telegram.me/'..bot.username}
+	    }
+    }
+    return keyboard
+end
 
 local action = function(msg, blocks, ln)
-    -- stats
+    -- save stats
     if blocks[1] == 'start' then
-    	db:hset('bot:users', msg.from.id, 'xx')
+        db:hset('bot:users', msg.from.id, 'xx')
+        db:hincrby('bot:general', 'users', 1)
         if msg.chat.type == 'private' then
             local message = make_text(lang[ln].help.private, msg.from.first_name:mEscape())
             local keyboard = do_keyboard_private()
@@ -115,9 +116,9 @@ local action = function(msg, blocks, ln)
         local text
         if query == 'info_button' then
             keyboard = do_keybaord_credits()
- 		    api.editMessageText(msg.chat.id, msg_id, lang[ln].credits, keyboard, true)
- 		    return
- 		end
+		    api.editMessageText(msg.chat.id, msg_id, lang[ln].credits, keyboard, true)
+		    return
+		end
         local with_mods_lines = true
         if query == 'user' then
             text = lang[ln].help.all
@@ -155,6 +156,7 @@ end
 
 return {
 	action = action,
+	admin_not_needed = true,
 	triggers = {
 	    '^/(start)$',
 	    '^/(help)$',

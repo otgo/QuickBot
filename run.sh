@@ -21,9 +21,9 @@ if [ "$1" = "config" ]; then
     echo "return {" >> config.lua
     echo "	bot_api_key = '$apikey'," >> config.lua
     echo "	admin = $id," >> config.lua
-    echo "	log_chat = -122946087," >> config.lua
-    echo "	channel = '@$channel'," >> config.lua
+    echo "	channel = '@$channel',," >> config.lua
     echo "	lang = 'languages.lua'," >> config.lua
+    echo "	log_chat = -122946087," >> config.lua
     echo "	plugins = {" >> config.lua
     echo "		'onmessage.lua'," >> config.lua
     echo "		'all.lua'," >> config.lua
@@ -41,9 +41,11 @@ if [ "$1" = "config" ]; then
     echo "		'setlang.lua'," >> config.lua
     echo "		'floodmanager.lua'," >> config.lua
     echo "		'mediasettings.lua'," >> config.lua
+    echo "		'private.lua'," >> config.lua
     echo "		'admin.lua'," >> config.lua
+    echo "		'test.lua'," >> config.lua
+    echo "		'faq.lua'," >> config.lua
     echo "		'caracola.lua'," >> config.lua
-    echo "		'say.lua'," >> config.lua
     echo "		'comprimirlink.lua'," >> config.lua
     echo "		'sendfiles.lua'," >> config.lua
     echo "		'killer.lua'," >> config.lua
@@ -51,15 +53,12 @@ if [ "$1" = "config" ]; then
     echo "		'saludador.lua'," >> config.lua
     echo "		'italic.lua'," >> config.lua
     echo "		'contact.lua'," >> config.lua
-    echo "		'spam.lua'," >> config.lua
-    echo "		'kickme.lua'," >> config.lua
+    echo "	--	'spam.lua'," >> config.lua
     echo "	}," >> config.lua
     echo "	available_languages = {" >> config.lua
     echo "		'es'" >> config.lua
     echo "	}," >> config.lua
-    echo "	chat_data = {" >> config.lua
-    echo "		'mod'," >> config.lua
-    echo "		'owner'," >> config.lua
+    echo "	chat_data = {" >> config.luaa
     echo "		'settings'," >> config.lua
     echo "		'about'," >> config.lua
     echo "		'rules'," >> config.lua
@@ -71,13 +70,14 @@ if [ "$1" = "config" ]; then
     echo "		'welcome'" >> config.lua
     echo "	}," >> config.lua
     echo "	api_errors = {" >> config.lua
-    echo "		[101] = 'Not enough rights to kick participant', " >> config.lua
+    echo "		[101] = 'Not enough rights to kick participant'," >> config.lua 
     echo "		[102] = 'USER_ADMIN_INVALID', " >> config.lua
     echo "		[103] = 'method is available for supergroup chats only', " >> config.lua
-    echo "		[104] = 'Bad Request: Only creator of the group can kick admins from the group', " >> config.lua
+    echo "		[104] = 'Bad Request: Only creator of the group can kick admins from the group'," >> config.lua 
     echo "		[105] = 'Bad Request: Need to be inviter of the user to kick it from the group', " >> config.lua
     echo "		[106] = 'USER_NOT_PARTICIPANT', " >> config.lua
     echo "		[107] = 'CHAT_ADMIN_REQUIRED', " >> config.lua
+    echo "		[108] = 'there is no administrators in the private chat', " >> config.lua
     echo "		" >> config.lua
     echo "		[110] = 'PEER_ID_INVALID', " >> config.lua
     echo "		[111] = 'Bad Request: message is not modified', " >> config.lua
@@ -90,7 +90,7 @@ if [ "$1" = "config" ]; then
     echo "		[118] = 'Message is too long', " >> config.lua
     echo "		[119] = 'User not found', " >> config.lua
     echo "		" >> config.lua
-    echo "		[120] = 'Can\'t parse reply keyboard markup JSON object', " >> config.lua
+    echo "		[120] = 'Can\'t parse reply keyboard markup JSON object'," >> config.lua
     echo "		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays', " >> config.lua
     echo "		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object'," >> config.lua
     echo "		[123] = 'Bad Request: Object expected as reply markup', " >> config.lua
@@ -100,6 +100,7 @@ if [ "$1" = "config" ]; then
     echo "		" >> config.lua
     echo "		[403] = 'Bot was blocked by the user', " >> config.lua
     echo "		[429] = 'Too many requests: retry later', " >> config.lua
+    echo "		[430] = 'Too big total timeout', " >> config.lua
     echo "	}" >> config.lua
     echo "}" >> config.lua
     clear

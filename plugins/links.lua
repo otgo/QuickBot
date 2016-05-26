@@ -1,28 +1,25 @@
 local action = function(msg, blocks, ln)
 	
-	--return nil if wrote in private
     if msg.chat.type == 'private' then
-        local out = make_text(lang[ln].pv)
-        api.sendMessage(msg.from.id, out)
-    	return nil
+    	return
     end
+	
+	if not is_mod(msg) then
+		return
+	end
 	
 	--initialize the hash
 	local hash = 'chat:'..msg.chat.id..'links'
 	local text
 	
 	if blocks[1] == 'link' then
-		--ignore if not mod
-		if not is_mod(msg) then
-			return
-		end
 		
 		local key = 'link'
 		local link = db:hget(hash, key)
 		
 		--check if link is nil or nul
 		if link == 'no' or link == nil then
-			text = make_text(lang[ln].links.no_link)
+			text = lang[ln].links.no_link
 		else
 			local title = msg.chat.title:mEscape_hard()
 			text = make_text(lang[ln].links.link, title, link)
@@ -32,25 +29,29 @@ local action = function(msg, blocks, ln)
 	end
 	
 	if blocks[1] == 'setlink' then
-		--ignore if not owner
-		if not is_owner(msg) then
-			return
+		
+		local link
+		if msg.chat.username then
+			link = 'https://telegram.me/'..msg.chat.username
+		else
+			if not blocks[2] then
+				api.sendReply(msg, lang[ln].links.link_no_input, true)
+				return
+			end
+			--warn if the link has not the right lenght
+			if string.len(blocks[2]) ~= 22 and blocks[2] ~= 'no' then
+				api.sendReply(msg, lang[ln].links.link_invalid, true)
+				return
+			end
+			link = 'https://telegram.me/joinchat/'..blocks[2]
 		end
 		
-		--warn if the link has not the right lenght
-		if string.len(blocks[2]) ~= 22 and blocks[2] ~= 'no' then
-			local out = make_text(lang[ln].links.link_invalid)
-			api.sendReply(msg, out, true)
-			return
-		end
-		
-		local link = 'https://telegram.me/joinchat/'..blocks[2]
 		local key = 'link'
 		
 		--set to nul the link, or update/set it
 		if blocks[2] == 'no' then
 			db:hset(hash, key, 'no')
-			text = make_text(lang[ln].links.link_unsetted)
+			text = lang[ln].links.link_unsetted
 		else
 			local succ = db:hset(hash, key, link)
 			local title = msg.chat.title:mEscape_hard()
@@ -65,24 +66,13 @@ local action = function(msg, blocks, ln)
 	end
 	
 	if blocks[1] == 'setpoll' then
-		--ignore if not owner
-		if not is_mod(msg) then
-			return
-		end
-		
-		--warn if the link has not the right lenght
-		if blocks[2] ~= 'no' and string.len(blocks[3]) ~= 44 then
-			local out = make_text(lang[ln].links.link_invalid)
-			api.sendReply(msg, out, true)
-			return
-		end
 		
 		local key = 'poll'
 		
 		--set to nul the poll, or update/set it
 		if blocks[2] == 'no' then
 			db:hset(hash, key, 'no')
-			text = make_text(lang[ln].links.poll_unsetted)
+			text = lang[ln].links.poll_unsetted
 		else
 			local link = 'telegram.me/PollBot?start='..blocks[3]
 			local succ = db:hset(hash, key, link)
@@ -101,10 +91,6 @@ local action = function(msg, blocks, ln)
 	end
 
 	if blocks[1] == 'poll' then
-		--ignore if not mod
-		if not is_mod(msg) then
-			return
-		end
 		
 		local key = 'poll'
 		local link = db:hget(hash, key)
@@ -125,10 +111,12 @@ return {
 	action = action,
 	triggers = {
 		'^/(link)$',
+		'^/(setlink)$',
 		'^/(setlink) https://telegram%.me/joinchat/(.*)',
 		'^/(setlink) (no)',
 		'^/(poll)$',
 		'^/(setpoll) (.*) http://telegram%.me/PollBot%?start=(.*)',
+		'^/(setpoll) (.*) telegram%.me/PollBot%?start=(.*)',
 		'^/(setpoll) (no)$'
 	}
 }

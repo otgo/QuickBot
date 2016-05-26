@@ -1,16 +1,10 @@
 local action = function(msg, blocks, ln)
     
-    if msg.chat.type == 'private' then--return nil if it's a private chat
-		api.sendMessage(msg.from.id, make_text(lang[ln].pv))
-    	return nil
-    end
+    if msg.chat.type == 'private' then return end
+    
+    if not is_mod(msg) then return end
     
     if blocks[1] == 'warn' then
-        
-        --return nil if not mod
-        if not is_mod(msg) then
-            return nil 
-        end
         
         --action do do when max number of warns change:
 		if blocks[2] then
@@ -23,18 +17,18 @@ local action = function(msg, blocks, ln)
 		--warning to reply to a message
         if not msg.reply then
             api.sendReply(msg, make_text(lang[ln].warn.warn_reply))
-		    return nil
+		    return
 	    end
 		
 	    --return nil if a mod is warned
 	    if is_mod(msg.reply) then
 			api.sendReply(msg, make_text(lang[ln].warn.mod))
-	        return nil
+	        return
 	    end
 				
 	    --return nil if an user flag the bot
 	    if msg.reply.from.id == bot.id then
-	        return nil
+	        return
 	    end
 	    
 	    --check if there is an username of flagged user
@@ -42,7 +36,6 @@ local action = function(msg, blocks, ln)
         if msg.reply.from.username then
             name = '@'..msg.reply.from.username
         end
-	    name = name:gsub('_', ''):gsub('*', '')
 		
 		local hash = 'chat:'..msg.chat.id..':warns'
 		local hash_set = 'chat:'..msg.chat.id..':max'
@@ -51,33 +44,37 @@ local action = function(msg, blocks, ln)
 		local text, res, motivation
 		
 		if tonumber(num) >= tonumber(nmax) then
-			text = make_text(lang[ln].warn.warned_max_ban, name:mEscape())
 			local type = db:get('chat:'..msg.chat.id..':warntype')
-			name = name..' (->'..num..'/'..nmax..')'
+			--try to kick/ban
 			if type == 'ban' then
+				text = make_text(lang[ln].warn.warned_max_ban, name:mEscape())..' (->'..num..'/'..nmax..')'
 				res, motivation = api.banUser(msg.chat.id, msg.reply.from.id, is_normal_group, ln)
-				if not res then text = motivation end
+				if res then
+					cross.addBanList(msg.chat.id, msg.reply.from.id, name, lang[ln].warn.ban_motivation)
+				end
 	    	else
-	    		text = make_text(lang[ln].warn.warned_max_kick, name:mEscape())
+				text = make_text(lang[ln].warn.warned_max_kick, name:mEscape())..' (->'..num..'/'..nmax..')'
 	    		local is_normal_group = false
 	    		if msg.chat.type == 'group' then is_normal_group = true end
 		    	res, motivation = api.kickUser(msg.chat.id, msg.reply.from.id, ln)
-		    	if not res then text = motivation end
 		    end
-		    return --avoid to send another reply 6 lines below
+		    --if kick/ban fails, send the motivation
+		    if not res then
+		    	if not motivation then
+		    		motivation = lang[ln].banhammer.general_motivation
+		    	end
+		    	text = motivation
+		    end
 		else
 			local diff = tonumber(nmax)-tonumber(num)
-			text = make_text(lang[ln].warn.warned, name, num, nmax, diff)
+			text = make_text(lang[ln].warn.warned, name:mEscape(), num, nmax, diff)
 		end
         
         mystat('/warn') --save stats
         api.sendReply(msg, text, true)
     end
     
-    if blocks[1] == 'warnmax' then--return nil if the user is not a moderator
-        if not is_mod(msg) then
-            return nil
-        end
+    if blocks[1] == 'warnmax' then
         
 	    local hash = 'chat:'..msg.chat.id..':max'
 		local old = (db:get(hash)) or 5
@@ -89,15 +86,10 @@ local action = function(msg, blocks, ln)
     
     if blocks[1] == 'getwarns' then
         
-        --return nil if the user is not a moderator
-        if not is_mod(msg) then
-            return nil
-        end
-        
         --warning to reply to a message
         if not msg.reply_to_message then
             api.sendReply(msg, make_text(lang[ln].warn.getwarns_reply))
-		    return nil
+		    return
 	    end
 	    
 		--return nil if an user flag a mod
@@ -140,26 +132,22 @@ local action = function(msg, blocks, ln)
     end
     
     if blocks[1] == 'nowarns' then
-        --return nil if the user is not a moderator
-        if not is_mod(msg) then
-            return nil
-        end
         
         --warning to reply to a message
         if not msg.reply then
             api.sendReply(msg, make_text(lang[ln].warn.nowarn_reply))
-		    return nil
+		    return
 	    end
 	    
 		--return nil if an user flag a mod
 	    if is_mod(msg.reply) then
 			api.sendReply(msg, make_text(lang[ln].warn.mod))
-	        return nil
+	        return
 	    end
 		
 	    --return nil if an user flag the bot
 	    if msg.reply.from.id == bot.id then
-	        return nil
+	        return
 	    end
 		
 		local hash = 'chat:'..msg.chat.id..':warns'
@@ -175,10 +163,10 @@ end
 return {
 	action = action,
 	triggers = {
-		'^/(warn)$',
 		'^/(warn) (kick)$',
 		'^/(warn) (ban)$',
 		'^/(warnmax) (%d%d?)$',
+		'^/(warn)',
 		'^/(getwarns)$',
 		'^/(nowarns)$',
 	}

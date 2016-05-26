@@ -32,7 +32,7 @@ function string:mEscape_hard() -- Remove the markdown.
 	return self
 end
 
-function is_admin(msg)
+function is_bot_owner(msg)
 	local id
 	if msg.adder and msg.adder.id then
 		id = msg.adder.id
@@ -45,7 +45,7 @@ function is_admin(msg)
 	return false
 end
 
-function is_owner(msg)
+--[[function is_owner(msg)
 	local var = false
 	
 	local hash = 'chat:'..msg.chat.id..':owner'
@@ -79,9 +79,65 @@ function is_owner2(chat_id, user_id)
 	end
 	
 	return var
+end]]
+
+function is_bot_admin(chat_id)
+	local status = api.getChatMember(chat_id, bot.id).result.status
+	if not(status == 'administrator') then
+		return false
+	else
+		return true
+	end
 end
 
 function is_mod(msg)
+	local res = api.getChatMember(msg.chat.id, msg.from.id)
+	if not res then
+		return false, false
+	end
+	local status = res.result.status
+	if status == 'creator' or status == 'administrator' then
+		return true, true
+	else
+		return false, true
+	end
+end
+
+function is_mod2(chat_id, user_id)
+	local res = api.getChatMember(chat_id, user_id)
+	if not res then
+		return false, false
+	end
+	local status = res.result.status
+	if status == 'creator' or status == 'administrator' then
+		return true, true
+	else
+		return false, true
+	end
+end
+
+function is_owner(msg)
+	local status = api.getChatMember(msg.chat.id, msg.from.id).result.status
+	if status == 'creator' then
+		return true
+	else
+		return false
+	end
+end
+
+function is_owner2(chat_id, user_id)
+	if msg.from.id == config.admin then
+		return true
+	end
+	local status = api.getChatMember(chat_id, user_id).result.status
+	if status == 'creator' then
+		return true
+	else
+		return false
+	end
+end
+
+--[[function is_mod(msg)
 	local var = false
 	
 	local hash = 'chat:'..msg.chat.id..':mod'
@@ -121,6 +177,11 @@ function is_mod2(chat_id, user_id)
 	--no need to check if is owner: the owner id is already saved in the modlist
 	
 	return var
+end]]
+
+function set_owner(chat_id, user_id, nick)
+	db:hset('chat:'..chat_id..':mod', user_id, nick) --mod
+	db:hset('chat:'..chat_id..':owner', user_id, nick) --owner
 end
 
 function is_blocked(id)
@@ -184,21 +245,6 @@ function save_data(filename, data) -- Saves a table to a JSON file.
 
 end
 
-function clean_owner_modlist(chat)
-	--clear the owner
-	local hash = 'chat:'..chat..':owner'
-	local owner_list = db:hkeys(hash) --get the current owner id
-	local owner = owner_list[1]
-	db:hdel(hash, owner)
-	
-	--clean the modlist
-	hash = 'chat:'..chat..':mod'
-	local mod_list = db:hkeys(hash) --get mods id
-	for i=1, #mod_list do
-		db:hdel(hash, mod_list[i])
-	end
-end
-
 function vardump(value)
   print(serpent.block(value, {comment=false}))
 end
@@ -207,52 +253,17 @@ function vtext(value)
   return serpent.block(value, {comment=false})
 end
 
-function breaks_markdown(text)
-	local i = 0
-	for word in string.gmatch(text, '%*') do
-		i = i+1	
-	end
-	local rest = i%2
-	if rest == 1 then
-		print('Wrong markdown *', i)
-		return true
-	end
-	
-	i = 0
-	for word in string.gmatch(text, '_') do
-		i = i+1	
-	end
-	local rest = i%2
-	if rest == 1 then
-		print('Wrong markdown _', i)
-		return true
-	end
-	
-	i = 0
-	for word in string.gmatch(text, '`') do
-		i = i+1	
-	end
-	local rest = i%2
-	if rest == 1 then
-		print('Wrong markdown `', i)
-		return true
-	end
-	
-	return false
-end
-
 local function per_away(text)
 	local text = tostring(text):gsub('%%', '£&£')
 	return text
 end
 
-function make_text(text, par1, par2, par3, par4, par5, par6)
+function make_text(text, par1, par2, par3, par4, par5)
 	if par1 then text = text:gsub('&&&1', per_away(par1)) end
 	if par2 then text = text:gsub('&&&2', per_away(par2)) end
 	if par3 then text = text:gsub('&&&3', per_away(par3)) end
 	if par4 then text = text:gsub('&&&4', per_away(par4)) end
 	if par5 then text = text:gsub('&&&5', per_away(par5)) end
-	if par6 then text = text:gsub('&&&6', per_away(par6)) end
 	text = text:gsub('£&£', '%%')
 	return text
 end
@@ -315,18 +326,10 @@ function save_log(action, arg1, arg2, arg3, arg4)
 			create_folder('logs')
 			write_file(path, text, "a")
 		end
-	elseif action == 'added' then
-		local text = 'BOT ADDED ['..os.date('%A, %d %B %Y at %X')..'] to ['..arg1..'] ['..arg2..'] by ['..arg3..'] ['..arg4..']\n'
-    	local path = "./logs/additions.txt"
-    	local res = write_file(path, text, "a")
-    	if not res then
-			create_folder('logs')
-			write_file(path, text, "a")
-		end
     end
 end
 
-function clone_table(t) --doing "shit = table" in lua is create a pointer
+function clone_table(t) --doing "table1 = table2" in lua = create a pointer to table2
   local new_t = {}
   local i, v = next(t, nil)
   while i do
@@ -395,30 +398,6 @@ function get_media_type(msg)
 	return false
 end
 
-function res_type(string)
-	if string:match('(%d+)') then
-		return 1
-	elseif string:match('(@[%w_]+)') then
-		return 2
-	elseif string:match('') or not string then
-		return 3
-	else
-		return 0
-	end
-end
-
-function res_type_id(msg, string)
-	if string:match('(%d+)') then
-		return string
-	elseif string:match('(@[%w_]+)') then
-		return res_user(string)
-	elseif string:match('') or not string then
-		return msg.reply.from.id
-	else
-		return false
-	end
-end
-
 function group_table(chat_id)
 	local group = {
 		id = chat_id
@@ -431,7 +410,8 @@ function group_table(chat_id)
 			settings = 'chat:'..chat_id..':settings',
 			mediasettings = 'chat:'..chat_id..':media',
 			flood = 'chat:'..chat_id..':flood',
-			extra = 'chat:'..chat_id..':extra'
+			extra = 'chat:'..chat_id..':extra',
+			welcome = 'chat:'..chat_id..':welcome'
 		},
 		get = {
 			about = 'chat:'..chat_id..':about',
@@ -490,7 +470,6 @@ function migrate_chat_info(old, new, on_request)
 		print('A group id is missing')
 		return false
 	end
-	local mods = db:hgetall('chat:'..old..':mod')
 	local owner_id = db:hkeys('chat:'..old..':owner')
 	local owner_name = db:hvals('chat:'..old..':owner')
 	local settings = db:hgetall('chat:'..old..':settings')
@@ -501,17 +480,6 @@ function migrate_chat_info(old, new, on_request)
 	local extra = db:hgetall('chat:'..old..':extra')
 	local admblock = db:smembers('chat:'..old..':reportblocked')
 	local logtxt = 'FROM ['..old..'] TO ['..new..']\n'
-	
-	--migrate mods
-	logtxt = logtxt..'Migrating moderators (#'..#mods..')...\n'
-	logtxt = logtxt..migrate_table(mods, 'chat:'..new..':mod')
-	
-	--migrate owner
-	logtxt = logtxt..'Migrating owner...'
-	if next(owner_id) and next(owner_name) then
-		local res = db:hset('chat:'..new..':owner', owner_id[1], owner_name[1])
-		logtxt = logtxt..give_result(res)..'\n'
-	else logtxt = logtxt..' empty\n' end
 	
 	--migrate about
 	logtxt = logtxt..'Migrating about...'
@@ -562,7 +530,7 @@ function migrate_chat_info(old, new, on_request)
 	file:write(logtxt)
     file:close()
 	if on_request then
-		api.sendDocument(old, log_path)
+		api.sendDocument(config.admin, log_path)
 	end
 end
 
@@ -586,7 +554,7 @@ function to_supergroup(msg)
 	local old = msg.chat.id
 	local new = msg.migrate_to_chat_id
 	migrate_chat_info(old, new, false)
-	--migrate_ban_list(old, new)
+	migrate_ban_list(old, new)
 	api.sendMessage(new, '(_service notification: migration of the group executed_)', true)
 end
 
@@ -730,19 +698,36 @@ local function getRules(chat_id, ln)
     end
 end
 
-local function getModlist(chat_id)
-	local hash = 'chat:'..chat_id..':mod'
-	local mlist = db:hvals(hash) --the array can't be empty: there is always the owner in
-    local message = ''
-    --build the list
-    for i=1, #mlist do
-        message = message..i..' - '..mlist[i]..'\n'
-    end
-    if message == '' then
-    	return '()'
-    else
-    	return message
-    end
+local function getModlist(chat_id, no_usernames)
+	local list, code = api.getChatAdministrators(chat_id)
+	if not list then
+		if code == 107 then
+			return false, code
+		else
+			return false, false
+		end
+	end
+	local creator
+	local adminlist = ''
+	local i = 1
+	for i,admin in pairs(list.result) do
+		local name
+		if admin.status == 'administrator' then
+			name = admin.user.first_name
+			if not no_usernames then
+				if admin.user.username then name = name..' (@'..admin.user.username..')' end
+			end
+			adminlist = adminlist..'*'..i..'* - '..name:mEscape()..'\n'
+		elseif admin.status == 'creator' then
+			creator = admin.user.first_name
+			if not no_usernames then
+				if admin.user.username then creator = creator..' (@'..admin.user.username..')' end
+			end
+			creator = creator:mEscape()
+		end
+	end
+	if adminlist == '' then adminlist = '-' end
+	return creator, adminlist
 end
 
 local function getExtraList(chat_id, ln)
@@ -763,11 +748,14 @@ local function getSettings(chat_id, ln)
 	--get settings from redis
     local hash = 'chat:'..chat_id..':settings'
     local settings_key = db:hkeys(hash)
+    if not next(settings_key) then
+    	return lang[ln].settings.broken_group, false
+    end
     local settings_val = db:hvals(hash)
     local key
     local val
         
-    message = make_text(lang[ln].bonus.settings_header, ln)
+    local message = make_text(lang[ln].bonus.settings_header, ln)
         
     --build the message
     for i=1, #settings_key do
@@ -910,7 +898,241 @@ local function changeMediaStatus(chat_id, media, new_status, ln)
 	end
 end
 
-return {
+local function sendStartMe(msg, ln)
+    local keyboard = {}
+    keyboard.inline_keyboard = {
+    	{
+    		{text = 'Start me', url = 'https://telegram.me/'..bot.username}
+	    }
+    }
+	api.sendKeyboard(msg.chat.id, lang[ln].help.group_not_success, keyboard, true)
+end
+
+local function initGroup(chat_id)
+	
+	--default settings
+	hash = 'chat:'..chat_id..':settings'
+	--disabled for users:yes / disabled for users:no
+	db:hset(hash, 'Rules', 'no')
+	db:hset(hash, 'About', 'no')
+	db:hset(hash, 'Modlist', 'no')
+	db:hset(hash, 'Report', 'yes')
+	db:hset(hash, 'Welcome', 'no')
+	db:hset(hash, 'Extra', 'no')
+	db:hset(hash, 'Rtl', 'no')
+	db:hset(hash, 'Arab', 'no')
+	db:hset(hash, 'Flood', 'no')
+	
+	--flood
+	hash = 'chat:'..chat_id..':flood'
+	db:hset(hash, 'MaxFlood', 5)
+	db:hset(hash, 'ActionFlood', 'kick')
+	
+	--warn
+	db:set('chat:'..chat_id..':max', 5)
+	db:set('chat:'..chat_id..':warntype', 'ban')
+	
+	--set media values
+	local list = {'image', 'audio', 'video', 'sticker', 'gif', 'voice', 'contact', 'file'}
+	hash = 'chat:'..chat_id..':media'
+	for i=1,#list do
+		db:hset(hash, list[i], 'allowed')
+	end
+	
+	--set the default welcome type
+	hash = 'chat:'..chat_id..':welcome'
+	db:hset(hash, 'type', 'composed')
+	db:hset(hash, 'content', 'no')
+	
+	--save group id
+	db:sadd('bot:groupsid', chat_id)
+	
+	--save stats
+	hash = 'bot:general'
+    local num = db:hincrby(hash, 'groups', 1)
+    print('Stats saved', 'Groups: '..num)
+end
+
+local function addBanList(chat_id, user_id, nick, why)
+    local hash = 'chat:'..chat_id..':bannedlist'
+    local res, is_id_added = rdb.set(hash, user_id, 'nick', nick)
+    if why and not(why == '') then
+        rdb.set(hash, user_id, 'why', why)
+    end
+    return is_id_added
+end
+
+local function remBanList(chat_id, user_id)
+	if not chat_id or not user_id then return false end
+    local hash = 'chat:'..chat_id..':bannedlist'
+    local res, des = rdb.rem(hash, user_id)
+    return res
+end
+
+local function getUserStatus(chat_id, user_id)
+	local res = api.getChatMember(chat_id, user_id)
+	if res then
+		return res.result.status
+	else
+		return false
+	end
+end
+
+-----------------------redis shorcuts---------------------------------------
+
+--[[
+
+------------|---------------------------|
+IDS SET     | SUB-HASH WITH SUB-KEY/VAL |
+------------|---------------------------|
+hash        | hash:id[n]                |
+------------|---------------------------|
+------------|---------------------------|
+            |             |
+id[1] ----->| key1 = val1 |
+            | key2 = val2 |
+            | key3 = val3 |
+            | key4 = val4 |
+------------|-------------|
+id[2] ----->| key1 = val1 |
+            | key2 = val2 |
+            | key3 = val3 |
+            | key4 = val4 |
+            | key5 = val5 |
+------------|-------------|
+
+extSet(hash, id, key, val)
+extGet(hash{, id{, key}})
+extSetTable(hash, table)
+extRem(hash{, id{, key}})
+]]
+
+local function extSet(hash, id, key, val)
+    
+    --returns false if an argument is missing
+    --else, returns true, true if the id has been added to the ids set or false if it hasn't, 0 the sub-key/val has been setted or 1 if only updated, 
+    
+    if not val then
+        return false, 'Missing field(s)'
+    else
+        local res_sadd = db:sadd(hash, id)
+		if res_sadd > 0 then res_sadd = false else res_sadd = true end
+        local res_hset = db:hset(hash..':'..id, key, val)
+        if res_hset then --or res_set == 1
+            return true, res_sadd, 1
+        else
+            return true, res_sadd, 0
+        end
+    end
+end
+
+local function extGet(hash, id, key)
+    
+    --returns false when the hash/id is not found or when the sub-hash/the ids set is empty, plus the descritption
+    --returns nil when the key passed does not exists
+    --else, returns the table/value
+    
+    local res = {}
+    local hash_exists = db:exists(hash)
+    if not hash_exists then
+        return false, 'hash does not exists'
+    else
+        if key then
+            return db:hegt(hahs..':'..id, key)
+        else
+            if id then
+                local hgetall_res = db:hgetall(hash..':'..id)
+                if not next(hgetall_res) then
+                    return false, 'empty sub-hash'
+                else
+                    return hgetall_res
+                end
+            else
+                local ids = db:smembers(hash)
+                if not next(ids) then
+                    return false, 'empty ids set'
+                else
+                    for i=1,#ids do
+                        local hgetall_res = db:hgetall(hash..':'..ids[i])
+                        if next(hgetall_res) then
+                            res[ids[i]] = hgetall_res
+                        end
+                    end
+                    return res
+                end
+            end
+        end
+    end
+end
+
+local function extSetTable(hash, table)
+    
+    --returns false if "table" argument is not a table, and the descriprion of the error
+    --else, returns true, the number of ids setted in the ids set, and the number of key/vals setted
+    
+    if not(type(table) == 'table') then
+        return false, 'the second argument is not a table'
+    else
+        local reset_res = rdb.rem(hash)
+        local id_setted = 0
+        local kv_setted = 0
+        for id,sub_table in pairs(table) do
+            id_setted = id_setted + 1
+            db:sadd(hash, id)
+            for key,val in pairs(sub_table) do
+                db:hset(hash..':'..id, key, val)
+                kv_setted = kv_setted + 1
+            end
+        end
+        return true, id_setted, kv_setted
+    end
+end
+
+local function extRem(hash, id, key)
+    
+    --if the hash/id/key is not found, returns false and a description of the error
+    --if the key/id/hash has been successfully removed, returns true with the number of sub-keys removed
+    
+    local hash_exists = db:exists(hash)
+    if not hash_exists then
+        return false, 'hash does not exists'
+    else
+        local ids = db:smembers(hash)
+        if next(ids) then --if the set is not empty
+            if not id then --if id and key are not provided, delete the whole hash
+                local subhash_removed = 0
+                for i,id in pairs(ids) do --delete each sub-hash, before delete the ids set
+                    db:del(hash..':'..id) --remove directly the entire sub-hash
+                    subhash_removed = subhash_removed + 1
+                end
+                db:del(hash) --remove the set of ids
+                return true, subhash_removed
+            else --else, if id is provided then
+                local id_exists = db:sismember(hash, id)
+                if not id_exists then
+                    return false, 'id does not exists'
+                else
+                    if key then --if the key is provided, then delete only the key
+                        local res_key = db:hdel(hash..':'..id, key)
+                        if res_key == 0 then --if the key does not exists then
+                            return false, 'key does not exists'
+                        else
+                            return true
+                        end
+                    else --if the key is not provided, then delete only id provided from the ids set, and the associated sub-hash
+                        db:del(hash..':'..id) --delete the whole sub-hash
+                        db:srem(hash, id) --remove the id from the set of ids
+                        return true, 1
+                    end
+                end
+            end
+        else
+            return false, 'id set is empty'
+        end
+    end
+end
+
+local cross = {
 	getAbout = getAbout,
 	getRules = getRules,
 	getModlist = getModlist,
@@ -920,5 +1142,19 @@ return {
 	disableSetting = disableSetting,
 	changeSettingStatus = changeSettingStatus,
 	changeFloodSettings = changeFloodSettings,
-	changeMediaStatus = changeMediaStatus
+	changeMediaStatus = changeMediaStatus,
+	sendStartMe = sendStartMe,
+	initGroup = initGroup,
+	addBanList= addBanList,
+	remBanList = remBanList,
+	getUserStatus = getUserStatus
 }
+
+local rdb = {
+	set = extSet,
+	get = extGet,
+	rem = extRem,
+	setTable = extSetTable,
+}
+
+return cross, rdb

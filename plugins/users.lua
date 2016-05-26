@@ -4,25 +4,11 @@ local function tell(msg, ln)
 	end
 	
 	local text = ''
-	text = text..make_text(lang[ln].tell.first_name, msg.from.first_name:mEscape())
-	
-	--check if the user has a last name
-	if msg.from.last_name then
-		text = text..make_text(lang[ln].tell.last_name, msg.from.last_name:mEscape())
-	end
-	
-	--check if the user has a username
-	if msg.from.username then
-		text = text..'*Username*: @'..msg.from.username:mEscape()..'\n'
-	end
-	
-	--add the id
+
 	text = text..'*ID*: '..msg.from.id..'\n'
 	
-	--if in a group, build group info
 	if msg.chat.type == 'group' or msg.chat.type == 'supergroup' then
-		text = text..make_text(lang[ln].tell.group_name, msg.chat.title:mEscape())
-		text = text..make_text(lang[ln].tell.group_id, msg.chat.id)
+		text = text..make_text(lang[ln].bonus.tell, msg.chat.id)
 		return text
 	else
 		return text
@@ -42,96 +28,86 @@ local function do_keybaord_credits()
 end
 
 local action = function(msg, blocks, ln)
-	if blocks[1] == 'ping' then
-		api.sendMessage(msg.from.id, lang[ln].ping)
-		mystat('/ping') --save stats
-	end
-	if blocks[1] == 'helpme' then
-		if not is_owner(msg) or msg.chat.type == 'private' then
-			return
-		end
-		db:sadd('bot:tofix', msg.chat.id)
-		change_one_header(msg.chat.id)
-		api.sendReply(msg, 'Todo debería estar bien ahora.\nSi no es así. Contactame con /c comentario.', true)
-	end
-	if blocks[1] == 'fixextra' then
-		if not is_owner(msg) or msg.chat.type == 'private' then
-			return
-		end
-		db:sadd('bot:tofixextra', msg.chat.id)
-		change_extra_header(msg.chat.id)
-		api.sendReply(msg, 'Todo debería estar bien ahora.\nSi no es así. Contactame con /c comentario.', true)
-	end
-	if blocks[1] == 'strings' then
-		if not blocks[2] then
-			local file_id = db:get('trfile:ES')
-			if not file_id then return end
-			api.sendDocumentId(msg.chat.id, file_id, msg.message_id)
-		else
-			local l_code = blocks[2]
-			local exists = is_lang_supported(l_code)
-			if exists then
-				local file_id = db:get('trfile:'..l_code:upper())
-				if not file_id then return end
-				api.sendDocumentId(msg.chat.id, file_id, msg.message_id)
-			else
-				api.sendReply(msg, lang[ln].setlang.error, true)
-			end
-		end
-	end
-	if blocks[1] == 'tell' then
-		local text = tell(msg, ln)
-		api.sendReply(msg, text, true)
-		mystat('/tell')
-	end
-	if blocks[1] == 'echo' then
-		local res = api.sendMessage(msg.chat.id, blocks[2], true)
-		if not res then
-			api.sendMessage(msg.chat.id, lang[ln].breaks_markdown, true)
-		end
-	end
-	if blocks[1] == 'c' then
-		if msg.chat.type ~= 'private' then
-        	return
-    	end
-        local input = blocks[2]
-        local receiver = msg.from.id
-        
-        --allert if not feedback
-        if not input and not msg.reply then
-        	local out = make_text(lang[ln].report.no_input)
-            api.sendMessage(msg.from.id, out)
-            return nil
+	if blocks[1] == 'initgroup' then
+		if msg.chat.type == 'private' then return end
+		if is_mod(msg) then
+			local set, is_ok = cross.getSettings(msg.chat.id, ln)
+			if not is_ok then
+				local nick = msg.from.first_name
+				if msg.from.username then
+					nick = nick..' ('..msg.from.username..')'
+				end
+        		cross.initGroup(msg.chat.id, msg.from.id, nick)
+        		api.sendMessage(msg.chat.id, 'Should be ok. Try to run /settings command')
+        		api.sendLog('#initGroup\n'..vtext(msg.chat)..vtext(msg.from))
+        	else
+        		api.sendMessage(msg.chat.id, 'This is already ok')
+        	end
         end
-        
-        if msg.reply then
-        	msg = msg.reply
+    end
+    if blocks[1] == 'adminlist' then
+    	local no_usernames
+    	local send_reply = true
+    	if is_locked(msg, 'Modlist') then
+    		if is_mod(msg) then
+        		no_usernames = true
+        	else
+        		no_usernames = false
+        		send_reply = false
+        	end
+        else
+            no_usernames = true
         end
-	    
-	    api.forwardMessage (config.admin, msg.from.id, msg.message_id)
-	    api.sendMessage(receiver, lang[ln].report.sent)
-	    mystat('/c')
-	end
-	if blocks[1] == 'info' then
-		local keyboard = {}
-		keyboard = do_keybaord_credits()
-		api.sendKeyboard(msg.chat.id, lang[ln].credits, keyboard, true)
-		mystat('/credits')
-	end
+    	local out
+        local creator, adminlist = cross.getModlist(msg.chat.id, no_usernames)
+        if not creator then
+            out = lang[ln].bonus.adminlist_admin_required --creator is false, admins is the error code
+        else
+            out = make_text(lang[ln].mod.modlist, creator, adminlist)
+        end
+        if not send_reply then
+        	api.sendMessage(msg.from.id, out, true)
+        else
+            api.sendReply(msg, out, true)
+        end
+        mystat('/adminlist')
+    end
+    if blocks[1] == 'status' then
+    	if msg.chat.type == 'private' then return end
+    	if is_mod(msg) then
+    		local user_id = res_user_group(blocks[2], msg.chat.id)
+    		if not user_id then
+		 		api.sendReply(msg, lang[ln].bonus.no_user, true)
+		 	else
+		 		local res = api.getChatMember(msg.chat.id, user_id)
+		 		if not res then
+		 			api.sendReply(msg, lang[ln].status.unknown)
+		 			return
+		 		end
+		 		local status = res.result.status
+				local name = res.result.user.first_name
+				if res.result.user.username then name = name..' (@'..res.result.user.username..')' end
+				if msg.chat.type == 'group' and is_banned(msg.chat.id, user_id) then
+					status = 'kicked'
+				end
+		 		local text = make_text(lang[ln].status[status], name)
+		 		api.sendReply(msg, text, true)
+		 	end
+	 	end
+ 	end
+ 	if blocks[1] == 'tell' then
+ 		local text = tell(msg, ln)
+ 		api.sendReply(msg, text, true)
+ 		mystat('/tell')
+ 	end
 end
 
 return {
 	action = action,
 	triggers = {
-		'^/(ping)$',
-		'^/(helpme)$',
-		'^/(fixextra)$',
-		'^/(strings)$',
-		'^/(strings) (%a%a)$',
 		'^/(tell)$',
-		'^/(echo) (.*)$',
-		'^/(c)$',
-		'^/(c) (.*)',
-		'^/(info)$'
+		'^/(initgroup)$',
+		'^/(adminlist)$',
+		'^/(status) (@[%w_]+)$',
 	}
 }
