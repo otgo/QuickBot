@@ -18,91 +18,11 @@ if [ "$1" = "config" ]; then
     echo -e '\e[0;34mPor favor, ingresa tu canal sin considerar el @\e[0m'
     read channel
     sudo rm -f config.lua
-    echo "return {" >> config.lua
-    echo "	bot_api_key = '$apikey'," >> config.lua
-    echo "	admin = $id," >> config.lua
-    echo "	channel = '@$channel',," >> config.lua
-    echo "	lang = 'languages.lua'," >> config.lua
-    echo "	log_chat = -122946087," >> config.lua
-    echo "	plugins = {" >> config.lua
-    echo "		'onmessage.lua'," >> config.lua
-    echo "		'all.lua'," >> config.lua
-    echo "		'banhammer.lua'," >> config.lua
-    echo "		'users.lua'," >> config.lua
-    echo "		'help.lua'," >> config.lua
-    echo "		'rules.lua'," >> config.lua
-    echo "		'settings.lua'," >> config.lua
-    echo "		'about.lua'," >> config.lua
-    echo "		'flag.lua'," >> config.lua
-    echo "		'service.lua'," >> config.lua
-    echo "		'links.lua'," >> config.lua
-    echo "		'warn.lua'," >> config.lua
-    echo "		'extra.lua'," >> config.lua
-    echo "		'setlang.lua'," >> config.lua
-    echo "		'floodmanager.lua'," >> config.lua
-    echo "		'mediasettings.lua'," >> config.lua
-    echo "		'private.lua'," >> config.lua
-    echo "		'admin.lua'," >> config.lua
-    echo "		'test.lua'," >> config.lua
-    echo "		'faq.lua'," >> config.lua
-    echo "		'caracola.lua'," >> config.lua
-    echo "		'comprimirlink.lua'," >> config.lua
-    echo "		'sendfiles.lua'," >> config.lua
-    echo "		'killer.lua'," >> config.lua
-    echo "		'beta.lua'," >> config.lua
-    echo "		'saludador.lua'," >> config.lua
-    echo "		'italic.lua'," >> config.lua
-    echo "		'contact.lua'," >> config.lua
-    echo "	--	'spam.lua'," >> config.lua
-    echo "	}," >> config.lua
-    echo "	available_languages = {" >> config.lua
-    echo "		'es'" >> config.lua
-    echo "	}," >> config.lua
-    echo "	chat_data = {" >> config.luaa
-    echo "		'settings'," >> config.lua
-    echo "		'about'," >> config.lua
-    echo "		'rules'," >> config.lua
-    echo "		'flood'," >> config.lua
-    echo "		'extra'," >> config.lua
-    echo "		'reportblocked'," >> config.lua
-    echo "		'media'," >> config.lua
-    echo "		'banned'," >> config.lua
-    echo "		'welcome'" >> config.lua
-    echo "	}," >> config.lua
-    echo "	api_errors = {" >> config.lua
-    echo "		[101] = 'Not enough rights to kick participant'," >> config.lua 
-    echo "		[102] = 'USER_ADMIN_INVALID', " >> config.lua
-    echo "		[103] = 'method is available for supergroup chats only', " >> config.lua
-    echo "		[104] = 'Bad Request: Only creator of the group can kick admins from the group'," >> config.lua 
-    echo "		[105] = 'Bad Request: Need to be inviter of the user to kick it from the group', " >> config.lua
-    echo "		[106] = 'USER_NOT_PARTICIPANT', " >> config.lua
-    echo "		[107] = 'CHAT_ADMIN_REQUIRED', " >> config.lua
-    echo "		[108] = 'there is no administrators in the private chat', " >> config.lua
-    echo "		" >> config.lua
-    echo "		[110] = 'PEER_ID_INVALID', " >> config.lua
-    echo "		[111] = 'Bad Request: message is not modified', " >> config.lua
-    echo "		[112] = 'Bad Request: Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', " >> config.lua
-    echo "		[113] = 'Bad Request: group chat is migrated to a supergroup chat', " >> config.lua
-    echo "		[114] = 'Bad Request: Message can\'t be forwarded', " >> config.lua
-    echo "		[115] = 'Message text is empty', " >> config.lua
-    echo "		[116] = 'message not found', " >> config.lua
-    echo "		[117] = 'chat not found', " >> config.lua
-    echo "		[118] = 'Message is too long', " >> config.lua
-    echo "		[119] = 'User not found', " >> config.lua
-    echo "		" >> config.lua
-    echo "		[120] = 'Can\'t parse reply keyboard markup JSON object'," >> config.lua
-    echo "		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays', " >> config.lua
-    echo "		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object'," >> config.lua
-    echo "		[123] = 'Bad Request: Object expected as reply markup', " >> config.lua
-    echo "		[124] = 'QUERY_ID_INVALID', " >> config.lua
-    echo "		" >> config.lua
-    echo "		[130] = 'Type of file to send mismatch', " >> config.lua
-    echo "		" >> config.lua
-    echo "		[403] = 'Bot was blocked by the user', " >> config.lua
-    echo "		[429] = 'Too many requests: retry later', " >> config.lua
-    echo "		[430] = 'Too big total timeout', " >> config.lua
-    echo "	}" >> config.lua
-    echo "}" >> config.lua
+    wget https://raw.githubusercontent.com/jarriztg/QuickBot/master/config.lua
+    clear
+    perl -pi -e "s[readapikey][$apikey]g" config.lua
+    perl -pi -e "s[readowner][$id]g" config.lua
+    perl -pi -e "s[readchannel][$channel]g" config.lua
     clear
   echo -e '\e[0;32mOK. Configurado!\e[0m'
   read -n1 -r -p 'A continuacion se abrirá el launcher del bot, cualquier falla, configuralo de nuevo.'
