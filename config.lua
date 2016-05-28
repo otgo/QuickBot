@@ -1,14 +1,14 @@
 return {
 	bot_api_key = 'readapikey',
 	admin = {
- 		owner = readowner,
- 		admins = {
- 			[141956218] = false,
- 			[23646077] = true
- 		} 
- 	},
-	log_chat = -122946087,
-	channel = '@readchannel', -- tu canal (opcional)
+		owner = readowner,
+		admins = {
+			[-1001056989896] = false,
+			[189041244] = true
+		} 
+	},
+	log_chat = -1001057801239,
+	channel = '@readchannel', 
 	lang = 'languages.lua',
 	plugins = {
 		'onmessage.lua',
@@ -39,14 +39,10 @@ return {
 		'saludador.lua',
 		'italic.lua',
 		'contact.lua',
-	--	'spam.lua',
-		
 	},
 	available_languages = {
 		'es'
-		
-		},
-		
+	},
 	chat_data = {
 		'settings',
 		'about',
@@ -79,12 +75,12 @@ return {
 		[118] = 'Message is too long', 
 		[119] = 'User not found', 
 		
-		[120] = 'Can\'t parse reply keyboard markup JSON object',
+		[120] = 'Can\'t parse reply keyboard markup JSON object', 
 		[121] = 'Field \\\"inline_keyboard\\\" of the InlineKeyboardMarkup should be an Array of Arrays', 
 		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object',
 		[123] = 'Bad Request: Object expected as reply markup', 
 		[124] = 'QUERY_ID_INVALID', 
-		[125] = 'CHANNEL_PRIVATE',
+		[125] = 'CHANNEL_PRIVATE', 
 		
 		[130] = 'Type of file to send mismatch', 
 		
