@@ -34,7 +34,7 @@ local triggers2 = {
 	'^/(usernames)$',
 	'^/(api errors)$',
 	'^/(rediscli) (.*)$',
-	'^/(update)$',
+	'^/(updatewelcome)$',
 	'^/(movechat) (-%d+)$',
 	'^/(redis backup)$',
 	'^/(group info) (-?%d+)$',
@@ -51,7 +51,8 @@ local triggers2 = {
 	'^/(savepin)$',
 	'^/(delpin)$',
 	'^/(migrate) (%d+)%s(%d+)',
-	'^/(resid) (%d+)$'
+	'^/(resid) (%d+)$',
+	'^/(update)$',
 }
 
 local logtxt = ''
@@ -115,7 +116,7 @@ local function update_welcome_settings()
 		end
 		total = total + 1
 	end
-	logtxt = logtxt..'\n\nTotal items: '..total
+	logtxt = logtxt..'\n\nItems totales: '..total
     --print(logtxt)
     local path = "./logs/update_welcome_settings.txt"
     write_file(path, logtxt)
@@ -702,7 +703,7 @@ local action = function(msg, blocks, ln)
 		local path = './'..blocks[2]
 		api.sendDocument(config.admin, path)
 	end
-	if blocks[1] == 'update' then
+	if blocks[1] == 'updatewelcome' then
 		update_welcome_settings()
 	end
 	if blocks[1] == 'reply' then
@@ -804,12 +805,26 @@ local action = function(msg, blocks, ln)
 				return
 			end
 		end
-		api.sendReply(msg, 'Not found')
+		api.sendReply(msg, 'No encontrado')
 	end
+	if blocks[1] == 'update' then
+ 		local groups = db:smembers('bot:groupsid')
+ 		local m_count = 0
+ 		local o_count = 0
+ 		for i,chat_id in ipairs(groups) do
+ 			local m_res = db:del('bot:'..chat_id..':mod')
+ 			print('m_res', chat_id, m_res)
+ 			local o_res = db:del('bot:'..chat_id..':owner')
+ 			print('o_res', chat_id, o_res)
+ 			print('\n')
+ 			if m_res == 1 then m_count = m_count + 1 end
+ 			if o_res == 1 then o_count = o_count + 1 end
+ 		end
+ 		api.sendAdmin('Done.\n*Mod removido*: '..m_count..'\n*Creador removido*: '..o_count, true)
+ 	end		
 end
 
 return {
 	action = action,
-	for_bot_admin = true,
 	triggers = triggers2
 	}
