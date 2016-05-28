@@ -58,8 +58,8 @@ return {
                 	   .."`/kick` (respuesta|alias) : kickea a un usuariode algún grupo (no podrá ser agregado de nuevo).\n"
                 	   .."`/ban` (respuesta|alias) : banea a un usuario desde el grupo.\n"
                 	   .."`/tempban [minutos]` = banea a un usuario por cierto tiempo limitado (puedes usar < 10.080, una semana). Solo con respuesta.\n"
-                	   .."`/unban` (respuesta|alias) : desbanea a un usuario desde el grupo.",
-                	   .."`/status [alias]` = muestra el status del usuario.\n"
+                	   .."`/unban` (respuesta|alias) : desbanea a un usuario desde el grupo."
+                	   .."`/status [alias]` = muestra el status del usuario.\n",
  		    info = "*Moderadores*: Información acerca del grupo\n\n"
  		           .."`/setrules <reglas>` : cambia las reglas del grupo\n"
  		           .."`/addrules <regla>` : agrega sólo una linea a las reglas anteriormente creadas\n"
