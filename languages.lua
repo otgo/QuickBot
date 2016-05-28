@@ -57,7 +57,9 @@ return {
             	    banhammer = "*Moderadores*: Baneos\n\n"
                 	   .."`/kick` (respuesta|alias) : kickea a un usuariode algún grupo (no podrá ser agregado de nuevo).\n"
                 	   .."`/ban` (respuesta|alias) : banea a un usuario desde el grupo.\n"
+                	   .."`/tempban [minutos]` = banea a un usuario por cierto tiempo limitado (puedes usar < 10.080, una semana). Solo con respuesta.\n"
                 	   .."`/unban` (respuesta|alias) : desbanea a un usuario desde el grupo.",
+                	   .."`/status [alias]` = muestra el status del usuario.\n"
  		    info = "*Moderadores*: Información acerca del grupo\n\n"
  		           .."`/setrules <reglas>` : cambia las reglas del grupo\n"
  		           .."`/addrules <regla>` : agrega sólo una linea a las reglas anteriormente creadas\n"
@@ -70,7 +72,7 @@ return {
                 	   .."\n*Nota:* el número máximo debe ser arriba de 3 y puedes ver los ajustes en teclado con `/menu`.",
                     media = "*Moderadores*: Ajustes de multimedia\n\n"
                     	   .."`/media` : Envia en PV un teclado para configurar los ajustes de multimedia.\n"
-                	   .."`/media [kick|ban|allow] [tipo]` : cambia la acción si ponen imagenes audios, etc.\n"
+                	   .."`/media [kick|ban|allow] [tipo]` : cambia la acción si ponen imagenes audios, links, etc.\n"
                 	   .."_Ejemplo_ : `/media kick sticker`.\n"
                 	   .."`/media list` = muestra los ajustes que pueden ser aplicados en la multimedia.\n"
                 	   .."\n*Multimedia soportada*: _imagenes, audios, videos, stickers, gifs, voz, contactos, archivos_\n"
@@ -344,6 +346,10 @@ return {
             not_banned = 'ℹ️ El usuario no está baneado.',
             banlist_header = 'ℹ️ *Usuarios baneados*:\n\n',
             banlist_empty = ' _Lista vacía_',
+            tempban_zero = 'Para esto, solo debes usar `/ban` ;)',
+            tempban_week = 'El tiempo para que se desbanee será una semana (10.080 minutos)',
+            tempban_banned = 'Usuario &&&1 baneado. Expiración:',
+            tempban_updated = 'Tiempo de baneo actualizado a  &&&1. Expiración:',
             general_motivation = 'ℹ️ No puedo expulsar al usuario.\nProbablemente, no soy admin, o el usuario es administrador.'
         },
         floodmanager = {
