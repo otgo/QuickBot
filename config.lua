@@ -7,7 +7,7 @@ return {
 			[189041244] = true
 		} 
 	},
-	log_chat = -1001057801239,
+	log_chat = -122946087,
 	channel = '@readchannel', 
 	lang = 'languages.lua',
 	plugins = {
