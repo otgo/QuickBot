@@ -1,23 +1,26 @@
 #!/bin/bash
 
 if [ "$1" = "install" ]; then
-echo -e '\e[0;31m----------------------------------------------------\e[0m'
-echo -e '\e[0;31m----------------------------------------------------\e[0m'
-echo -e '\e[0;31m----                    QUICK BOT               ----\e[0m'
-echo -e '\e[0;31m----  Traduccion y algunos codigos por @Jarriz  ----\e[0m'
-echo -e '\e[0;31m----  Contribuidorres   @george0884  @xxdamage  ----\e[0m'
-echo -e '\e[0;31m----                    @huezohuezo1990         ----\e[0m'
-echo -e '\e[0;31m----  Mas funciones gracias a remembertheair    ----\e[0m'
-echo -e '\e[0;31m----------------------------------------------------\e[0m'
-echo -e '\e[0;31m----------------------------------------------------\e[0m'
+clear
+echo -e '\e[1;33m----------------------------------------------------\e[0m'
+echo -e '\e[1;33m----------------------------------------------------\e[0m'
+echo -e '\e[1;33m----                    QUICK BOT               ----\e[0m'
+echo -e '\e[1;33m----  Traduccion y algunos codigos por @Jarriz  ----\e[0m'
+echo -e '\e[1;33m----  Contribuidorres   @george0884  @xxdamage  ----\e[0m'
+echo -e '\e[1;33m----                    @huezohuezo1990         ----\e[0m'
+echo -e '\e[1;33m----  Mas funciones gracias a remembertheair    ----\e[0m'
+echo -e '\e[1;33m----------------------------------------------------\e[0m'
+echo -e '\e[1;33m----------------------------------------------------\e[0m'
 echo ''
-read -t4 'En unos segundos iniciara la instalacion'
+read -t8 -p 'En unos segundos iniciara la instalacion'
  sudo apt-get update && sudo apt-get install libreadline-dev libconfig-dev libssl-dev lua5.2 liblua5.2-dev libevent-dev make unzip git redis-server g++ libjansson-dev libpython-dev expat libexpat1-dev tmux subversion && wget http://luarocks.org/releases/luarocks-2.2.2.tar.gz && tar zxpf luarocks-2.2.2.tar.gz && cd luarocks-2.2.2 && sudo ./configure && sudo make bootstrap && sudo luarocks install luasocket && sudo luarocks install luasec && sudo luarocks install redis-lua && sudo luarocks install lua-term && sudo luarocks install serpent && sudo apt-get install curl && cd .. && sudo rm -Rf luarocks-2.2.2.tar.gz && sudo rm -Rf luarocks-2.2.2 
- read -t5 -r -p 'Dependencias instaladas. Presione una tecla para continuar'
+ echo -e '\e[0;36mDependencias instaladas\e[0m'
+ read -r -p 'Presione una tecla para continuar'
  sudo ./run.sh config
 fi
 
 if [ "$1" = "config" ]; then
+    clear
     echo -e '\e[0;31mNOTA: al continuar eliminara el config.lua y clonara el archivo original\e[0m'
     echo -e '\e[0;31m      todos los datos que ingreses a continuacion el script seran guardados\e[0m'
     echo -e '\e[0;31m      si ya haz modificado el config.lua, cierra el script con CTRL + C. \e[0m'
