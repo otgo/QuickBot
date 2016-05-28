@@ -66,7 +66,7 @@ if [ "$1" = "kp" ]; then
 fi
 
 
-if [ "$1" = "stop" ]; then
+if [ "$1" = "kill" ]; then
 
 sudo screen -X -S running kill
   
