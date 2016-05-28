@@ -58,7 +58,7 @@ Envia tus pullrequest para mejorar el código.
 
 
 
-Contacta conmigo
+
 --------------------
 [![https://telegram.me/jarriz](https://img.shields.io/badge/Telegram-%40Jarriz-green.svg)](https://telegram.me/jarriz)
-[![https://telegram.me/jarriz](https://img.shields.io/badge/chat-soporte-orange.svg)](https://telegram.me/equipoQuickSilver)
+[![https://telegram.me/jarriz](https://img.shields.io/badge/Chat-soporte-orange.svg)](https://telegram.me/equipoQuickSilver)
