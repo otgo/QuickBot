@@ -1,10 +1,15 @@
 return {
-	bot_api_key = '',
-	admin = 0,
-	support = 0, -- id de soporte (opcional)
-	channel = '@MoDeRaToRz', -- tu canal (opcional)
-	lang = 'languages.lua',
+	bot_api_key = 'readapikey',
+	admin = {
+ 		owner = readowner,
+ 		admins = {
+ 			[141956218] = false,
+ 			[23646077] = true
+ 		} 
+ 	},
 	log_chat = -122946087,
+	channel = '@readchannel', -- tu canal (opcional)
+	lang = 'languages.lua',
 	plugins = {
 		'onmessage.lua',
 		'all.lua',
@@ -64,10 +69,10 @@ return {
 		[108] = 'there is no administrators in the private chat', 
 		
 		[110] = 'PEER_ID_INVALID', 
-		[111] = 'Bad Request: message is not modified', 
-		[112] = 'Bad Request: Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', 
-		[113] = 'Bad Request: group chat is migrated to a supergroup chat', 
-		[114] = 'Bad Request: Message can\'t be forwarded', 
+		[111] = 'message is not modified', 
+		[112] = 'Can\'t parse message text: Can\'t find end of the entity starting at byte offset %d+', 
+		[113] = 'group chat is migrated to a supergroup chat', 
+		[114] = 'Message can\'t be forwarded', 
 		[115] = 'Message text is empty', 
 		[116] = 'message not found', 
 		[117] = 'chat not found', 
@@ -79,6 +84,7 @@ return {
 		[122] = 'Can\'t parse inline keyboard button: InlineKeyboardButton should be an Object',
 		[123] = 'Bad Request: Object expected as reply markup', 
 		[124] = 'QUERY_ID_INVALID', 
+		[125] = 'CHANNEL_PRIVATE',
 		
 		[130] = 'Type of file to send mismatch', 
 		
