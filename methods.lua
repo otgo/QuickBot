@@ -138,7 +138,7 @@ end
 
 local function banUser(chat_id, user_id, is_normal_group, ln)--no_msg: kick without message if kick is failed
 	
-	if is_mod2(chat_id, user_id) then return end
+	--if is_mod2(chat_id, user_id) then return false, api.code2text(2, ln) end
 	
 	local res, code = api.kickChatMember(chat_id, user_id) --try to kick. "code" is already specific
 	
@@ -157,7 +157,7 @@ end
 
 local function kickUser(chat_id, user_id, ln)-- no_msg: don't send the error message if kick is failed. If no_msg is false, it will return the motivation of the fail
 	
-	if is_mod2(chat_id, user_id) then return end
+	--if is_mod2(chat_id, user_id) then return false, api.code2text(2, ln) end
 	
 	local res, code = api.kickChatMember(chat_id, user_id) --try to kick
 	
