@@ -41,7 +41,7 @@ Más funciones del bash:
 ./run.sh kp
 
 # Detener última sesión de QuickBot en screen
-./run.sh stop
+./run.sh kill
 
 # Borrar logs por consola
 ./run.sh rmlogs
