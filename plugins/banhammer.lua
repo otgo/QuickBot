@@ -224,6 +224,6 @@ return {
 		'^/(tempban) (%d+)',
 		'^/(unban) (@[%w_]+)',
 		'^/(unban)',
-		'^/(gban)$',
+	--	'^/(gban)$',
 	}
 }
