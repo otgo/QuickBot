@@ -14,17 +14,6 @@ local function sendRequest(url)
 	end
 	
 	local tab = JSON.decode(dat)
-
-	if code ~= 200 then
-		if tab and tab.description then print(code, tab.description) end
-		--403: bot blocked, 429: spam limit ...send a message to the admin, return the code
-		if code == 400 then code = api.getCode(tab.description) end --error code 400 is general: try to specify
-		db:hincrby('bot:errors', code, 1)
-		if code ~= 403 and code ~= 429 and code ~= 110 and code ~= 111 and code ~= 107 then
-			api.sendLog('#BadRequest\n'..vtext(dat)..'\n'..code..'\n(text in the log)')
-		end
-		return false, code
-	end
 	
 	--actually, this rarely happens
 	if not tab.ok then
@@ -53,15 +42,6 @@ local function getUpdates(offset)
 
 	return sendRequest(url)
 
-end
-
-local function getCode(error)
-	for k,v in pairs(config.api_errors) do
-		if error:match(v) then
-			return k
-		end
-	end
-	return 7 --if unknown
 end
 
 local function unbanChatMember(chat_id, user_id)
