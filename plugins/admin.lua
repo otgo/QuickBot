@@ -15,11 +15,11 @@ local triggers = {
 	'^/(log) (.*)$',
 	'^/(log)$',
 	'^/(adminpatterns)$',
-	'^/(banall) (%d+)$',
-	'^/(banall)$',
-	'^/(unbanall) (%d+)$',
-	'^/(unbanall)$',
-	'^/(isbanall)$',
+	'^/(gban) (%d+)$',
+	'^/(gban)$',
+	'^/(ungban) (%d+)$',
+	'^/(ungban)$',
+	'^/(isgban)$',
 	'^/(ping redis)$',
 	'^/(leave) (-%d+)$',
 	'^/(leave)$',
@@ -369,7 +369,7 @@ local action = function(msg, blocks, ln)
 		end
 		mystat('/log')
     end
-	if blocks[1] == 'banall' then
+	if blocks[1] == 'gban' then
 		local id
 		if not blocks[2] then
 			if not msg.reply then
@@ -389,9 +389,9 @@ local action = function(msg, blocks, ln)
 			text = '*El ID* ' ..id..' *ya ha sido baneado globalmente*.'
 		end
 		api.sendReply(msg, text, true)
-		mystat('/banall')
+		mystat('/gban')
 	end
-	if blocks[1] == 'unbanall' then
+	if blocks[1] == 'ungban' then
 		local id
 		local response
 		if not blocks[2] then
@@ -414,7 +414,7 @@ local action = function(msg, blocks, ln)
 		api.sendReply(msg, text, true)
 		mystat('/ungban')
 	end
-	if blocks[1] == 'isbanall' then
+	if blocks[1] == 'isgban' then
 		if not msg.reply then
 			api.sendReply(msg, 'Necesita respuesta o ID')
 			return
@@ -425,7 +425,7 @@ local action = function(msg, blocks, ln)
 				api.sendReply(msg, '*No*, no está baneado globalmente.', true)
 			end
 		end
-		mystat('/isbanall')
+		mystat('/isgban')
 	end
 	if blocks[1] == 'ping redis' then
 		local ris = db:ping()
