@@ -9,45 +9,36 @@ Clonar repositorio:
 
 ```bash
 # Clonar QuickBot
-git clone https://github.com/jarriztg/QuickBot.git
+git clone https://github.com/jarriztg/QuickBot mi_bot
 ```
-```bash
-# Mover a directorio y cambiar permisos de arranque
-cd QuickBot && chmod +x run.sh
-```
+
 Instalar QuickBot: 
 
 ```bash
+cd mi_bot
 ./run.sh install
 ```
 
-Al terminar la instalación te pedirá el apikey, tu ID y tu canal, por favor, ingresalos y pulsa enter.
+Ingresas a ``data/key`` y reemplazas toda la linea por el token que te dió [@botfather](http://telegram.me/botfather)
 
 Despúes, el bot ya estará funcionando si lo haz configurado bien, cualquier falla vuelvelo a configurar.
-
-
-**IMPORTANTE**    
-_Al iniciar ./run.sh config o al volver iniciar el instalador, config.lua será eliminado y reemplazado por el de origen, para evitar cualquier error propio, si ya haz personalizado el config.lua renombra o copia tu config.lua_.
 
 
 
 Más funciones del bash:
 
 ```bash
-# Volver a iniciar una sesión normal
+# Iniciar una sesión tmux
 ./run.sh
 
-# Arrancar QuickBot en screen, siempre arrancando
-./run.sh kp
-
-# Detener última sesión de QuickBot en screen
+# Detener la sesiones (script de lectura de gbans, y script del bot. Tmux)
 ./run.sh kill
 
-# Borrar logs por consola
-./run.sh rmlogs
+# Attach del bot (regresar a la sesión del bot. Tmux)
+./run.sh attach
 
-# Configurar y/o crear de nuevo el config.lua
-./run.sh config
+# Attach de los gbans (regresar a la sesión de los gbans. Tmux)
+./run.sh attach-gbans
 
 ```
 
