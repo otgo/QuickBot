@@ -3,13 +3,13 @@ local function make_keyboard(mod)
 	keyboard.inline_keyboard = {}
 	if mod then --extra options for the mod
 	    local list = {
-	        ['Baneos'] = '!banhammer',
-	        ['Grupos'] = '!info',
+	        ['Ban'] = '!banhammer',
+	        ['Informacion'] = '!info',
 	        ['Flood'] = '!flood',
 	        ['Multimedia'] = '!media',
 	        ['Bienvenida'] = '!welcome',
 	        ['General'] = '!settings',
-	        ['Extra'] = '!extra',
+	        ['Extras'] = '!extra',
 	        ['Advertencias'] = '!warns',
 	        ['Árabe/RTL'] = '!char',
 	        ['Links'] = '!links',
@@ -18,12 +18,12 @@ local function make_keyboard(mod)
         local line = {}
         for k,v in pairs(list) do
             if next(line) then
-                local button = {text = '📍'..k, callback_data = v}
+                local button = {text = '🔸'..k, callback_data = v}
                 table.insert(line, button)
                 table.insert(keyboard.inline_keyboard, line)
                 line = {}
             else
-                local button = {text = '📍'..k, callback_data = v}
+                local button = {text = '🔹'..k, callback_data = v}
                 table.insert(line, button)
             end
         end
@@ -32,12 +32,12 @@ local function make_keyboard(mod)
         end
     end
     local bottom_bar = {
-		{text = '🔰 Todos', callback_data = '!user'},
+		{text = '🔰 Usuario', callback_data = '!user'},
 		{text = '🔰 Admins', callback_data = '!mod'},
 	}
 	table.insert(keyboard.inline_keyboard, bottom_bar)
 	local info_button = {
-	    {text = 'Información', callback_data = '!info_button'}
+	    {text = 'Info', callback_data = '!info_button'}
     }
     table.insert(keyboard.inline_keyboard, info_button)
 	return keyboard
@@ -48,11 +48,10 @@ local function do_keybaord_credits()
     keyboard.inline_keyboard = {
     	{
     		{text = 'Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
-    		{text = 'GitHub', url = 'https://github.com/jarriztg/QuickBot'},
-    		{text = 'Puntúame', url = 'https://telegram.me/storebot?start='..bot.username},
+    		{text = 'Votame', url = 'https://telegram.me/storebot?start='..bot.username},
 		},
 		{
-		    {text = '🔙', callback_data = '!user'}
+		    {text = 'Atrás', callback_data = '!user'}
         }
 	}
 	return keyboard
@@ -62,11 +61,11 @@ local function do_keyboard_private()
     local keyboard = {}
     keyboard.inline_keyboard = {
     	{
-    		{text = '👥 Agregar', url = 'https://telegram.me/'..bot.username..'?startgroup=new'},
-    		{text = '📢 Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
+    		{text = 'Agregar', url = 'https://telegram.me/jorgemar45soporte'},
+    		{text = '🌐 Canal', url = 'https://telegram.me/'..config.channel:gsub('@', '')},
 	    },
 	    {
-	        {text = '📕 Comandos', callback_data = '!user'}
+	        {text = 'Comandos', callback_data = '!user'}
         }
     }
     return keyboard
@@ -76,7 +75,7 @@ local function do_keyboard_startme()
     local keyboard = {}
     keyboard.inline_keyboard = {
     	{
-    		{text = 'Iniciar', url = 'https://telegram.me/'..bot.username}
+    		{text = '🔸 Iniciarme 🔹', url = 'https://telegram.me/'..bot.username}
 	    }
     }
     return keyboard
@@ -103,7 +102,7 @@ local action = function(msg, blocks, ln)
             api.sendKeyboard(msg.from.id, message, keyboard, true)
             return
         end
-        local res = api.sendKeyboard(msg.from.id, lang[ln].keyboard.role_keyboard, keyboard, true)
+        local res = api.sendKeyboard(msg.from.id, 'Choose the *role* to see the available commands:', keyboard, true)
         if res then
             api.sendMessage(msg.chat.id, lang[ln].help.group_success, true)
         else
@@ -125,6 +124,9 @@ local action = function(msg, blocks, ln)
             with_mods_lines = false
         elseif query == 'mod' then
             text = lang[ln].help.kb_header
+        elseif query == 'owner' then
+            text = lang[ln].help.owner
+            with_mods_lines = false
         end
         if query == 'info' then
         	text = lang[ln].help.mods[query]
@@ -156,12 +158,12 @@ end
 
 return {
 	action = action,
-	admin_not_needed = true,
 	triggers = {
 	    '^/(start)$',
 	    '^/(help)$',
 	    '^###cb:!(user)',
 	    '^###cb:!(info_button)',
+    	'^###cb:!(owner)',
 	    '^###cb:!(mod)',
 	    '^###cb:!(info)',
 	    '^###cb:!(banhammer)',

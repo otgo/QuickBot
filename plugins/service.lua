@@ -28,14 +28,8 @@ local function get_welcome(msg, ln)
 		if not(content == 'no') then
 			local abt = cross.getAbout(msg.chat.id, ln)
 			local rls = cross.getRules(msg.chat.id, ln)
-			local creator, admins = cross.getModlist(msg.chat.id, ln)
-			print(admins)
-			local mods
-			if not creator then
-				mods = '\n'
-			else
-				mods = make_text(lang[ln].service.welcome_modlist, creator:mEscape(), admins:gsub('*', ''):mEscape())
-			end
+			local mods = cross.getModlist(msg.chat.id, ln):mEscape()
+			local mods = lang[ln].service.welcome_modlist..mods
 			local text = make_text(lang[ln].service.welcome, msg.added.first_name:mEscape_hard(), msg.chat.title:mEscape_hard())
 			if content == 'a' then
 				text = text..'\n\n'..abt
@@ -70,15 +64,25 @@ local action = function(msg, blocks, ln)
 		
 		print('Bot added to '..msg.chat.title..' ['..msg.chat.id..']')
 		
-		if db:hget('bot:general', 'adminmode') == 'on' and not is_bot_owner(msg) then
-			api.sendMessage(msg.chat.id, 'Admin mode is on: only the admin can add me to a new group')
-			api.leaveChat(msg.chat.id)
+		if db:hget('bot:general', 'adminmode') == 'on' and not is_admin(msg) then
+			api.sendMessage(msg.chat.id, 'Solamente puede agregarme mi administrador')
+			api.kickChatMember(msg.chat.id, bot.id)
 			return
 		end
 		
-		cross.initGroup(msg.chat.id)
+		--check if the owner has a username, and save it. If not, use the name
+		local name = msg.adder.first_name
+		if msg.adder.username then
+			name = name..' (@'..msg.adder.username..')'
+		end
 		
+		save_log('added', msg.chat.title, msg.chat.id, name, msg.adder.id)
 		api.sendLog(vtext(msg.chat)..vtext(msg.adder))
+		
+		cross.initGroup(msg.chat.id, msg.adder.id, name)
+		
+        local out = make_text(lang[ln].service.new_group, msg.from.first_name:mEscape())
+		api.sendMessage(msg.chat.id, out, true)
 	end
 	
 	--if someone join the chat
@@ -90,13 +94,8 @@ local action = function(msg, blocks, ln)
 		end
 		
 		cross.remBanList(msg.chat.id, msg.added.id) --remove him from the banlist
-		db:hdel('chat:'..msg.chat.id..':warns', msg.added.id) --remove the warns
+		db:hdel('warn:'..msg.chat.id, msg.added.id) --remove the warns
 		db:del('chat:'..msg.chat.id..':'..msg.added.id..':mediawarn') --remove the warn for media
-		
-		if msg.added.username then
-			local username = msg.added.username:lower()
-			if username:find('bot', -3) then return end
-		end
 		
 		local text = get_welcome(msg, ln)
 		if text then
@@ -110,11 +109,12 @@ local action = function(msg, blocks, ln)
 		
 		print('Bot left '..msg.chat.title..' ['..msg.chat.id..']')
 		
+		--clean the modlist and the owner. If the bot is added again, the owner will be who added the bot and the modlist will be empty (except for the new owner)
+		clean_owner_modlist(msg.chat.id)
+		
 		--remove group id
 		db:srem('bot:groupsid', msg.chat.id)
 		
-		api.sendLog(vtext(msg.chat)..vtext(msg.remover))
- 	
 		--save stats
         local num = db:hincrby('bot:general', 'groups', -1)
         print('Stats saved', 'Groups: '..num)
@@ -127,6 +127,6 @@ return {
 	triggers = {
 	--	'^###(botadded)',
 		'^###(added)',
-		'^###(botremoved)'
+	--	'^###(botremoved)'
 	}
 }

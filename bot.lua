@@ -6,44 +6,48 @@ redis = require('redis')
 colors = require 'term.colors'
 db = Redis.connect('127.0.0.1', 6379)
 serpent = require('serpent')
+existe_apikey = io.open("./data/key","r")
 
 
-bot_init = function(on_reload) -- The function run when the bot is started or reloaded.
-	
-	print(colors.blue..'Leyendo config.lua...')
-	config = dofile('config.lua') -- Load configuration file.
-	if config.bot_api_key == '' then
-		print(colors.red..'VERIFICA LA APIKEY')
+bot_init = function(on_reload) 
+	print(colors.blue..'Deteniendo proceso de gbans...' ..colors.reset)
+	os.execute('sudo tmux kill-session -t ScriptGban')
+	print(colors.blue..'Leyendo config.lua...' ..colors.reset)
+	config = dofile('config.lua') 
+	if not existe_apikey then
+		print(colors.red..'No hay api key' ..colors.reset)
 		return
 	end
-	print(colors.blue..'Leyendo utilities.lua...')
-	cross, rdb = dofile('utilities.lua') -- Load miscellaneous and cross-plugin functions.
-	print(colors.blue..'Leyendo languages.lua...')
-	lang = dofile(config.lang) -- All the languages available
-	print(colors.blue..'Leyendo tabla de funciones API...')
-	api = require('methods')
+	print(colors.blue..'Loading utilidades.lua...' ..colors.reset)
+	cross, rdb = dofile('utilidades.lua') 
+	print(colors.blue..'Leyendo lenjuages.lua...' ..colors.reset)
+	lang = dofile(config.languages) 
+	print(colors.blue..'Iniciando un nuevo proceso de gbans...' ..colors.reset)
+	os.execute('sudo tmux new-session -s "ScriptGban" -d "bash gbanner/metodo.sh gbans"')
+	print(colors.blue..'Leyendo tabla de funciones...' ..colors.reset)
+	api = require('metodos')
 	
 	tot = 0
 	
 	bot = nil
-	while not bot do -- Get bot info and retry if unable to connect.
+	while not bot do 
 		bot = api.getMe()
 	end
 	bot = bot.result
 
-	plugins = {} -- Load plugins.
+	plugins = {} 
 	for i,v in ipairs(config.plugins) do
 		local p = dofile('plugins/'..v)
 		print(colors.red..'Leyendo plugin...'..colors.reset, v)
 		table.insert(plugins, p)
 	end
-	print(colors.blue..'Plugins leidos:', #plugins)
+	print(colors.blue..'Plugins leidos:', #plugins ..colors.reset)
 
-	print(colors.blue..'BOT INICIADO: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')')
+	print(colors.blue..'BOT INICIADO: @'..bot.username .. ', ' .. bot.first_name ..' ('..bot.id..')' ..colors.reset)
 	if not on_reload then
 		save_log('starts')
 		db:hincrby('bot:general', 'starts', 1)
-		api.sendAdmin('*Bot iniciado!*\n_'..os.date('On %A, %d %B %Y\nAt %X')..'_\n'..#plugins..' plugins leidos', true)
+		api.sendMessage(config.admin, '*Bot iniciado*\n'..os.date('Día %A, %d %B %Y\nHora %X')..'\n'..#plugins..' plugins leidos', true)
 	end
 	
 	-- Generate a random seed and "pop" the first random number. :)
@@ -113,20 +117,20 @@ local function collect_stats(msg)
 end
 
 local function match_pattern(pattern, text)
-  	if text then
-  		text = text:gsub('@'..bot.username, '')
-    	local matches = {}
-    	matches = { string.match(text, pattern) }
-    	if next(matches) then
-    		return matches
-		end
-  	end
+  if text then
+  	text = text:gsub('@'..bot.username, '')
+    local matches = {}
+    matches = { string.match(text, pattern) }
+    if next(matches) then
+    	return matches
+    end
+  end
 end
 
 on_msg_receive = function(msg) -- The fn run whenever a message is received.
 	--vardump(msg)
 	if not msg then
-		api.sendAdmin('Bucle!')
+		api.sendMessage(config.admin, 'Shit, a loop without msg!')
 		return
 	end
 	
@@ -147,6 +151,7 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 	collect_stats(msg) --resolve_username support, chat stats
 	
 	for i,v in pairs(plugins) do
+		--vardump(v)
 		local stop_loop
 		if v.on_each_msg then
 			msg, stop_loop = v.on_each_msg(msg, msg.lang)
@@ -158,29 +163,21 @@ on_msg_receive = function(msg) -- The fn run whenever a message is received.
 				for k,w in pairs(v.triggers) do
 					local blocks = match_pattern(w, msg.text)
 					if blocks then
-						--workaround for the stupid bug
-						if not(msg.chat.type == 'private') and not db:exists('chat:'..msg.chat.id..':settings') and not msg.service then
-							cross.initGroup(msg.chat.id)
-							api.sendLog('#initGroup\n'..vtext(msg.chat)..vtext(msg.from))
-						end
-						--print in the terminal
 						print(colors.reset..colors.underscore..'\nMsg info:\t'..colors.reset..colors.red..get_from(msg)..colors.reset..' ['..msg.chat.type..'] ('..os.date('at %X')..')')
-						--print the match
 						if blocks[1] ~= '' then
-      						print(colors.reset..colors.underscore..'Match encontrado:', colors.reset..colors.blue..w..colors.reset)
+      						print(colors.reset..colors.underscore..'Match found:', colors.reset..colors.blue..w..colors.reset)
       						db:hincrby('bot:general', 'query', 1)
       						if msg.from then db:incrby('user:'..msg.from.id..':query', 1) end
       					end
-						--execute plugin
+				
 						local success, result = pcall(function()
 							return v.action(msg, blocks, msg.lang)
 						end)
-						--if bugs
 						if not success then
-							api.sendReply(msg, '*Error*\nPor favor reportalo con `/c <bug>` :)', true)
+							api.sendReply(msg, '*This is a bug!*\nPlease report the problem with `/c <bug>` :)', true)
 							print(msg.text, result)
 							save_log('errors', result, msg.from.id or false, msg.chat.id or false, msg.text or false)
-          					api.sendLog('#ERROR OCURRIDO.\n'..result)
+          					api.sendLog('An #error occurred.\n'..result)
 							return
 						end
 						-- If the action returns a table, make that table msg.
@@ -300,13 +297,6 @@ local function media_to_msg(msg)
 		msg.text = '###sticker'
 	elseif msg.contact then
 		msg.text = '###contact'
-	elseif msg.entities then
- 		for i,entity in pairs(msg.entities) do
- 			if entity.type == 'url' then
- 				msg.url = true
- 				break
- 			end
- 		end
 	end
 	if msg.reply_to_message then
 		msg.reply = msg.reply_to_message
@@ -347,18 +337,14 @@ while is_started do -- Start a loop while the bot should be running.
 		for i,msg in ipairs(res.result) do -- Go through every new message.
 			last_update = msg.update_id
 			tot = tot + 1
-			if msg.message  or msg.callback_query --[[or msg.edited_message]]then
-				--[[if msg.edited_message then
-					msg.message = msg.edited_message
-					msg.edited_message = nil
-				end]]
+			if msg.message  or msg.callback_query then
 				if msg.callback_query then
 					handle_inline_keyboards_cb(msg.callback_query)
 				elseif msg.message.migrate_to_chat_id then
 					to_supergroup(msg.message)
 				elseif msg.message.new_chat_member or msg.message.left_chat_member or msg.message.group_chat_created then
 					service_to_message(msg.message)
-				elseif msg.message.photo or msg.message.video or msg.message.document or msg.message.voice or msg.message.audio or msg.message.sticker or msg.message.entities then
+				elseif msg.message.photo or msg.message.video or msg.message.document or msg.message.voice or msg.message.audio or msg.message.sticker then
 					media_to_msg(msg.message)
 				elseif msg.message.forward_from then
 					forward_to_msg(msg.message)
@@ -370,21 +356,9 @@ while is_started do -- Start a loop while the bot should be running.
 			end
 		end
 	else
-		print('Connection error')
+		print('Hay dos sessiones o más iniciadas.')
+		return
 	end
-	if last_cron ~= os.date('%M') then -- Run cron jobs every minute.
- 		last_cron = os.date('%M')
- 		--db:bgsave()
- 		for i,v in ipairs(plugins) do
- 			if v.cron then -- Call each plugin's cron function, if it has one.
- 				local res, err = pcall(function() v.cron() end)
- 				if not res then
-           			api.sendLog('An #error occurred.\n'..err)
- 					return
- 				end
- 			end
- 		end
- 	end
 end
 
-print('Halted.')
+print('Detenido.')

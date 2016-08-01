@@ -6,41 +6,10 @@ local included_fields = {
     'extra'
 }
 
-local function getWelcomeMessage(chat_id, ln)
-    hash = 'chat:'..chat_id..':welcome'
-    local type = db:hget(hash, 'type')
-    local message = ''
-    if type == 'composed' then
-    	local wel = db:hget(hash, 'content')
-    	if wel == 'a' then
-    	    message = message..lang[ln].settings.resume.w_a
-    	elseif wel == 'r' then
-    	    message = message..lang[ln].settings.resume.w_r
-    	elseif wel == 'm' then
-    	    message = message..lang[ln].settings.resume.w_m
-    	elseif wel == 'ra' then
-    	    message = message..lang[ln].settings.resume.w_ra
-    	elseif wel == 'rm' then
-    	    message = message..lang[ln].settings.resume.w_rm
-    	elseif wel == 'am' then
-    	    message = message..lang[ln].settings.resume.w_am
-    	elseif wel == 'ram' then
-    	    message = message..lang[ln].settings.resume.w_ram
-    	elseif wel == 'no' then
-    	    message = message..lang[ln].settings.resume.w_no
-    	end
-	elseif type == 'media' then
-		message = message..lang[ln].settings.resume.w_media
-	elseif type == 'custom' then
-		message = db:hget(hash, 'content')
-	end
-    return message
-end
-
 local function doKeyboard_media(chat_id)
     local keyboard = {}
     keyboard.inline_keyboard = {}
-    local list = {'image', 'audio', 'video', 'sticker', 'gif', 'voice', 'contact', 'file', 'link'}
+    local list = {'image', 'audio', 'video', 'sticker', 'gif', 'voice', 'contact', 'file'}
     local media_sett = db:hgetall('chat:'..chat_id..':media')
     for media,status in pairs(media_sett) do
         if status == 'allowed' then
@@ -62,16 +31,15 @@ local function doKeyboard_dashboard(chat_id)
     local keyboard = {}
     keyboard.inline_keyboard = {
 	    {
-            {text = "Ajustes", callback_data = 'dashboardsettings//'..chat_id},
-            {text = "Admins", callback_data = 'dashboardmodlist//'..chat_id}
+            {text = "Settings", callback_data = 'dashboardsettings//'..chat_id},
 		},
 	    {
-		    {text = "Reglas", callback_data = 'dashboardrules//'..chat_id},
-		    {text = "Acerca", callback_data = 'dashboardabout//'..chat_id}
+		    {text = "Rules", callback_data = 'dashboardrules//'..chat_id},
+		    {text = "About", callback_data = 'dashboardabout//'..chat_id}
         },
 	   	{
-	   	    {text = "Bienvenida", callback_data = 'dashboardwelcome//'..chat_id},
-	   	    {text = "Extra", callback_data = 'dashboardextra//'..chat_id}
+	   	    {text = "Moderators", callback_data = 'dashboardmodlist//'..chat_id},
+	   	    {text = "Extra commands", callback_data = 'dashboardextra//'..chat_id}
 	    }
     }
     
@@ -96,7 +64,7 @@ local function doKeyboard_menu(chat_id)
     local num = db:hget(hash, 'MaxFlood')
     local flood = {
         {text = '➖', callback_data = 'menuDimFlood//'..chat_id},
-        {text = '📍'..num..' ⚡️'..action, callback_data = 'menuActionFlood//'..chat_id},
+       -- {text = '📍' ..num.. ' ⚡️'..action, callback_data = 'menuActionFlood//'..chat_id},
         {text = '➕', callback_data = 'menuRaiseFlood//'..chat_id},
     }
     table.insert(keyboard.inline_keyboard, flood)
@@ -113,7 +81,7 @@ local action = function(msg, blocks, ln)
     else
         chat_id = msg.chat.id
     end
-
+    print('Chat id:', chat_id)
     local keyboard = {}
     
     if blocks[1] == 'dashboard' then
@@ -137,18 +105,11 @@ local action = function(msg, blocks, ln)
                 text = cross.getAbout(chat_id, ln)
             end
             if blocks[2] == 'modlist' then
-                local creator, admins = cross.getModlist(chat_id)
-                if not creator then
-                    text = lang[ln].bonus.adminlist_admin_required --creator is false, admins is the error code
-                else
-                    text = make_text(lang[ln].mod.modlist, creator, admins)
-                end
+                text = cross.getModlist(chat_id):mEscape()
+                text = make_text(lang[ln].mod.modlist, text)
             end
             if blocks[2] == 'extra' then
                 text = cross.getExtraList(chat_id, ln)
-            end
-            if blocks[2] == 'welcome' then
-                text = getWelcomeMessage(chat_id, ln)
             end
             api.editMessageText(msg.chat.id, msg_id, text, keyboard, true)
             return
@@ -164,7 +125,7 @@ local action = function(msg, blocks, ln)
 	    end
 	    if msg.cb then
 	        if blocks[2] == 'alert' then
-                api.answerCallbackQuery(msg.cb_id, '⚠️ Presiona el bloquear')
+                api.answerCallbackQuery(msg.cb_id, 'Tap on a lock!')
                 return
             end
             --keyboard = doKeyboard(blocks[1], chat_id)
@@ -198,7 +159,6 @@ local action = function(msg, blocks, ln)
 	        local text = cross.changeMediaStatus(chat_id, media, 'next', ln)
             keyboard = doKeyboard_media(chat_id)
             api.editMessageText(msg.chat.id, msg_id, text, keyboard, true)
-            api.answerCallbackQuery(msg.cb_id, '✅ '..media..' actualizado')
         end
     end
 end
@@ -206,36 +166,34 @@ end
 return {
 	action = action,
 	triggers = {
-		'^/(dashboard)$',
+	--[[	'^/(dashboard)$',
 		'^/(menu)$',
-		'^/(media)$',
+		'^/(media)$',]]
 		'^###cb:(dashboard)(settings)//',
-		'^###cb:(dashboard)(rules)//',
-		'^###cb:(dashboard)(about)//',
-		'^###cb:(dashboard)(modlist)//',
-		'^###cb:(dashboard)(extra)//',
-		'^###cb:(dashboard)(welcome)//',
-		'^###cb:(menu)(alert)//',
-		'^###cb:(menu)(Rules)//',
-		'^###cb:(menu)(About)//',
-		'^###cb:(menu)(Modlist)//',
-		'^###cb:(menu)(Rtl)//',
-		'^###cb:(menu)(Arab)//',
-		'^###cb:(menu)(Report)//',
-		'^###cb:(menu)(Welcome)//',
-		'^###cb:(menu)(Extra)//',
-		'^###cb:(menu)(Flood)//',
-		'^###cb:(menu)(DimFlood)//',
-		'^###cb:(menu)(RaiseFlood)//',
-		'^###cb:(menu)(ActionFlood)//',
-		'^###cb:(media)(image)//',
-		'^###cb:(media)(audio)//',
-		'^###cb:(media)(video)//',
-		'^###cb:(media)(voice)//',
-		'^###cb:(media)(sticker)//',
-		'^###cb:(media)(contact)//',
-		'^###cb:(media)(file)//',
-		'^###cb:(media)(gif)//',
-		'^###cb:(media)(link)//',
+    	'^###cb:(dashboard)(rules)//',
+	    '^###cb:(dashboard)(about)//',
+	    '^###cb:(dashboard)(modlist)//',
+	    '^###cb:(dashboard)(extra)//',
+    	'^###cb:(menu)(alert)//',
+    	'^###cb:(menu)(Rules)//',
+    	'^###cb:(menu)(About)//',
+    	'^###cb:(menu)(Modlist)//',
+    	'^###cb:(menu)(Rtl)//',
+    	'^###cb:(menu)(Arab)//',
+    	'^###cb:(menu)(Report)//',
+    	'^###cb:(menu)(Welcome)//',
+    	'^###cb:(menu)(Extra)//',
+    	'^###cb:(menu)(Flood)//',
+    	'^###cb:(menu)(DimFlood)//',
+    	'^###cb:(menu)(RaiseFlood)//',
+    	'^###cb:(menu)(ActionFlood)//',
+    	'^###cb:(media)(image)//',
+    	'^###cb:(media)(audio)//',
+    	'^###cb:(media)(video)//',
+    	'^###cb:(media)(voice)//',
+    	'^###cb:(media)(sticker)//',
+    	'^###cb:(media)(contact)//',
+    	'^###cb:(media)(file)//',
+    	'^###cb:(media)(gif)//',
 	}
 }

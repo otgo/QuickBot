@@ -1,6 +1,7 @@
 local action = function(msg, blocks, ln)
 	if msg.chat.type ~= 'private' and not is_mod(msg) then
-		return
+		api.sendReply(msg, make_text(lang[ln].not_mod), true)
+		return nil
 	end   
 	
 	if blocks[1] == 'lang' and not blocks[2] then

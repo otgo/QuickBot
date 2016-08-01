@@ -9,25 +9,20 @@ local action = function(msg, blocks, ln)
 	        return nil
 		end
 	    if not is_mod(msg) then
-	        return
+	        return nil
 	    end
 	    local hash = 'chat:'..msg.chat.id..':extra'
-	    local res, code = api.sendReply(msg, blocks[3], true)
+	    local text = make_text(lang[ln].extra.new_command, blocks[2], blocks[3])
+	    local res = api.sendReply(msg, text, true)
 	    if not res then
-	    	if code == 118 then
-				api.sendMessage(msg.chat.id, lang[ln].bonus.too_long)
-			else
-				api.sendMessage(msg.chat.id, lang[ln].breaks_markdown, true)
-			end
-    	else
+	    	api.sendReply(msg, lang[ln].breaks_markdown, true)
+	    else
 	    	db:hset(hash, blocks[2], blocks[3])
-	    	local id = res.result.message_id
-			api.editMessageText(msg.chat.id, id, make_text(lang[ln].extra.setted, blocks[2]), false)
 	    end
 	    mystat('/extra')
 	elseif blocks[1] == 'extra list' then
 	    if not is_mod(msg) then
-	        return
+	        return nil
 	    end
 	    local hash = 'chat:'..msg.chat.id..':extra'
 	    local commands = db:hkeys(hash)
@@ -45,10 +40,11 @@ local action = function(msg, blocks, ln)
 	    mystat('/extra list')
     elseif blocks[1] == 'extra del' then
         if not is_mod(msg) then
-	        return
+	        return nil
 	    end
 	    local hash = 'chat:'..msg.chat.id..':extra'
 	    local success = db:hdel(hash, blocks[2])
+	    print(success)
 	    if success == 1 then
 	    	local out = make_text(lang[ln].extra.command_deleted, blocks[2])
 	        api.sendReply(msg, out)

@@ -8,18 +8,16 @@ local triggers = {
 	'^/(commands)$',
 	'^/(stats)$',
 	'^/(lua)$',
-	'^/(lua) (.*)$',
-	'^/(run) (.*)$',
-	'^/(log) (del) (.*)',
+    '^/(log) (del) (.*)',
 	'^/(log) (del)',
 	'^/(log) (.*)$',
 	'^/(log)$',
-	'^/(adminpatterns)$',
-	'^/(banall) (%d+)$',
-	'^/(banall)$',
-	'^/(unbanall) (%d+)$',
-	'^/(unbanall)$',
-	'^/(isbanall)$',
+	'^/(admin)$',
+	'^/(block) (%d+)$',
+	'^/(block)$',
+	'^/(unblock) (%d+)$',
+	'^/(unblock)$',
+	'^/(isblocked)$',
 	'^/(ping redis)$',
 	'^/(leave) (-%d+)$',
 	'^/(leave)$',
@@ -27,7 +25,7 @@ local triggers = {
 	'^###(forward)',
 	'^/(reset) (.*)$',
 	'^/(reset)$',
-	'^/(send) (%d+) (.*)$',
+	'^/(send) (-?%d+) (.*)$',
 	'^/(send) (.*)$',
 	'^/(adminmode) (%a%a%a?)$',
 	'^/(delflag)$',
@@ -43,11 +41,12 @@ local triggers = {
 	'^/(trfile) (%a%a)$',
 	'^/(trfile)$',
 	'^/(fixaction) (-%d+)$',
-	'^/(sendplug) (.*)$',
-	'^/(sendfile) (.*)$',
-	'^/?(reply)$',
+    '^/?(reply)$',
 	'^/?(reply) (.*)',
-	'^/(download)$'
+	'^/(download)$',
+	'^/(savepin)$',
+	'^/(delpin)$',
+	'^/(migrate) (%d+)%s(%d+)'
 }
 
 local logtxt = ''
@@ -60,14 +59,6 @@ local function save_in_redis(hash, text)
 	else
 	    failed = failed + 1
 	    return 'Something went wrong with redis, res -> '..res
-	end
-end
-
-local function get_user_id(msg, blocks)
-	if msg.reply then
-		return msg.reply.from.id
-	elseif blocks[2] then
-		return res_user_group(blocks[2], msg.chat.id)
 	end
 end
 
@@ -168,31 +159,32 @@ end
 
 local action = function(msg, blocks, ln)
 	
-	if msg.from.id ~= config.admin and msg.from.id ~= config.george then
+	if msg.from.id ~= config.admin and msg.from.id ~= config.admin2 then
 		return
 	end
 	
-	if blocks[1] == 'adminpatterns' then
+	if blocks[1] == 'admin' then
 		local text = ''
 		for k,v in pairs(triggers) do
 			text = text..v..'\n'
 		end
 		api.sendMessage(config.admin, text)
-		mystat('/adminpatterns')
+		mystat('/admin')
 	end
 	if blocks[1] == 'init' then
 		--db:bgsave()
 		bot_init(true)
-		api.sendReply(msg, (lang[ln].admin.reload), true)
+		api.sendReply(msg, '*Bot reiniciado*', true)
 		mystat('/reload')
 	end
 	if blocks[1] == 'stop' then
 		db:bgsave()
 		is_started = false
-		api.sendReply(msg, (lang[ln].admin.stop), true)
+		api.sendReply(msg, '*Bot detenido*', true)
 		mystat('/stop')
 	end
 	if blocks[1] == 'backup' then
+		db:bgsave()
 		local cmd = io.popen('sudo tar -cpf '..bot.first_name:gsub(' ', '_')..'.tar *')
     	cmd:read('*all')
     	cmd:close()
@@ -211,7 +203,7 @@ local action = function(msg, blocks, ln)
 	                api.sendMessage(ids[i], blocks[2], true)
 	                print('Sent', ids[i])
 	            end
-	            api.sendMessage(config.admin, lang[ln].admin.broadcast, true)
+	            api.sendMessage(config.admin, 'Broadcast delivered. Check the log for the list of reached ids')
 	        else
 	            api.sendMessage(config.admin, 'No users saved, no broadcast')
 	        end
@@ -291,27 +283,23 @@ local action = function(msg, blocks, ln)
     		if blocks[2] ~= 'del' then
     			local reply = 'I\' sent it in private'
     			if blocks[2] == 'msg' then
-    				api.sendDocument(msg.from.id, './logs/msgs_errors.txt')
+    				api.sendDocument(msg.chat.id, './logs/msgs_errors.txt')
     			elseif blocks[2] == 'dbswitch' then
-    				api.sendDocument(msg.from.id, './logs/dbswitch.txt')
+    				api.sendDocument(msg.chat.id, './logs/dbswitch.txt')
     			elseif blocks[2] == 'errors' then
-    				api.sendDocument(msg.from.id, './logs/errors.txt')
+    				api.sendDocument(msg.chat.id, './logs/errors.txt')
     			elseif blocks[2] == 'starts' then
-    				api.sendDocument(msg.from.id, './logs/starts.txt')
+    				api.sendDocument(msg.chat.id, './logs/starts.txt')
     			elseif blocks[2] == 'additions' then
-    				api.sendDocument(msg.from.id, './logs/additions.txt')
+    				api.sendDocument(msg.chat.id, './logs/additions.txt')
     			elseif blocks[2] == 'usernames' then
-    				api.sendDocument(msg.from.id, './logs/usernames.txt')
+    				api.sendDocument(msg.chat.id, './logs/usernames.txt')
     			else
     				reply = 'Invalid parameter: '..blocks[2]
     			end
-    			if msg.chat.type ~= 'private' then
-    				api.sendReply(msg, reply)
-    			else
-    				if string.match(reply, '^Invalid parameter: .*') then
-    					api.sendMessage(msg.chat.id, reply)
-    				end
-				end
+    			if reply:match('^Invalid parameter: .*') then
+    				api.sendMessage(msg.chat.id, reply)
+    			end
 			else
 				if blocks[3] then
 					local reply = 'Log deleted'
@@ -369,11 +357,11 @@ local action = function(msg, blocks, ln)
 		end
 		mystat('/log')
     end
-	if blocks[1] == 'banall' then
+	if blocks[1] == 'block' then
 		local id
 		if not blocks[2] then
 			if not msg.reply then
-				api.sendReply(msg, 'Necesita respuesta o ID')
+				api.sendReply(msg, 'Este comando funciona por respuesta')
 				return
 			else
 				id = msg.reply.from.id
@@ -384,19 +372,19 @@ local action = function(msg, blocks, ln)
 		local response = db:sadd('bot:blocked', id)
 		local text
 		if response == 1 then
-			text = '*El ID* ' ..id.. ' *ha sido baneado globalmente*.'
+			text = id..' ha sido bloqueado'
 		else
-			text = '*El ID* ' ..id..' *ya ha sido baneado globalmente*.'
+			text = id..' ya había sido bloqueado'
 		end
-		api.sendReply(msg, text, true)
-		mystat('/banall')
+		api.sendReply(msg, text)
+		mystat('/block')
 	end
-	if blocks[1] == 'unbanall' then
+	if blocks[1] == 'unblock' then
 		local id
 		local response
 		if not blocks[2] then
 			if not msg.reply then
-				api.sendReply(msg, 'Necesita respuesta o ID')
+				api.sendReply(msg, 'Este comando funciona por respuesta')
 				return
 			else
 				id = msg.reply.from.id
@@ -407,25 +395,25 @@ local action = function(msg, blocks, ln)
 		local response = db:srem('bot:blocked', id)
 		local text
 		if response == 1 then
-			text = '*El ID* ' ..id..' *ha sido desbaneado globalmente*.'
+			text = id..' ha sido desbloqueado'
 		else
-			text = '*EL ID* ' ..id..' *ya ha sido desbaneado globalmente*.'
+			text = id..' ya ha sido desbloqueado'
 		end
-		api.sendReply(msg, text, true)
-		mystat('/ungban')
+		api.sendReply(msg, text)
+		mystat('/unblock')
 	end
-	if blocks[1] == 'isbanall' then
+	if blocks[1] == 'isblocked' then
 		if not msg.reply then
-			api.sendReply(msg, 'Necesita respuesta o ID')
+			api.sendReply(msg, 'Este comando funciona por respuesta')
 			return
 		else
 			if is_blocked(msg.reply.from.id) then
-				api.sendReply(msg, '*Sí*, está baneado globalmente.', true)
+				api.sendReply(msg, 'Sí')
 			else
-				api.sendReply(msg, '*No*, no está baneado globalmente.', true)
+				api.sendReply(msg, 'No')
 			end
 		end
-		mystat('/isbanall')
+		mystat('/isblocked')
 	end
 	if blocks[1] == 'ping redis' then
 		local ris = db:ping()
@@ -438,7 +426,7 @@ local action = function(msg, blocks, ln)
 		local text
 		if not blocks[2] then
 			if msg.chat.type == 'private' then
-				text = 'ID perdida'
+				text = 'ID missing'
 			else
 				text = bot_leave(msg.chat.id, ln) 
 			end
@@ -490,23 +478,25 @@ local action = function(msg, blocks, ln)
 			api.sendMessage(config.admin, 'Specify an id or reply with the message')
 			return
 		end
-		local id
-		if blocks[2]:match('(%d+)') then
+		local id, text
+		if blocks[2]:match('(-?%d+)') then
 			if not blocks[3] then
 				api.sendMessage(config.admin, 'Text is missing')
 				return
 			end
 			id = blocks[2]
+			text = blocks[3]
 		else
 			if not msg.reply then
 				api.sendMessage(config.admin, 'Reply to a user to send him a message')
 				return
 			end
 			id = msg.reply.from.id
+			text = blocks[2]
 		end
-		local res = api.sendMessage(id, blocks[2])
+		local res = api.sendMessage(id, text)
 		if res then
-			api.sendMessage(config.admin, 'Successful delivery')
+			api.sendMessage(msg.chat.id, 'Successful delivery')
 		end
 	end
 	if blocks[1] == 'adminmode' then
@@ -645,7 +635,7 @@ local action = function(msg, blocks, ln)
 			if not blocks[2] then
 				local hash = 'trfile:EN'
 				db:set(hash, msg.reply.document.file_id)
-				api.sendReply(msg, 'Translation file setted!\n*Lang*: '..code:upper()..'\n*ID*: '..msg.reply.document.file_id..'\n*Path*: ln'..code:upper()..'.lua', true)
+				api.sendReply(msg, 'Translation file setted!\n*Lang*: '..code:upper()..'\n*ID*: '..msg.reply.document.file_id:mEscape()..'\n*Path*: ln'..code:upper()..'.lua', true)
 				return
 			end
 			local code = blocks[2]
@@ -655,7 +645,7 @@ local action = function(msg, blocks, ln)
 			else
 				local hash = 'trfile:'..code:upper()
 				db:set(hash, msg.reply.document.file_id)
-				api.sendReply(msg, 'Translation file setted!\n*Lang*: '..code:upper()..'\n*ID*: '..msg.reply.document.file_id..'\n*Path*: ln'..code:upper()..'.lua', true)
+				api.sendReply(msg, 'Translation file setted!\n*Lang*: '..code:upper()..'\n*ID*: '..msg.reply.document.file_id:mEscape()..'\n*Path*: ln'..code:upper()..'.lua', true)
 			end
 		end
 	end
@@ -694,8 +684,8 @@ local action = function(msg, blocks, ln)
 	end
 	if blocks[1] == 'reply' then
 	    --ignore if no reply
-	    if not msg.reply_to_message then
-            api.sendReply(msg, lang[ln].report.reply)
+	    if not msg.reply then
+            api.sendReply(msg, 'Reply to a message')
 			return nil
 		end
 		
@@ -703,17 +693,16 @@ local action = function(msg, blocks, ln)
 		
 		--ignore if not imput
 		if not input then
-            api.sendMessage(msg.from.id, lang[ln].report.reply_no_input)
+            api.sendMessage(msg.from.id, 'Write something to reply')
             return
         end
 		
 		msg = msg.reply_to_message
 		local receiver = msg.forward_from.id
-		local out = make_text(lang[ln].report.feedback_reply, input)
 		
-		local res = api.sendAdmin(make_text(lang[ln].report.reply_sent, input), true)
+		local res = api.sendAdmin('*Reply sent:*\n\n'..input, true)
 		if res then
-			api.sendMessage(receiver, out, true)
+			api.sendMessage(receiver, input, true)
 		else
 			api.sendAdmin('Wrong markdown')
 		end
@@ -751,6 +740,37 @@ local action = function(msg, blocks, ln)
 			end
 			api.sendMessage(msg.chat.id, text)
 		end
+	end
+	if blocks[1] == 'savepin' then
+		if not msg.reply then
+			api.sendMessage(msg.chat.id, 'Reply to a message')
+			return
+		end
+		local id, type
+		msg = msg.reply
+		if msg.photo then
+			id = msg.photo[1].file_id
+			if not id then
+				api.sendMessage(msg.chat.id, 'ID not detected\n\n'..vtext(msg.photo))
+				return
+			end
+			type = 'photo'
+		elseif msg.document then
+			id = msg.document.file_id
+			type = 'document'
+		end
+		db:set('pin:id', id)
+		db:set('pin:type', type)
+		api.sendMessage(msg.chat.id, '*Pin is setted*: '..id:mEscape()..'\n*Type*: '..type, true)
+	end
+	if blocks[1] == 'delpin' then
+		db:del('pin:id', 'pin:type')
+		api.sendAdmin('Pin removed')
+	end
+	if blocks[1] == 'migrate' then
+		local old = '-'..blocks[2]
+		local new = '-'..blocks[3]
+		migrate_chat_info(old, new, true)
 	end
 end
 

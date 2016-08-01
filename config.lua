@@ -1,19 +1,26 @@
 return {
-	bot_api_key = 'readapikey',
-	admin = {
-		owner = readowner,
-		admins = {
-			[-1001056989896] = false,
-			[189041244] = true
-		} 
-	},
-	log_chat = -122946087,
-	channel = '@readchannel', 
-	lang = 'languages.lua',
+	bot_api_key = io.open("./data/key","r"):read(),
+	admin = 189041244,
+	admin2 = 28358650,
+	log_chat = -1001061708674,
+    channel = '@moderatorz',
+	languages = 'lenguajes.lua',
 	plugins = {
 		'onmessage.lua',
 		'all.lua',
+		'uptime.lua',
+		'gbanner.lua',
+		'error.lua',
+		'caracola.lua',
+		'killer.lua',
+		'saludador.lua',
+		'say.lua',
+		'sendfiles.lua',
+		'compresor.lua',
+		'repetir.lua',
+		'sera.lua',
 		'banhammer.lua',
+		'mod.lua',
 		'users.lua',
 		'help.lua',
 		'rules.lua',
@@ -27,23 +34,15 @@ return {
 		'setlang.lua',
 		'floodmanager.lua',
 		'mediasettings.lua',
-		'private.lua',
-		'admin.lua',
-		'test.lua',
-		'faq.lua',
-		'caracola.lua',
-		'comprimirlink.lua',
-		'sendfiles.lua',
-		'killer.lua',
-		'beta.lua',
-		'saludador.lua',
-		'italic.lua',
-		'contact.lua',
+		'admin.lua'
 	},
+	
 	available_languages = {
 		'es'
 	},
 	chat_data = {
+		'mod',
+		'owner',
 		'settings',
 		'about',
 		'rules',

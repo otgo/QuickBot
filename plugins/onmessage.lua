@@ -12,14 +12,14 @@ local function saveFirstWarn(chat, user, media, ln)
 end
 
 pre_process = function(msg, ln)
-    if is_blocked(msg.from.id) then
+    if msg.from.id and is_blocked(msg.from.id) then
         print('Bloqueado:', msg.from.id)
         return msg, true --if an user is blocked, don't go through plugins
     end
     if msg.cb then
         return msg
     end
-    if msg.chat.type ~= 'private' then
+    if msg.chat.type ~= 'private' and not is_mod(msg) then
         local spamhash = 'spam:'..msg.chat.id..':'..msg.from.id
         local msgs = tonumber(db:get(spamhash)) or 0
         if msgs == 0 then msgs = 1 end
@@ -61,7 +61,6 @@ pre_process = function(msg, ln)
             local name = msg.from.first_name
             if msg.from.username then name = name..' (@'..msg.from.username..')' end
             local media = msg.text:gsub('###', '')
-            if msg.url then media = 'link' end
             local hash = 'chat:'..msg.chat.id..':media'
             local status = db:hget(hash, media)
             local out

@@ -14,12 +14,12 @@ local action = function(msg, blocks, ln)
         end
         mystat('/rules') --save stats
     end
-	
-	if not is_mod(msg) then
-		return
-	end
-	
 	if blocks[1] == 'addrules' then
+	    --ignore if not mod
+		if not is_mod(msg) then
+			api.sendReply(msg, lang[ln].not_mod, true)
+			return
+		end
 		if not blocks[2] then
 			api.sendReply(msg, lang[ln].setabout.no_input_add)
 			return
@@ -47,31 +47,30 @@ local action = function(msg, blocks, ln)
         mystat('/addrules')
     end
 	if blocks[1] == 'setrules' then
+    	--ignore if not mod
+		if not is_mod(msg) then
+			api.sendReply(msg, make_text(lang[ln].not_mod), true)
+			return nil
+		end
 		local input = blocks[2]
 		--ignore if not input text
 		if not input then
-			api.sendReply(msg, lang[ln].setrules.no_input_set, true)
-			return
+			api.sendReply(msg, make_text(lang[ln].setrules.no_input_set), true)
+			return true
 		end
     	--check if a mod want to clean the rules
 		if input == '^clean' then
 			db:del(hash)
-			api.sendReply(msg, lang[ln].setrules.clean)
-			return
+			api.sendReply(msg, make_text(lang[ln].setrules.clean))
+			return nil
 		end
 		
 		--set the new rules	
-		local res, code = api.sendReply(msg, input, true)
+		local res = api.sendReply(msg, make_text(lang[ln].setrules.new, input), true)
 		if not res then
-			if code == 118 then
-				api.sendMessage(msg.chat.id, lang[ln].bonus.too_long)
-			else
-				api.sendMessage(msg.chat.id, lang[ln].breaks_markdown, true)
-			end
+			api.sendReply(msg, lang[ln].breaks_markdown, true)
 		else
 			db:set(hash, input)
-			local id = res.result.message_id
-			api.editMessageText(msg.chat.id, id, lang[ln].setrules.rules_setted, false, true)
 		end
 		mystat('/setrules')
 	end
