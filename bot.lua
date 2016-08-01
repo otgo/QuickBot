@@ -23,7 +23,7 @@ bot_init = function(on_reload)
 	print(colors.blue..'Leyendo lenjuages.lua...' ..colors.reset)
 	lang = dofile(config.languages) 
 	print(colors.blue..'Iniciando un nuevo proceso de gbans...' ..colors.reset)
-	os.execute('sudo tmux new-session -s "ScriptGban" -d "bash gbanner/metodo.sh gbans"')
+	os.execute('sudo TMUX= tmux new-session -s "ScriptGban" -d "bash gbanner/metodo.sh gbans"')
 	print(colors.blue..'Leyendo tabla de funciones...' ..colors.reset)
 	api = require('metodos')
 	
