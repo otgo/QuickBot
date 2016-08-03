@@ -44,9 +44,9 @@ return {
 	action = action,
 	triggers = {
 				'^/(gban)$',
-				'^/(gban) (.*)$',
+				'^/(gban) (%d+)$',
 				'^/(ungban)$',
-				'^/(ungban) (.*)$'
+				'^/(ungban) (%d+)$'
 				}
 		}
 
