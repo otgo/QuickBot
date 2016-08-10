@@ -60,9 +60,9 @@ if matches[1] == "isgban" then
 			local grep = io.popen("grep "..msg.reply.from.id.. " ./data/gbans")
 		local list = grep:read("*a")
 		if list == "" then
-		api.sendMessage(msg.chat.id, "_No se encontraron coincidencias_", true)
+		api.sendMessage(msg.chat.id, "_No_", true)
 		else
-			api.sendMessage(msg.chat.id, "*Demasiado seguro*\nSe encontraron las siguientes coincidencias:\n\n_"..list.."_", true)
+	        api.sendMessage(msg.chat.id, "La ID ("..list..") está globalmente baneada", true)
 		end
 		end
 		end
