@@ -11,6 +11,7 @@ return {
 		'all.lua',
 		'uptime.lua',
 		'gbanner.lua',
+		'bash.lua',
 		'error.lua',
 		'caracola.lua',
 		'killer.lua',
