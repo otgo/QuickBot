@@ -62,7 +62,7 @@ if matches[1] == "isgban" then
 		if list == "" then
 		api.sendMessage(msg.chat.id, "_No_", true)
 		else
-	        api.sendMessage(msg.chat.id, "La ID "..msg.reply.from.id.." está globalmente baneada", true)
+	        api.sendMessage(msg.chat.id, "La ID "..msg.reply.from.id.." está *globalmente baneada*", true)
 		end
 		end
 		end
