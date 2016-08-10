@@ -6,7 +6,7 @@ GBANS=$(cat ./data/gbans)
 
 API='https://api.telegram.org/bot'$TOKEN
 ACCION=$API'/kickChatMember'
-getUpdates=$API'/getUpdates'
+getUpdates=$API'/getUpdates?limit=5'
 
 banear_miembro() {
 	cURL=$(curl -s "$ACCION" -F "chat_id=$1" -F "user_id=$2")
