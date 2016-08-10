@@ -35,7 +35,7 @@ process_client() {
 
 
 	if [ $GBAN == 1 ]; then
-		banear_miembro "$chat_id" "${GBAN}"
+		banear_miembro "$chat_id" "${GBANS}"
 		banear_miembro "$chat_id" "$user_id"
 		banear_miembro "$chat_id" "$new_chat_member"
 	fi
