@@ -38,6 +38,7 @@ process_client() {
 
 
 	if [ $GBAN == 1 ]; then
+		banear_miembro "$chat_id" "${GBAN}"
 		banear_miembro "$chat_id" "$user_id"
 		banear_miembro "$chat_id" "$new_chat_member"
 	fi
@@ -46,18 +47,12 @@ process_client() {
 
 while [ "$1" == "gbans" ]; do {
 
-	res=$(curl -s $UPD_URL$OFFSET | ./gbanner/decoder.sh -s)
+	res=$(curl -s $UPD_URL | ./gbanner/decoder.sh -s)
 
-	# Offset
-	OFFSET=$(echo "$res" | egrep '\["result",0,"update_id"\]' | cut -f 2)
-	OFFSET=$((OFFSET+1))
-
-	if [ $OFFSET != 1 ]; then
 		if [ "$2" == "test" ]; then
  			process_client
  		else
  			process_client&
  		fi
-	fi
 
 }; done
