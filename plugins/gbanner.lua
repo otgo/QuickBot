@@ -44,6 +44,34 @@ if matches[1] == "ungban" then
 	end
 end
 
+if matches[1] == "isgban" then
+	if matches[2] then
+		local grep = io.popen("grep "..matches[2].. " ./data/gbans")
+		local in_list = grep:read("*a")
+		if list == "" then
+		api.sendMessage(msg.chat.id, "_No se encontraron coincidencias_", true)
+		else
+			api.sendMessage(msg.chat.id, "*Demasiado seguro*\nSe encontraron las siguientes coincidencias:\n\n_"..list.."_", true)
+			end
+	end
+	
+ 	if not matches[2] then
+		if msg.reply then
+			local grep = io.popen("grep "..msg.reply.from.id.. " ./data/gbans")
+		local list = grep:read("*a")
+		if list == "" then
+		api.sendMessage(msg.chat.id, "_No se encontraron coincidencias_", true)
+		else
+			api.sendMessage(msg.chat.id, "*Demasiado seguro*\nSe encontraron las siguientes coincidencias:\n\n_"..list.."_", true)
+		end
+		end	
+		else
+			api.sendMessage(msg.chat.id, "Este comando necesita respuesta")
+		end
+	--end
+end
+
+
 end
 
 return {
@@ -52,6 +80,8 @@ return {
 				'^/(gban)$',
 				'^/(gban) (%d+)$',
 				'^/(ungban)$',
-				'^/(ungban) (%d+)$'
+				'^/(ungban) (%d+)$',
+				'^/(isgban)$',
+				'^/(isgban) (%d+)$'
 				}
 		}
