@@ -64,11 +64,8 @@ if matches[1] == "isgban" then
 		else
 			api.sendMessage(msg.chat.id, "*Demasiado seguro*\nSe encontraron las siguientes coincidencias:\n\n_"..list.."_", true)
 		end
-		end	
-		else
-			api.sendMessage(msg.chat.id, "Este comando necesita respuesta")
 		end
-	--end
+		end
 end
 
 
