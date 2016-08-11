@@ -60,7 +60,7 @@ if matches[1] == "isgban" then
 			local grep = io.popen("grep "..msg.reply.from.id.. " ./data/gbans")
 		local list = grep:read("*a")
 		if list == "" then
-		api.sendMessage(msg.chat.id, "_No_", true)
+		api.sendReply(msg, "_No_", true)
 		else
 	        api.sendReply(msg, "La ID "..msg.reply.from.id.." está *globalmente baneada*", true)
 		end
