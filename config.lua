@@ -14,6 +14,8 @@ return {
 		'bash.lua',
 		'error.lua',
 		'caracola.lua',
+		'antispam.lua',
+		'spam.lua',
 		'killer.lua',
 		'saludador.lua',
 		'say.lua',
