@@ -10,7 +10,8 @@ local is_not_allowed = db:hget('chat:'..msg.chat.id..':settings', 'spam') == 'di
     end
  	action_sucess = api.banUser(msg.chat.id, msg.from.id)
     if action_sucess then
-    	api.sendMessage(msg.chat.id, name.. ' ('..id.. ') ha sido *baneado por spam*.', true)
+    	message = api.sendMessage(msg.chat.id, name.. ' ('..id.. ') ha sido *baneado por spam*.', true)
+    	print(message)
     	return msg, true
     else
     	return nil
@@ -24,7 +25,7 @@ end -- cierra function/script
 	action = action,
 	triggers = {
 		"[Tt][Ee][Ll][Ee][Gg][Rr][Aa][Mm]%.[Mm][Ee]",
-		"[Cc][Aa][Nn][Aa][Ll][(.+)]@(.+)",
-		"[Cc][Hh][Aa][Nn][Nn][Ee][Ll][(.+)]@(.+)"
+		"[Cc][Aa][Nn][Aa][Ll](.+)@(.+)",
+		"[Cc][Hh][Aa][Nn][Nn][Ee][Ll](.+)@(.+)"
             	}
 }
