@@ -24,7 +24,7 @@ end -- cierra function/script
 	action = action,
 	triggers = {
 		"[Tt][Ee][Ll][Ee][Gg][Rr][Aa][Mm]%.[Mm][Ee]",
-           	"[Cc][Aa][Nn][Aa][Ll][(.+)]@(.+)",
-            	"[Cc][Hh][Aa][Nn][Nn][Ee][Ll][(.+)]@(.+)"
+		"[Cc][Aa][Nn][Aa][Ll][(.+)]@(.+)",
+		"[Cc][Hh][Aa][Nn][Nn][Ee][Ll][(.+)]@(.+)"
             	}
 }
