@@ -17,7 +17,7 @@ if [ "$1" = "attach" ]; then
   elseif [ "$2" == "gbans" ]; then
         clear
         tmux attach -t "$session2"
-  end
+  fi
 fi
 
 if [ "$1" = "kill" ]; then
