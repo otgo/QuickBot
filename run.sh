@@ -11,15 +11,14 @@ if [ "$1" = "" ]; then
 fi
 
 if [ "$1" = "attach" ]; then
+  if [ "$2" == "" ]; then
 	clear
 	tmux attach -t "$session"
+  elseif [ "$2" == "gbans"]; then
+        clear
+        tmux attach -t "$session2"
+  end
 fi
-
-   if [ "$2" = "gbans" ]; then
-	clear
-	tmux attach -t "$session2"
-   fi
-
 
 if [ "$1" = "kill" ]; then
 	clear
