@@ -15,10 +15,10 @@ if [ "$1" = "attach" ]; then
 	tmux attach -t "$session"
 fi
 
-if [ "$1" = "attach-gbans" ]; then
+   if [ "$2" = "gbans" ]; then
 	clear
 	tmux attach -t "$session2"
-fi
+   fi
 
 
 if [ "$1" = "kill" ]; then
