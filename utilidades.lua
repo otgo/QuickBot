@@ -1,10 +1,16 @@
 -- utilities.lua
 -- Functions shared among plugins.
 
-function owners(msg)
+function owners(msg, user_id)
   local var = false
   for v,owners in pairs(config.owners) do
     if owners == msg.from.id then
+      var = true
+    end
+    if owners == user_id then
+      var = true
+    end
+    if owners == tonumber(id) then
       var = true
     end
   end
@@ -12,6 +18,7 @@ function owners(msg)
   
  end
  
+
  
 function get_word(s, i) -- get the indexed word in a string
 
@@ -51,7 +58,7 @@ function is_admin(msg)
 	else
 		id = msg.from.id
 	end
-	if id and tonumber(id) == config.admin and tonumber(id) == config.admin2 then
+	if id and owners(msg) then
 		return true
 	end
 	return false
@@ -68,7 +75,7 @@ function is_owner(msg)
 		var = true
 	end
 	
-	if msg.from.id == config.admin or msg.from.id == config.admin2 then
+	if owners(msg) then
 		var = true
 	end
 	
@@ -88,7 +95,7 @@ function is_owner2(chat_id, user_id)
 		var = true
 	end
 	
-	if user_id == config.admin or user_id == config.admin2 then
+	if owners(msg) then
 		var = true
 	end
 	
@@ -107,7 +114,7 @@ function is_mod(msg)
 		end
 	end
 
-	if msg.from.id == config.admin then
+	if owners(msg) then
 		var = true
 	end
 	
@@ -128,7 +135,7 @@ function is_mod2(chat_id, user_id)
 		end
 	end
 
-	if user_id == config.admin then
+	if owners(msg) then
 		var = true
 	end
 	
@@ -552,8 +559,30 @@ function to_supergroup(msg)
 	local new = msg.migrate_to_chat_id
 	migrate_chat_info(old, new, false)
 	migrate_ban_list(old, new)
-	api.sendMessage(new, '(_service notification: migration of the group executed_)', true)
+	api.sendMessage(new, '(_grupo convertido a supergrupo_)', true)
 end
+
+function load_plugins()
+local text = ''
+	for k,v in pairs(config.plugins) do
+		if (v:match(".lua$")) then
+			text = text..v..'\n'
+		end
+	end
+return text
+end
+
+function remove_plugin()
+local text = ''
+	for k,v in pairs(config.plugins) do
+		if (v:match(".lua$")) then
+			table.remove(config.plugins, 1)
+			text = text..v..'\n'
+		end
+	end
+return text
+end
+
 
 function getname(msg)
     local name = msg.from.first_name
