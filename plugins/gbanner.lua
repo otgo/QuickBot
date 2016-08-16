@@ -1,10 +1,8 @@
 local action = function(msg, matches)
 
-if msg.from.id ~= config.admin and msg.from.id ~= config.admin2 then
-	return
-end
+if owners(msg) then
 
-if matches[1] == "gban" then
+ if matches[1] == "gban" then
 	
 	if matches[2] then
   		os.execute('echo "' ..matches[2].. '," >> ./data/gbans')
@@ -27,9 +25,9 @@ if matches[1] == "gban" then
 			api.sendMessage(msg.chat.id, "Este comando necesita respuesta")
 		end
 	end
-end
+ end
 
-if matches[1] == "ungban" then
+ if matches[1] == "ungban" then
 	
 	if matches[2] then
 		os.execute('sed -i "/' ..matches[2].. '/d" ./data/gbans')
@@ -52,9 +50,9 @@ if matches[1] == "ungban" then
 			api.sendMessage(msg.chat.id, "Este comando necesita respuesta")
 		end
 	end
-end
+ end
 
-if matches[1] == "isgban" then
+ if matches[1] == "isgban" then
 	if matches[2] then
 		local grep = io.popen("grep "..matches[2].. " ./data/gbans")
 		local list = grep:read("*a")
@@ -76,8 +74,8 @@ if matches[1] == "isgban" then
 		end
 		end
 		end
+ end
 end
-
 
 end
 
