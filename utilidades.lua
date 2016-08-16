@@ -1,6 +1,3 @@
--- utilities.lua
--- Functions shared among plugins.
-
 function owners(msg, user_id)
   local var = false
   for v,owners in pairs(config.owners) do
@@ -683,7 +680,7 @@ function download_to_file(url, file_path)--https://github.com/yagop/telegram-bot
   -- nil, code, headers, status
   local response = nil
     options.redirect = false
-    response = {HTTPS.request(options)}
+    response = {https.request(options)}
   local code = response[2]
   local headers = response[3]
   local status = response[4]
