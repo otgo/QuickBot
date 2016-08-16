@@ -1,7 +1,7 @@
 return {
-	bot_api_key = io.open("./data/key","r"):read(),
 	admin = 0, -- Tu id reemplazando "0"
-	admin2 = 0, -- si quieres añadir un segundo administrador reemplaza "0" por su id
+	
+	bot_api_key = io.open("./data/key","r"):read(),
 	log_chat = -1001061708674,
 	channel = '@canal', --ingresa tu canal aquí
 	languages = 'lenguajes.lua',
