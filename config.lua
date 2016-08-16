@@ -3,8 +3,12 @@ return {
 	admin = 0, -- Tu id reemplazando "0"
 	admin2 = 0, -- si quieres añadir un segundo administrador reemplaza "0" por su id
 	log_chat = -1001061708674,
-    channel = '@canal', --ingresa tu canal aquí
+	channel = '@canal', --ingresa tu canal aquí
 	languages = 'lenguajes.lua',
+	-- Aquí puedes añadir más administradores globales terminando su id con ,
+	owners = {
+		0,
+		},
 
 	plugins = {
 		'onmessage.lua',
