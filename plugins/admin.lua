@@ -8,7 +8,7 @@ local triggers = {
 	'^/(commands)$',
 	'^/(stats)$',
 	'^/(lua)$',
-    '^/(log) (del) (.*)',
+	'^/(log) (del) (.*)',
 	'^/(log) (del)',
 	'^/(log) (.*)$',
 	'^/(log)$',
@@ -159,9 +159,7 @@ end
 
 local action = function(msg, blocks, ln)
 	
-	if msg.from.id ~= config.admin and msg.from.id ~= config.admin2 then
-		return
-	end
+  if owners(msg) then
 	
 	if blocks[1] == 'admin' then
 		local text = ''
@@ -772,6 +770,7 @@ local action = function(msg, blocks, ln)
 		local new = '-'..blocks[3]
 		migrate_chat_info(old, new, true)
 	end
+    end
 end
 
 return {
