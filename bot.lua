@@ -1,5 +1,5 @@
-HTTP = require('socket.http')
-HTTPS = require('ssl.https')
+http = require('socket.http')
+https = require('ssl.https')
 URL = require('socket.url')
 JSON = require('dkjson')
 redis = require('redis')
