@@ -1,4 +1,3 @@
-
 local BASE_URL = 'https://api.telegram.org/bot' .. config.bot_api_key
 
 if not config.bot_api_key then
@@ -7,7 +6,7 @@ end
 
 local function sendRequest(url)
 
-	local dat, code = HTTPS.request(url)
+	local dat, code = https.request(url)
 	
 	if not dat then 
 		return false, code 
@@ -50,7 +49,7 @@ local function unbanChatMember(chat_id, user_id)
 
 	--return sendRequest(url)
 	
-	local dat, res = HTTPS.request(url)
+	local dat, res = https.request(url)
 	
 	local tab = JSON.decode(dat)
 	
@@ -72,7 +71,7 @@ local function kickChatMember(chat_id, user_id)
 
 	--return sendRequest(url)
 	
-	local dat, res = HTTPS.request(url)
+	local dat, res = https.request(url)
 
 	local tab = JSON.decode(dat)
 
@@ -482,4 +481,4 @@ return {
 	sendStickerId = sendStickerId,
 	getFile = getFile,
 	sendPhotoId = sendPhotoId
-}	
+}
