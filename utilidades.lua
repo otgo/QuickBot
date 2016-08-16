@@ -1,6 +1,18 @@
 -- utilities.lua
 -- Functions shared among plugins.
 
+function owners(msg)
+  local var = false
+  for v,owners in pairs(config.owners) do
+    if owners == msg.from.id then
+      var = true
+    end
+  end
+  return var
+  
+ end
+ 
+ 
 function get_word(s, i) -- get the indexed word in a string
 
 	s = s or ''
