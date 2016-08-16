@@ -48,6 +48,10 @@ if [ "$1" = "attach" ]; then
         clear
         sudo tmux attach -t "$session2"
   fi
+  if [ "$2" == "secure" ]; then
+        clear
+        sudo tmux attach -t "$process"
+  fi
 fi
 
 if [ "$1" = "kill" ]; then
@@ -67,5 +71,6 @@ if [ "$1" == "secure" ]; then
 	sudo tmux kill-session -t $process
 	clear
 	sudo tmux new-session -s "$process" -d 'sudo bash run.sh '$process
+	echo "Sesión segura iniciada"
 	exit
 fi
