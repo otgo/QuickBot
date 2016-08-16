@@ -36,15 +36,20 @@ Más funciones del bash:
 # Iniciar una sesión tmux
 ./run.sh
 
-# Detener la sesiones (script de lectura de gbans, y script del bot. Tmux)
+# Detener la sesiones (script de lectura de gbans, script del bot. Tmux y sesión segura)
 ./run.sh kill
+
+# Sesión segura (tmux)
+./run.sh secure # previene cierres inesperados pero se recomienda no tener errores de código porque generará un bucle
 
 # Attach del bot (regresar a la sesión del bot. Tmux)
 ./run.sh attach
 
 # Attach de los gbans (regresar a la sesión de los gbans. Tmux)
-./run.sh attach-gbans
+./run.sh attach gbans
 
+# Attach de sesión segura
+./run.sh attach secure
 ```
 
 
