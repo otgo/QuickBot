@@ -50,6 +50,6 @@ return {
 		'^/media (ban) (.*)$',
 		'^/media (allow) (.*)$',
 		'^/(media list)$',
-		--'^/(media)$'
+		'^/(media)$'
 	}
 }
