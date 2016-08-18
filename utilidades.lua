@@ -1,10 +1,7 @@
-function owners(msg, user_id)
+function owners(msg)
   local var = false
   for v,owners in pairs(config.owners) do
     if owners == msg.from.id then
-      var = true
-    end
-    if owners == user_id then
       var = true
     end
     if owners == tonumber(id) then
@@ -12,8 +9,18 @@ function owners(msg, user_id)
     end
   end
   return var
-  
- end
+end
+
+
+function owners_listed(user_id)
+local var = false
+  for v,owners in pairs(config.owners) do
+    if user_id == owners then
+      var = true
+    end
+  end
+  return var
+end
  
 
  
@@ -28,7 +35,6 @@ function get_word(s, i) -- get the indexed word in a string
 	end
 
 	return t[i] or false
-
 end
 
 function string:input() -- Returns the string after the first space.
@@ -92,7 +98,7 @@ function is_owner2(chat_id, user_id)
 		var = true
 	end
 	
-	if owners(msg) then
+	if owners_listed(user_id) then
 		var = true
 	end
 	
@@ -132,7 +138,7 @@ function is_mod2(chat_id, user_id)
 		end
 	end
 
-	if owners(msg) then
+	if owners_listed(user_id) then
 		var = true
 	end
 	
