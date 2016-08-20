@@ -20,7 +20,7 @@ if owners(msg) then
 	if matches[2] then
 	get = grep_matches(msg, matches)
 	 if get == '' then
-  		os.execute('perl -pi -e "s[gbans = {][gbans = {\n\t'..matches[2]..',]g" data/gbans.lua')
+  		os.execute('perl -pi -e "s[gbans = \\{][gbans = {\n\t'..matches[2]..',]g" data/gbans.lua')
 		api.sendReply(msg, "ID " ..matches[2].. " *globalmente baneada*.", true)
 		bot_init(true)
 	 else
@@ -35,7 +35,7 @@ if owners(msg) then
 			action_sucess = api.kickUser(msg.chat.id, msg.reply.from.id)
 			if action_sucess then
 			 if get == '' then
-			 	os.execute('perl -pi -e "s[gbans = {][gbans = {\n\t'..msg.reply.from.id..',]g" data/gbans.lua')
+			 	os.execute('perl -pi -e "s[gbans = \\{][gbans = {\n\t'..msg.reply.from.id..',]g" data/gbans.lua')
 				api.sendReply(msg, "Usuario *expulsado*.\nID " ..msg.reply.from.id.. " *globalmente baneada*.", true)
 				bot_init(true)
 			 else
@@ -45,7 +45,7 @@ if owners(msg) then
 			end
 			if not action_sucess then
 			 if get == '' then
-			 	os.execute('perl -pi -e "s[gbans = {][gbans = {\n\t'..msg.reply.from.id..',]g" data/gbans.lua')
+			 	os.execute('perl -pi -e "s[gbans = \\{][gbans = {\n\t'..msg.reply.from.id..',]g" data/gbans.lua')
 				api.sendReply(msg, "Usuario *no expulsado*.\nID " ..msg.reply.from.id.. " *globalmente baneada*.", true)
 				bot_init(true)
 			 else
