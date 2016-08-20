@@ -130,8 +130,8 @@ end
 return {
 	action = action,
 	triggers = {
-	--	'^###(botadded)',
+		'^###(botadded)',
 		'^###(added)',
-	--	'^###(botremoved)'
+		'^###(botremoved)'
 	}
 }
