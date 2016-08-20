@@ -16,7 +16,7 @@ bot_init = function(on_reload)
 		print(colors.red..'No hay api key' ..colors.reset)
 		return
 	end
-    	print(colors.blue..'Leyendo gbans.lua...' ..colors.reset)
+	print(colors.blue..'Leyendo gbans.lua...' ..colors.reset)
 	gbans = dofile('data/gbans.lua')
 	print(colors.blue..'Leyendo utilidades.lua...' ..colors.reset)
 	cross, rdb = dofile('utilidades.lua') 
