@@ -10,20 +10,18 @@ existe_apikey = io.open("./data/key","r")
 
 
 bot_init = function(on_reload) 
-	print(colors.blue..'Deteniendo proceso de gbans...' ..colors.reset)
-	os.execute('sudo tmux kill-session -t ScriptGban')
 	print(colors.blue..'Leyendo config.lua...' ..colors.reset)
 	config = dofile('config.lua') 
 	if not existe_apikey then
 		print(colors.red..'No hay api key' ..colors.reset)
 		return
 	end
-	print(colors.blue..'Loading utilidades.lua...' ..colors.reset)
+    	print(colors.blue..'Leyendo gbans.lua...' ..colors.reset)
+	gbans = require('data/gbans')
+	print(colors.blue..'Leyendo utilidades.lua...' ..colors.reset)
 	cross, rdb = dofile('utilidades.lua') 
 	print(colors.blue..'Leyendo lenjuages.lua...' ..colors.reset)
 	lang = dofile(config.languages) 
-	print(colors.blue..'Iniciando un nuevo proceso de gbans...' ..colors.reset)
-	os.execute('sudo TMUX= tmux new-session -s "ScriptGban" -d "bash gbanner/metodo.sh gbans"')
 	print(colors.blue..'Leyendo tabla de funciones...' ..colors.reset)
 	api = require('metodos')
 	
