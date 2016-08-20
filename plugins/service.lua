@@ -94,7 +94,7 @@ local action = function(msg, blocks, ln)
 		end
 		
 		if user_gbanned(msg) then
-			api.sendMessage(msg.chat.id, "test")
+			api.banUser(msg.chat.id, msg.added.id)
 			return
 		end
 		
