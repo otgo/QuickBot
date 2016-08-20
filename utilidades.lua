@@ -28,9 +28,6 @@ local var = false
     if msg.from.id == users then
       var = true
     end
-    if msg.added.id == users then
-      var = true
-    end
   end
   return var
 end
