@@ -12,6 +12,7 @@ return {
 
 	plugins = {
 		'onmessage.lua',
+		'calculator.lua',
 		'all.lua',
 		'uptime.lua',
 		'gbanner.lua',
