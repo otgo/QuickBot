@@ -93,9 +93,9 @@ local action = function(msg, blocks, ln)
 			return
 		end
 		
-		if user_gbanned(msg) then
+		if user_in_gbans(msg) then
 			api.kickChatMember(msg.chat.id, msg.added.id)
-			return
+		    	return
 		end
 		
 		cross.remBanList(msg.chat.id, msg.added.id) --remove him from the banlist
