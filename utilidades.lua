@@ -21,8 +21,16 @@ local var = false
   end
   return var
 end
- 
 
+function user_gbanned(msg)
+local var = false
+  for v,users in pairs(gbans.gbans) do
+    if msg.from.id == users then
+      var = true
+    end
+  end
+  return var
+end
  
 function get_word(s, i) -- get the indexed word in a string
 
