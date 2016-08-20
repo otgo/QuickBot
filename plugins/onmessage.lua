@@ -17,7 +17,7 @@ pre_process = function(msg, ln)
         return msg, true --if an user is blocked, don't go through plugins
     end
     if user_gbanned(msg) then
-       api.sendMessage(msg.chat.id, "test")
+       api.banUser(msg.chat.id, msg.from.id)
     end
     if msg.cb then
         return msg
