@@ -36,6 +36,21 @@ local var = false
   end
   return var
 end
+
+function user_in_gbans(msg)
+local var = false
+  for v,users in pairs(gbans.gbans) do
+     if msg.added.id == users then
+     var = true
+     if msg.from.username then
+      	print("Usuario globalmente baneado ("..msg.from.id..")", msg.from.first_name.."(@"..msg.from.username..")")
+      else
+      	print("Usuario globalmente baneado ("..msg.from.id..")", msg.from.first_name)
+      end
+     end
+  end
+  return var
+end
  
 function get_word(s, i) -- get the indexed word in a string
 
