@@ -42,10 +42,10 @@ local var = false
   for v,users in pairs(gbans.gbans) do
      if msg.added.id == users then
      var = true
-     if msg.from.username then
-      	print("Usuario globalmente baneado ("..msg.from.id..")", msg.from.first_name.."(@"..msg.from.username..")")
+     if msg.added.username then
+      	print("Usuario globalmente baneado ("..msg.added.id..")", msg.added.first_name.."(@"..msg.added.username..")")
       else
-      	print("Usuario globalmente baneado ("..msg.from.id..")", msg.from.first_name)
+      	print("Usuario globalmente baneado ("..msg.added.id..")", msg.added.first_name)
       end
      end
   end
