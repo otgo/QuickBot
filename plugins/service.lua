@@ -93,6 +93,11 @@ local action = function(msg, blocks, ln)
 			return
 		end
 		
+		if user_gbanned(msg) then
+			api.sendMessage(msg.chat.id, "test")
+			return
+		end
+		
 		cross.remBanList(msg.chat.id, msg.added.id) --remove him from the banlist
 		db:hdel('warn:'..msg.chat.id, msg.added.id) --remove the warns
 		db:del('chat:'..msg.chat.id..':'..msg.added.id..':mediawarn') --remove the warn for media
