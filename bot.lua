@@ -17,7 +17,7 @@ bot_init = function(on_reload)
 		return
 	end
     	print(colors.blue..'Leyendo gbans.lua...' ..colors.reset)
-	gbans = require('data/gbans')
+	gbans = dofile('data/gbans.lua')
 	print(colors.blue..'Leyendo utilidades.lua...' ..colors.reset)
 	cross, rdb = dofile('utilidades.lua') 
 	print(colors.blue..'Leyendo lenjuages.lua...' ..colors.reset)
