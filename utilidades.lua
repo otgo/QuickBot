@@ -92,7 +92,8 @@ function load_plugins()
 local text = ''
 	for k,v in pairs(config.plugins) do
 		if (v:match(".lua$")) then
-			text = text.."- "..v..'\n'
+			list = v:gsub('.lua', '')
+			text = text.."► "..list..'\n'
 		end
 	end
 return text
