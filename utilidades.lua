@@ -51,6 +51,52 @@ local var = false
   end
   return var
 end
+-- Plugins
+function disable_plugin(msg, blocks)
+local var = false
+for k,disable in pairs(config.plugins) do
+plugin = disable:gsub('.lua', '')
+	if blocks[3] == plugin then
+		os.execute('sed -i "/'..config.plugins[k]..'/d" ./config.lua')
+		var = true
+	end
+end
+return var
+end
+
+function plugin_exist(msg, blocks)
+local var = false
+for k,exist in pairs(config.plugins) do
+plugin = exist:gsub('.lua', '')
+	if blocks[3] == plugin then
+		var = true
+	end
+end
+return var
+end
+
+
+function enable_plugin(msg, blocks)
+local var = false
+plugin_existing = io.open("./plugins/"..blocks[3]..".lua","r")
+	if plugin_existing then
+	 if plugin_exist(msg, blocks) == false then
+		os.execute('perl -pi -e "s[plugins = \\{][plugins = \\{\n\t\t\\"'..blocks[3]..'.lua\\",]g" ./config.lua')
+		var = true
+	 end
+	end
+return var
+end
+
+function load_plugins()
+local text = ''
+	for k,v in pairs(config.plugins) do
+		if (v:match(".lua$")) then
+			text = text.."- "..v..'\n'
+		end
+	end
+return text
+end
  
 function get_word(s, i) -- get the indexed word in a string
 
@@ -593,15 +639,6 @@ function to_supergroup(msg)
 	api.sendMessage(new, '(_grupo convertido a supergrupo_)', true)
 end
 
-function load_plugins()
-local text = ''
-	for k,v in pairs(config.plugins) do
-		if (v:match(".lua$")) then
-			text = text..v..'\n'
-		end
-	end
-return text
-end
 
 function remove_plugin()
 local text = ''
