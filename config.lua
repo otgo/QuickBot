@@ -15,6 +15,7 @@ return {
 		'calculator.lua',
 		'plugins.lua',
 		'all.lua',
+		'edit.lua',
 		'uptime.lua',
 		'gbanner.lua',
 		'bash.lua',
