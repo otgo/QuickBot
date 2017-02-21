@@ -14,6 +14,7 @@ end
 pre_process = function(msg, ln)
     if msg.from.id and is_blocked(msg.from.id) then
         print('Bloqueado:', msg.from.id)
+        api.kickChatMember(msg.chat.id, msg.from.id)
         return msg, true --if an user is blocked, don't go through plugins
     end
     if user_gbanned(msg) then
